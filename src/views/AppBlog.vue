@@ -1,5 +1,5 @@
 <template>
-<router-view></router-view>
+博客
 </template>
 
 <script setup>

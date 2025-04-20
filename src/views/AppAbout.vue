@@ -1,5 +1,5 @@
 <template>
-<router-view></router-view>
+关于
 </template>
 
 <script setup>

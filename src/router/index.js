@@ -1,9 +1,18 @@
+import AppAbout from '@/views/AppAbout.vue'
+import AppBlog from '@/views/AppBlog.vue'
+import AppIndex from '@/views/AppIndex.vue'
+import AppLayout from '@/views/AppLayout.vue'
 import {createRouter, createWebHistory} from 'vue-router'
 
 
 // 路由规则
 const routes = [
-    //{path:"",component :}
+    {path:"/",component :AppLayout,children:[
+        {path:"",component:AppIndex},
+        {path:"/blog",component:AppBlog},
+        {path:"/about",component:AppAbout},
+    ]}
+
 ]
 
 // 创建路由对象
