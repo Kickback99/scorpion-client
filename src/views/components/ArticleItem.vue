@@ -14,7 +14,7 @@
                 />
             </template>
             <!-- 右侧内容区域 -->
-              <v-list-item-content class="d-flex flex-column justify-space-between" style="height: 127px;">
+              <v-list-item-content class="d-flex flex-column justify-space-between">
                 <v-list-item-title class="title-category ">
                   <h4 class="ma-0">{{ post.title }}</h4>
                   <span class="category">{{ post.category }}</span>
@@ -65,6 +65,11 @@ const posts = ref([
 .metadata{
     padding-top: 8px;
     margin-top: auto;
+}
+
+:deep(.v-list-item__content) {
+  align-self: stretch !important;
+  background: coral;
 }
 
 /* .title-category h4 {
