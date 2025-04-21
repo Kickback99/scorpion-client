@@ -1,5 +1,8 @@
 <template>
     <ArticleItem></ArticleItem>
+    <ArticleItem></ArticleItem>
+    <ArticleItem></ArticleItem>
+    <ArticleItem></ArticleItem>
 </template>
 
 <script setup>
