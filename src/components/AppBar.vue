@@ -10,8 +10,8 @@
     <!-- 热门文章 -->
     <v-card class="mb-4">
         <v-card-title class="text-h6">热门文章</v-card-title>
-        <v-list>
-            <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id">
+        <v-list color="error">
+            <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact>
                 <template v-slot:prepend>
                     <v-icon color="error">mdi-numeric-{{index+1}}-box</v-icon>
                 </template>
