@@ -5,19 +5,19 @@
         <v-list-item v-for="post in posts" :key="post.id">
             <template v-slot:prepend>
                 <v-img
-                  src="https://img0.baidu.com/it/u=74028626,2723881857&fm=253&fmt=auto&app=138&f=JPEG?w=787&h=500"
+                  src="https://img0.baidu.com/it/u=74028626,2723881857&fm=253&fmt=auto&app=138&f=JPEG"
                   :alt="post.title"
                   class="cover-image"
-                  width="200"
+                  :width="display.smAndDown.value ? 150 : 250"
                 :aspect-ratio="16/9"
                 contain
                 />
             </template>
             <!-- 右侧内容区域 -->
               <v-list-item-content class="d-flex flex-column justify-space-between">
-                <v-list-item-title class="title-category ">
-                  <h4 class="ma-0">{{ post.title }}</h4>
-                  <span class="category">{{ post.category }}</span>
+                <v-list-item-title class="title-category">
+                  <h4 class="ma-0 title">{{ post.title }}</h4>
+                  <!-- <span class="category">{{ post.category }}</span> -->
                 </v-list-item-title>
   
                 <v-list-item-subtitle class="description">
@@ -38,12 +38,15 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
+const display = useDisplay()
 import coverImg from '@/assets/course01.png'
 
 const posts = ref([
   {
     id: 1,
     title: '关于标题的编写很重要的而关于这个标题的长度会可能挺长的',
+    // title: '关于标题的编写很重要的而关于这个标题的长度会可能挺长的关于标题的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的编写很重要的而关于这个标题的长度会可能挺长的',
     category: '文章分类名',
     description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
     publishDate: '2025-04-21',
@@ -55,12 +58,12 @@ const posts = ref([
 </script>
 
 <style scoped>
-.title-category {
+/* .title-category {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
-}
+} */
 
 .metadata{
     padding-top: 8px;
@@ -71,6 +74,27 @@ const posts = ref([
   align-self: stretch !important;
   background: coral;
 }
+
+/* 单行截断 */
+/* .v-list-item-title h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+} */
+
+/* 两行截断 */
+/* .v-list-item-title h4{
+
+  display: -webkit-box;
+  white-space: wrap !important;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word; 
+} */
+
 
 /* .title-category h4 {
   font-size: 1.5rem;

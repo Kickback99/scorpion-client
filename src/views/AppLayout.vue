@@ -21,7 +21,7 @@
                     </v-col>
 
                     <!-- 右侧侧边栏 -->
-                    <v-col md="3" class="hidden-sm-and-down">
+                    <v-col md="3" class="d-none d-md-block">
                         <!-- 个人信息卡片 -->
                         <v-card class="mb-4">
                             <v-card-title>个人信息</v-card-title>
