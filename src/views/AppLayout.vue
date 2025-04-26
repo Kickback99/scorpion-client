@@ -22,14 +22,7 @@
 
                     <!-- 右侧侧边栏 -->
                     <v-col md="3" class="d-none d-md-block">
-                        <!-- 个人信息卡片 -->
-                        <v-card class="mb-4">
-                            <v-card-title>个人信息</v-card-title>
-                            <v-card-text>
-                            <p>用户名: {{ user.username }}</p>
-                            <p>邮箱: {{ user.email }}</p>
-                            </v-card-text>
-                        </v-card>
+                        <AppBar></AppBar>
                     </v-col>
                 </v-row>
             </v-container>
@@ -38,15 +31,9 @@
 </template>
 
 <script setup>
+import AppBar from '@/components/AppBar.vue';
 import AppCarousel from '@/components/AppCarousel.vue';
 import AppHeader from '@/components/AppHeader.vue';
-import { ref } from 'vue'
-  
-const user = ref({
-    username: 'JohnDoe',
-    email: 'johndoe@example.com',
-  });
-
 </script>
 
 <style scoped lang="scss">

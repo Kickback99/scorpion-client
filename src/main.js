@@ -15,6 +15,9 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
+// 全局导入mdi图标
+import '@mdi/font/css/materialdesignicons.css'
+
 const vuetify = createVuetify({
   components,
   directives,
