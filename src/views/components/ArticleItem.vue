@@ -72,7 +72,7 @@ const posts = ref([
 
 :deep(.v-list-item__content) {
   align-self: stretch !important;
-  background: coral;
+  /* background: coral; */
 }
 
 /* 单行截断 */
