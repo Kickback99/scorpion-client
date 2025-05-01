@@ -1,5 +1,4 @@
 <template>
-  <v-app>
     <!-- 全宽应用栏 -->
     <v-app-bar app color="primary">
       <!-- 将导航内容限制在容器内 -->
@@ -88,14 +87,6 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    
-    <v-main>
-      <v-container>
-        <!-- 页面内容 -->
-        <router-view />
-      </v-container>
-    </v-main>
-  </v-app>
 </template>
 
 <script setup>
