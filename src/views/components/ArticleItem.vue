@@ -1,7 +1,4 @@
 <template>
-    <v-container>
-        <v-card>
-        <v-list lines="one">
         <v-list-item v-for="post in posts" :key="post.id">
             <template v-slot:prepend>
                 <v-img
@@ -14,7 +11,7 @@
                 />
             </template>
             <!-- 右侧内容区域 -->
-              <v-list-item-content class="d-flex flex-column justify-space-between">
+              <!-- <v-list-item-content class="d-flex flex-column justify-space-between"> -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title">{{ post.title }}</h4>
                   <!-- <span class="category">{{ post.category }}</span> -->
@@ -29,11 +26,8 @@
                   <span>{{ post.comments }} 评论</span>
                   <span>{{ post.views }} 阅读量</span>
                 </v-list-item-subtitle>
-              </v-list-item-content>
+              <!-- </v-list-item-content> -->
         </v-list-item>
-    </v-list>
-    </v-card>
-    </v-container>
   </template>
 
 <script setup>
@@ -71,7 +65,9 @@ const posts = ref([
 }
 
 :deep(.v-list-item__content) {
+  display: flex;
   align-self: stretch !important;
+  flex-direction: column;
   /* background: coral; */
 }
 

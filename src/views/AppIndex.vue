@@ -1,8 +1,12 @@
 <template>
-    <ArticleItem></ArticleItem>
-    <ArticleItem></ArticleItem>
-    <ArticleItem></ArticleItem>
-    <ArticleItem></ArticleItem>
+    <v-container>
+            <v-list lines="one">
+                <ArticleItem></ArticleItem>
+                <ArticleItem></ArticleItem>
+                <ArticleItem></ArticleItem>
+                <ArticleItem></ArticleItem>
+            </v-list>
+    </v-container>
 </template>
 
 <script setup>
