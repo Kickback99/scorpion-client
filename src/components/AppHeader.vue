@@ -8,14 +8,14 @@
         
         <!-- 桌面导航 (显示在 md 及以上屏幕) -->
         <div v-if="!smAndDown" class="d-flex ml-4">
-          <template v-for="item in navItems" :key="item.title">
+          <template v-for="item in categories" :key="item.id">
             <!-- 一级导航项 -->
             <v-btn
               variant="text"
               @click="handleNavClick(item)"
               class="text-none"
             >
-              {{ item.title }}
+              {{ item.name }}
               
               <!-- 二级菜单 (桌面端下拉) -->
               <v-menu
@@ -27,10 +27,10 @@
                 <v-list density="compact">
                   <v-list-item
                     v-for="child in item.children"
-                    :key="child.title"
+                    :key="child.id"
                     @click="handleNavClick(child)"
                   >
-                    <v-list-item-title>{{ child.title }}</v-list-item-title>
+                    <v-list-item-title>{{ child.name }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -57,31 +57,31 @@
       location="left"
     >
       <v-list nav density="compact">
-        <template v-for="item in navItems" :key="item.title">
+        <template v-for="item in categories" :key="item.id">
           <!-- 有子菜单的项 -->
           <v-list-group
             v-if="item.children"
-            :value="item.title"
+            :value="item.id"
             @click="!item.children && handleNavClick(item)"
           >
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" :title="item.title"></v-list-item>
+              <v-list-item v-bind="props" :title="item.name"></v-list-item>
             </template>
             
             <v-list-item
               v-for="child in item.children"
-              :key="child.title"
-              :value="child.title"
+              :key="child.id"
+              :value="child.id"
               @click="handleNavClick(child)"
             >
-              <v-list-item-title>{{ child.title }}</v-list-item-title>
+              <v-list-item-title>{{ child.name }}</v-list-item-title>
             </v-list-item>
           </v-list-group>
           
           <!-- 没有子菜单的项 -->
           <v-list-item
             v-else
-            :title="item.title"
+            :title="item.name"
             @click="handleNavClick(item)"
           ></v-list-item>
         </template>
@@ -97,6 +97,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const { smAndDown } = useDisplay()
 const drawer = ref(false)
+
+defineProps(['categories'])
 
 // 导航数据
 const navItems = ref([
@@ -138,13 +140,15 @@ const navItems = ref([
 
 // 处理导航点击
 const handleNavClick = (item) => {
-  // 执行自定义动作
+  /* // 执行自定义动作
   if (item.action) item.action()
   
   // 路由跳转
   if (item.to) {
     router.push(item.to)
-  }
+  } */
+
+  console.log(item)
   
   // 移动端点击后关闭抽屉
   if (smAndDown.value) {

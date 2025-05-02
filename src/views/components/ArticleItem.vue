@@ -1,9 +1,10 @@
 <template>
-        <v-list-item v-for="post in posts" :key="post.id">
+  <v-card>
+        <v-list-item class="pa-0">
             <template v-slot:prepend>
                 <v-img
                   src="https://img0.baidu.com/it/u=74028626,2723881857&fm=253&fmt=auto&app=138&f=JPEG"
-                  :alt="post.title"
+                  :alt="title"
                   class="cover-image"
                   :width="display.smAndDown.value ? 150 : 250"
                 :aspect-ratio="16/9"
@@ -13,30 +14,30 @@
             <!-- 右侧内容区域 -->
               <!-- <v-list-item-content class="d-flex flex-column justify-space-between"> -->
                 <v-list-item-title class="title-category">
-                  <h4 class="ma-0 title">{{ post.title }}</h4>
+                  <h4 class="ma-0 title">{{ title }}</h4>
                   <!-- <span class="category">{{ post.category }}</span> -->
                 </v-list-item-title>
   
                 <v-list-item-subtitle class="description">
-                  <p class="ma-0">{{ post.description }}</p>
+                  <p class="ma-0">{{ description }}</p>
                 </v-list-item-subtitle>
   
                 <v-list-item-subtitle class="metadata pb-1">
-                  <span>{{ post.publishDate }}</span>
-                  <span>{{ post.comments }} 评论</span>
-                  <span>{{ post.views }} 阅读量</span>
+                  <span>{{  createTime }}</span>
+                  <span>{{ viewCount }} 评论</span>
+                  <span>{{ viewCount }} 阅读量</span>
                 </v-list-item-subtitle>
               <!-- </v-list-item-content> -->
         </v-list-item>
+  </v-card>
   </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 const display = useDisplay()
-import coverImg from '@/assets/course01.png'
 
-const posts = ref([
+/* const posts = ref([
   {
     id: 1,
     // title: '关于标题的编写很重要的而关于这个标题的长度会可能挺长的',
@@ -48,7 +49,10 @@ const posts = ref([
     views: 1024
   },
   // 添加更多文章
-])
+]) */
+
+
+defineProps(['title','cateName','cover','description','createTime','viewCount'])
 </script>
 
 <style scoped>

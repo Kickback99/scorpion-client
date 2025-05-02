@@ -1,29 +1,31 @@
 <template>
     <!-- 个人信息卡片 -->
-    <v-card class="mb-4">
+    <!-- <v-card class="mb-4">
         <v-card-title>个人信息</v-card-title>
         <v-card-text>
             <p>用户名: {{ user.username }}</p>
             <p>邮箱: {{ user.email }}</p>
         </v-card-text>
-    </v-card>
-    <!-- 热门文章 -->
-    <v-card class="mb-4">
-        <v-card-title class="text-h6">热门文章</v-card-title>
+    </v-card> -->
+
+    <AppBlogBox title="个人信息">
+        <p>用户名: {{ user.username }}</p>
+        <p>邮箱: {{ user.email }}</p>
+    </AppBlogBox>
+
+    <AppBlogBox title="热门文章">
         <v-list color="error">
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact>
                 <template v-slot:prepend>
                     <v-icon color="error">mdi-numeric-{{index+1}}-box</v-icon>
                 </template>
 
-                <v-list-item-title class="text-caption">{{ item.text }}</v-list-item-title>
+                <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>
             </v-list-item>
         </v-list>
-    </v-card>
+    </AppBlogBox>
 
-        <!-- 推荐文章 -->
-        <v-card class="mb-4">
-        <v-card-title class="text-h6">文章推荐</v-card-title>
+    <AppBlogBox title="文章推荐">
         <v-list>
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id">
                 <template v-slot:prepend>
@@ -35,23 +37,26 @@
 
                     </v-img>
                 </template>
-
-                <v-list-item-title class="text-caption">{{ item.text }}</v-list-item-title>
-                <v-list-item-subtitle class="text-caption">2022-02-03</v-list-item-subtitle>
+                <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>
+                <v-list-item-subtitle class="text-caption">{{ item.createTime }}</v-list-item-subtitle>
             </v-list-item>
         </v-list>
-    </v-card>
+    </AppBlogBox>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import AppBlogBox from './AppBlogBox.vue';
+import { hotListApi } from '@/api/article';
   
 const user = ref({
     username: 'JohnDoe',
     email: 'johndoe@example.com',
 });
 
-const hotBlogs =[
+const hotBlogs = ref([])
+
+/* const hotBlogs =[
     {id:1,text: '考前50分-四六级必考词汇预测'},
     {id:2,text: '魔导国东征记-世界守护突破(622~624)三更·0VERLORD'},
     {id:3,text: 'FGo国服《妖精圆桌领域阿瓦隆·勒·菲星辰诞生之刻》2.6前篇主线根'},
@@ -62,7 +67,15 @@ const hotBlogs =[
     {id:8,text: '为了实现游戏里的二段跳，人类到底能多拼命？'},
     {id:9,text: '2022上半年四级真题--提案，给学校图书馆，学校医院，学生会'},
     {id:10,text: '关于2022年高考数学试题的一点点想法'}
-]
+] */
+
+const renderHotList = async() => {
+    const res = await hotListApi()
+    hotBlogs.value =  res.data
+}
+
+renderHotList()
+
 </script>
 
 <style scoped lang="scss">
