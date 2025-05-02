@@ -12,7 +12,7 @@
             <!-- 一级导航项 -->
             <v-btn
               variant="text"
-              @click="handleNavClick(item)"
+              @click="handleNavClick('cate',item.id)"
               class="text-none"
             >
               {{ item.name }}
@@ -28,7 +28,7 @@
                   <v-list-item
                     v-for="child in item.children"
                     :key="child.id"
-                    @click="handleNavClick(child)"
+                    @click="handleNavClick('cate',child.id)"
                   >
                     <v-list-item-title>{{ child.name }}</v-list-item-title>
                   </v-list-item>
@@ -62,7 +62,7 @@
           <v-list-group
             v-if="item.children"
             :value="item.id"
-            @click="!item.children && handleNavClick(item)"
+            @click="!item.children && handleNavClick('cate',item.id)"
           >
             <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" :title="item.name"></v-list-item>
@@ -72,7 +72,7 @@
               v-for="child in item.children"
               :key="child.id"
               :value="child.id"
-              @click="handleNavClick(child)"
+              @click="handleNavClick('cate',child.id)"
             >
               <v-list-item-title>{{ child.name }}</v-list-item-title>
             </v-list-item>
@@ -82,7 +82,7 @@
           <v-list-item
             v-else
             :title="item.name"
-            @click="handleNavClick(item)"
+            @click="handleNavClick('cate',item.id)"
           ></v-list-item>
         </template>
       </v-list>
@@ -93,6 +93,8 @@
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
+// 全局总线
+import emitter from '@/utils/event-bus.js'
 
 const router = useRouter()
 const { smAndDown } = useDisplay()
@@ -139,7 +141,7 @@ const navItems = ref([
 ])
 
 // 处理导航点击
-const handleNavClick = (item) => {
+const handleNavClick = (type,param) => {
   /* // 执行自定义动作
   if (item.action) item.action()
   
@@ -148,12 +150,13 @@ const handleNavClick = (item) => {
     router.push(item.to)
   } */
 
-  console.log(item)
+  // console.log(item)
   
   // 移动端点击后关闭抽屉
   if (smAndDown.value) {
     drawer.value = false
   }
+  emitter.emit('search',{type,param})
 }
 </script>
 
