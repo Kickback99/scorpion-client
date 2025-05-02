@@ -37,7 +37,6 @@ const categories = ref([])
 
 const renderCateList = async() => {
     const res = await cateListApi()
-    console.log(res.data)
     categories.value = res.data
 }
 renderCateList()

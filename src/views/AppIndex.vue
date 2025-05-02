@@ -12,9 +12,9 @@
             </ArticleItem>
 
             <v-pagination
-            v-show=" total>=1 " 
+            v-show=" Math.ceil(total / params.pageSize) > 1 " 
             v-model="params.pageNum" 
-            class="mt-5 pagination-full-width"
+            class="mt-5"
             :length="Math.ceil(total / params.pageSize)"
             :total-visible="8"
             :elevation="2"
@@ -29,7 +29,9 @@
 <script setup>
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
+// 全局总线
+import emitter from '@/utils/event-bus.js'
 
 // 文章列表
 const articleList = ref([])
@@ -39,7 +41,9 @@ const total = ref(null)
 
 //搜索相关
 const searchData = ref({
-    
+      keyword:'',
+      categoryId: null,
+      tagId: null
 })
 
 const params = ref({
@@ -49,12 +53,62 @@ const params = ref({
 
 const renderArticleList = async() => {
     const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
-    console.log(res.data.items)
     articleList.value = res.data.items
     total.value = res.data.total
 }
 
 renderArticleList()
+
+// 绑定总线事件
+onMounted(()=>{
+    emitter.on('search',receiveParam)
+})
+
+    const history = {
+        keyword:'',
+        categoryId: null,
+        tagId: null
+    }
+
+    /**
+     * 搜索业务(增加用户有没有重复点击相同的按钮)
+     * @param {*} data 
+     */
+     const receiveParam = (data) => {
+        params.value.pageNum = 1 //重置分页
+        console.log('data',data)
+        history.keyword = searchData.value.keyword
+        history.categoryId = searchData.value.categoryId
+        history.tagId = searchData.value.tagId
+        searchData.value.keyword = ''
+        searchData.value.categoryId = null
+        searchData.value.tagId = null
+        if(data.type === 'cate'){
+          searchData.value.categoryId = data.param
+          console.log('输出了吗',searchData.value.categoryId)
+            // 验证是否重复点击
+            if(history.categoryId === data.param){
+                console.log('你重复点击了，请求失败')
+                return
+            }
+        }else if (data.type === 'tag'){
+          searchData.value.tagId = data.param
+            // 验证是否重复点击
+            if (history.tagId === data.param) {
+                console.log('你重复点击了，请求失败')
+                return
+            }
+        }else if (data.type === 'keyword') {
+          searchData.value.keyword = data.param
+            // 验证是否重复点击
+            if (history.keyword === data.param) {
+                console.log('你重复点击了，请求失败')
+                return
+            }
+        }
+        renderArticleList() 
+  
+    }
 
 
 </script>

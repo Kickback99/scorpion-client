@@ -8,6 +8,18 @@
         </v-card-text>
     </v-card> -->
 
+    <AppBlogBox title="文章搜索">
+        <v-text-field
+        max-width="80%"  
+        label="请输入标题/内容" 
+        variant="outlined" 
+        density="compact" 
+        append-inner-icon="mdi-magnify"
+        @click:append-inner="onSearch"
+        >
+        </v-text-field>
+    </AppBlogBox>
+
     <AppBlogBox title="个人信息">
         <p>用户名: {{ user.username }}</p>
         <p>邮箱: {{ user.email }}</p>
@@ -55,6 +67,10 @@ const user = ref({
 });
 
 const hotBlogs = ref([])
+
+const onSearch = () => {
+    // alert(123)
+}
 
 /* const hotBlogs =[
     {id:1,text: '考前50分-四六级必考词汇预测'},
