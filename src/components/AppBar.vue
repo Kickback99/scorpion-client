@@ -7,6 +7,7 @@
             <p>邮箱: {{ user.email }}</p>
         </v-card-text>
     </v-card> -->
+    <v-btn>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</v-btn>
 
     <AppBlogBox title="文章搜索">
         <v-text-field
@@ -102,5 +103,9 @@ renderHotList()
 
 :deep(.customImg+.v-list-item__spacer){
     width: 10px !important; /* 调整为更小的值 */
+}
+
+:deep(.v-text-field .v-label) {
+  font-size: 10px !important;
 }
 </style>
