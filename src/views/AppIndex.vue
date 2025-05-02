@@ -1,7 +1,6 @@
 <template>
     <v-container>
             <ArticleItem v-for="(item,index) in articleList" :key="item.id" 
-                class="elevation-2 rounded-lg"
                 :class="{'mt-5':(index !== 0)}"
                 :title="item.title" 
                 :cateName="item.cateName"

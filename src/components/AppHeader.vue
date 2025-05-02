@@ -36,6 +36,11 @@
               </v-menu>
             </v-btn>
           </template>
+          <v-btn color="success"
+            variant="text"
+            @click="handleNavClick('about')"
+            class="text-none"
+            >关于</v-btn>
         </div>
         
         <!-- 移动端菜单按钮 (显示在 sm 及以下屏幕) -->
@@ -149,6 +154,10 @@ const handleNavClick = (type,param) => {
   if (item.to) {
     router.push(item.to)
   } */
+
+  if(type === 'about'){
+    router.push('/about')
+  }
 
   // console.log(item)
   

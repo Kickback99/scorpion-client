@@ -9,7 +9,8 @@ export default defineConfig({
   plugins: [
     vue(),
     vuetify({
-      styles: { configFile: 'src/assets/style/variables.scss' },
+      autoImport: true,  // 必须启用自动导入
+      styles: { configFile: 'src/assets/styles/variables.scss' },// 可选，用于自定义变量
     }),
   ],
   resolve: {
