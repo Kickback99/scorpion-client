@@ -1,6 +1,7 @@
 <template>
     <h4>当前断点是 {{ name }}</h4>
     <h4>是否是移动设备 {{ mobile }}</h4>
+    <my-button>123</my-button>
     <br>
     <v-btn color="primary">primary</v-btn>
     <v-btn color="error">error</v-btn>
@@ -23,8 +24,10 @@
   </template>
 
 <script setup>
-import { useDisplay } from 'vuetify'
+import { useDisplay} from 'vuetify'
 const { name, mobile, width } = useDisplay()
+
+
 </script>
 
 <style scoped lang="scss">
