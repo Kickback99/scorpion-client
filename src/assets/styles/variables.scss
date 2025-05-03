@@ -10,10 +10,10 @@
   $color-pack: false, // 禁用预设颜色类
   $body-font-family: 'Roboto, sans-serif',  
   // 其他卡片样式
-  $card-border-radius: 2px,
+  $card-border-radius: 5px,
 //   $card-title-padding: 7px,
 //   $card-text-padding: 7px,
-  $card-elevation: 20  // 阴影深度（0-24）
+  // $card-elevation: 20  // 阴影深度（0-24）
 );
 
 // 强制覆盖卡片标题样式（跳过 typography 系统）
@@ -23,8 +23,8 @@
 
 // 必须用深层选择器穿透 Vuetify 的 scoped style
 .v-card-title {
-  font-size: var(--v-card-title-font-size) !important;
-  font-weight: 600 !important;
+  // font-size: var(--v-card-title-font-size) !important;
+  // font-weight: 600 !important;
 }
 
 
