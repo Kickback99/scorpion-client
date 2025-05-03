@@ -1,3 +1,4 @@
+import { VBtn } from 'vuetify/components/VBtn'
 export default {
     theme: {
       defaultTheme: 'custom',
@@ -12,6 +13,15 @@ export default {
           }
         }
       }
+    },
+
+    defaults: {
+      VBtn: { variant: 'outlined'},
+      MyButton: { variant: 'tonal',color:'primary'},
+    },
+    aliases: {
+      MyButton: VBtn, // 继承全局VBtn配置
+      
     },
     display: {
       mobileBreakpoint: 'md', // 只有md以下(不包含)才为移动设备
