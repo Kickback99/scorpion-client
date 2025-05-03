@@ -14,7 +14,7 @@ export default {
       }
     },
     display: {
-      mobileBreakpoint: 'md', // 默认是 'sm'，可显式设置
+      mobileBreakpoint: 'md', // 只有md以下(不包含)才为移动设备
     },
   }
 

@@ -23,7 +23,7 @@ import '@mdi/font/css/materialdesignicons.css'
 const vuetify = autoImportVuetify(vuetifyPlugins)
 
 const app = createApp(App)
-app.use(vuetify)
+app.use(vuetify) // 只需注册一次
 app.use(router)
 const pinia = createPinia() //创建Pinia实例
 app.use(pinia.use(persist)) //安装pinia插件
