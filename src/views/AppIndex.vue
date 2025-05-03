@@ -100,7 +100,7 @@ onMounted(()=>{
         }else if (data.type === 'keyword') {
           searchData.value.keyword = data.param
             // 验证是否重复点击
-            if (history.keyword === data.param) {
+            if (!data.param.trim() ||  history.keyword === data.param) {
                 console.log('你重复点击了，请求失败')
                 return
             }
