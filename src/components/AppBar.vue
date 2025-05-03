@@ -10,12 +10,13 @@
 
     <AppBlogBox title="文章搜索">
         <v-text-field
+        v-model="keyword"
         full-width
         label="请输入标题/内容" 
         variant="outlined" 
         density="compact" 
         append-inner-icon="mdi-magnify"
-        @click:append-inner="onSearch"
+        @click:append-inner="onSearch('keyword',keyword)"
         class="px-2"
         >
         </v-text-field>
@@ -61,6 +62,9 @@
 import { ref } from 'vue'
 import AppBlogBox from './AppBlogBox.vue';
 import { hotListApi } from '@/api/article';
+const keyword = ref('')
+// 全局总线
+import emitter from '@/utils/event-bus.js'
   
 const user = ref({
     username: 'JohnDoe',
@@ -69,8 +73,10 @@ const user = ref({
 
 const hotBlogs = ref([])
 
-const onSearch = () => {
+const onSearch = (type,param) => {
     // alert(123)
+    emitter.emit('search',{type,param})
+    keyword.value = ''
 }
 
 /* const hotBlogs =[
