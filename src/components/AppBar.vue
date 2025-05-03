@@ -7,16 +7,16 @@
             <p>邮箱: {{ user.email }}</p>
         </v-card-text>
     </v-card> -->
-    <v-btn>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</v-btn>
 
     <AppBlogBox title="文章搜索">
         <v-text-field
-        max-width="80%"  
+        full-width
         label="请输入标题/内容" 
         variant="outlined" 
         density="compact" 
         append-inner-icon="mdi-magnify"
         @click:append-inner="onSearch"
+        class="px-2"
         >
         </v-text-field>
     </AppBlogBox>
@@ -108,4 +108,21 @@ renderHotList()
 :deep(.v-text-field .v-label) {
   font-size: 10px !important;
 }
+
+/* 彻底移除 hover、focus 等所有交互效果 */
+/* 强制保持默认边框颜色 */
+/* :deep(.v-field__outline) {
+  color: rgba(0, 0, 0, 0.38) !important; 
+} */
+
+/* 禁用 hover 变色 */
+:deep(.v-field:hover .v-field__outline) {
+  color: rgba(0, 0, 0, 0.38) !important; 
+}
+
+/* 禁用 focus 变色（可选） */
+ :deep(.v-field--focused .v-field__outline) {
+  color: rgba(0, 0, 0, 0.38) !important; 
+}
+
 </style>
