@@ -22,6 +22,14 @@
         </v-text-field>
     </AppBlogBox>
 
+    <AppBlogBox title="文章标签">
+        <v-chip-group column class="pa-2"  selected-class="light-blue-darken-3" mandatory>
+        <v-chip label v-for="item in tagList" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id" 
+        base-color="light-blue-darken-1"
+        >{{ item.name }}</v-chip>
+        </v-chip-group>
+    </AppBlogBox>
+
     <AppBlogBox title="个人信息">
         <p>用户名: {{ user.username }}</p>
         <p>邮箱: {{ user.email }}</p>
@@ -61,7 +69,7 @@
 <script setup>
 import { ref } from 'vue'
 import AppBlogBox from './AppBlogBox.vue';
-import { hotListApi } from '@/api/article';
+import { hotListApi, tagListApi } from '@/api/article';
 const keyword = ref('')
 // 全局总线
 import emitter from '@/utils/event-bus.js'
@@ -99,6 +107,15 @@ const renderHotList = async() => {
 
 renderHotList()
 
+const tagList = ref([])
+
+const renderTagList = async() =>{
+    const res = await tagListApi()
+    tagList.value = res.data
+}
+
+renderTagList()
+
 </script>
 
 <style scoped lang="scss">
@@ -130,5 +147,7 @@ renderHotList()
  :deep(.v-field--focused .v-field__outline) {
   color: rgba(0, 0, 0, 0.38) !important; 
 }
+
+
 
 </style>

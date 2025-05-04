@@ -8,7 +8,7 @@ export default {
           colors: {
             /* primary: '#3f51b5', 
             secondary: '#673ab7',
-            error: '#f44336' */
+            error: '#f44336', */
             customBlue: '#2196F3', // 自定义颜色
           }
         }
