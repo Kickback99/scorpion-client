@@ -1,3 +1,4 @@
+//main.js
 // Vuetify
 import 'vuetify/styles'
 import vuetifyPlugins from './plugins/vuetify' // 导入配置

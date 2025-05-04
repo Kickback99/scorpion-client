@@ -1,3 +1,4 @@
+// src/plugins/vuetify.js
 import { VBtn } from 'vuetify/components/VBtn'
 export default {
     theme: {
