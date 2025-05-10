@@ -77,10 +77,11 @@ onMounted(()=>{
     emitter.on('search',receiveParam)
         // 首次加载或路由跳转后检查 query 参数
     if (route.query.type && route.query.param) {
+        console.log('首次加载')
         receiveParam({
             type: route.query.type,
             param: route.query.param
-        })
+        },'onMounted')
     }
 })
 
@@ -94,7 +95,7 @@ onMounted(()=>{
      * 搜索业务(增加用户有没有重复点击相同的按钮)
      * @param {*} data 
      */
-     const receiveParam = (data) => {
+     const receiveParam = (data,flag) => {
 
         // 如果当前路由不是首页，就跳转到首页
         if(route.path !='/') {
@@ -104,6 +105,13 @@ onMounted(()=>{
             query: { type: data.type, param: data.param } // 通过 query 传递参数
         })
             return // 不再继续执行
+        }
+
+        if(flag === 'onMounted'){
+            console.log('onMounted事件')
+            if(data.type === 'cate')searchData.value.categoryId = data.param
+            renderArticleList() 
+            return
         }
 
         params.value.pageNum = 1 //重置分页
