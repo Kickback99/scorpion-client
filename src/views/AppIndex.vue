@@ -103,9 +103,15 @@ onMounted(()=>{
      * @param {*} data 
      */
   const receiveParam = (data) => {
-    console.log("data",data)
       if (isProcessing.value) return
       isProcessing.value = true
+      console.log('执行了2次')
+    console.log("data",data)
+
+    // 记录历史值用于重复点击检测
+  history.keyword = searchData.value.keyword
+  history.categoryId = searchData.value.categoryId
+  history.tagId = searchData.value.tagId
   
   // 重复点击检测
   if (data.type === 'cate' && history.categoryId === data.param) {
@@ -145,16 +151,13 @@ onUnmounted(()=>{
 const updateSearchState = (data) => {
   params.value.pageNum = 1
   
-  // 记录历史值用于重复点击检测
-  history.keyword = searchData.value.keyword
-  history.categoryId = searchData.value.categoryId
-  history.tagId = searchData.value.tagId
+
   
   // 更新当前搜索参数
   searchData.value = {
     keyword: data.type === 'keyword' ? data.param : '',
-    categoryId: data.type === 'cate' ? data.param : null,
-    tagId: data.type === 'tag' ? data.param : null
+    categoryId: data.type === 'cate' ? Number(data.param) : null,
+    tagId: data.type === 'tag' ? Number(data.param) : null
   }
 }
 
