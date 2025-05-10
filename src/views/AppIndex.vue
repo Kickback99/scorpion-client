@@ -29,9 +29,17 @@
 <script setup>
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
-import { ref,onMounted } from 'vue'
+import { ref,onMounted,onUnmounted } from 'vue'
+
+
+
 // 全局总线
 import emitter from '@/utils/event-bus.js'
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute()
+const router = useRouter()
+
 
 // 文章列表
 const articleList = ref([])
@@ -51,8 +59,13 @@ const params = ref({
     pageSize : 5
 })
 
+
 const renderArticleList = async() => {
+    let count = 0;
+    ++count;
+    console.log(`第${count}次`,searchData.value.categoryId)
     const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
+    // console.log('renderArticleList...')
     articleList.value = res.data.items
     total.value = res.data.total
 }
@@ -62,6 +75,13 @@ renderArticleList()
 // 绑定总线事件
 onMounted(()=>{
     emitter.on('search',receiveParam)
+        // 首次加载或路由跳转后检查 query 参数
+    if (route.query.type && route.query.param) {
+        receiveParam({
+            type: route.query.type,
+            param: route.query.param
+        })
+    }
 })
 
     const history = {
@@ -75,14 +95,26 @@ onMounted(()=>{
      * @param {*} data 
      */
      const receiveParam = (data) => {
+
+        // 如果当前路由不是首页，就跳转到首页
+        if(route.path !='/') {
+            console.log(123)
+            router.push({
+            path: '/',
+            query: { type: data.type, param: data.param } // 通过 query 传递参数
+        })
+            return // 不再继续执行
+        }
+
         params.value.pageNum = 1 //重置分页
         console.log('data',data)
         history.keyword = searchData.value.keyword
         history.categoryId = searchData.value.categoryId
         history.tagId = searchData.value.tagId
-        searchData.value.keyword = ''
+       /*  searchData.value.keyword = ''
         searchData.value.categoryId = null
-        searchData.value.tagId = null
+        searchData.value.tagId = null */
+        searchData.value = { keyword: '', categoryId: null, tagId: null } // 清空
         if(data.type === 'cate'){
           searchData.value.categoryId = data.param
           console.log('输出了吗',searchData.value.categoryId)
@@ -110,7 +142,10 @@ onMounted(()=>{
   
     }
 
-
+onUnmounted(()=>{
+    console.log("searchData.value.categoryId",searchData.value.categoryId)
+    console.log('卸载了...')
+})
 </script>
 
 <style scoped lang="scss">
