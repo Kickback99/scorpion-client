@@ -11,3 +11,6 @@ export const hotListApi = () => http.get('user/content/article/hot')
 
 // 所有标签
 export const tagListApi = () => http.get('user/content/tag')
+
+// 文章详情
+export const articleDetailApi = (param) => http.get(`user/content/article/detail/${param}`)

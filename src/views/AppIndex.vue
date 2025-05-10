@@ -2,6 +2,7 @@
     <v-container>
             <ArticleItem v-for="(item,index) in articleList" :key="item.id" 
                 :class="{'mt-5':(index !== 0)}"
+                :id="item.id"
                 :title="item.title" 
                 :cateName="item.cateName"
                 :cover="item.cover" 
