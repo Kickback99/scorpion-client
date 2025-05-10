@@ -72,6 +72,8 @@ const renderArticleList = async() => {
 
 renderArticleList()
 
+let isProcessing = false; // 全局标志位
+
 // 绑定总线事件
 onMounted(()=>{
     emitter.on('search',receiveParam)
@@ -81,7 +83,8 @@ onMounted(()=>{
         receiveParam({
             type: route.query.type,
             param: route.query.param
-        },'onMounted')
+        })
+        
     }
 })
 
@@ -95,25 +98,21 @@ onMounted(()=>{
      * 搜索业务(增加用户有没有重复点击相同的按钮)
      * @param {*} data 
      */
-     const receiveParam = (data,flag) => {
-
+     const receiveParam = (data) => {
+        if (isProcessing) return; // 如果正在处理，直接返回
+        isProcessing = true; // 标记为正在处理
         // 如果当前路由不是首页，就跳转到首页
         if(route.path !='/') {
             console.log(123)
             router.push({
             path: '/',
             query: { type: data.type, param: data.param } // 通过 query 传递参数
+        }).then(() => {
+            // 跳转成功后替换当前历史记录，去掉query参数
+            router.replace({ path: '/' })
         })
             return // 不再继续执行
         }
-
-        if(flag === 'onMounted'){
-            console.log('onMounted事件')
-            if(data.type === 'cate')searchData.value.categoryId = data.param
-            renderArticleList() 
-            return
-        }
-
         params.value.pageNum = 1 //重置分页
         console.log('data',data)
         history.keyword = searchData.value.keyword
@@ -129,6 +128,7 @@ onMounted(()=>{
             // 验证是否重复点击
             if(history.categoryId === data.param){
                 console.log('你重复点击了，请求失败')
+                isProcessing = false; // 确保最终重置
                 return
             }
         }else if (data.type === 'tag'){
@@ -136,6 +136,7 @@ onMounted(()=>{
             // 验证是否重复点击
             if (history.tagId === data.param) {
                 console.log('你重复点击了，请求失败')
+                isProcessing = false; // 确保最终重置
                 return
             }
         }else if (data.type === 'keyword') {
@@ -143,9 +144,11 @@ onMounted(()=>{
             // 验证是否重复点击
             if (!data.param.trim() ||  history.keyword === data.param) {
                 console.log('你重复点击了，请求失败')
+                isProcessing = false; // 确保最终重置
                 return
             }
         }
+        isProcessing = false; // 确保最终重置
         renderArticleList() 
   
     }
