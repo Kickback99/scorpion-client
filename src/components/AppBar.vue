@@ -22,7 +22,7 @@
         </v-text-field>
     </AppBlogBox>
 
-    <AppBlogBox title="文章标签">
+    <AppBlogBox :title="titles.tags">
         <v-chip-group column class="pa-2"  selected-class="light-blue-darken-3" mandatory>
         <v-chip label v-for="item in tagList" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id" 
         base-color="light-blue-darken-1"
@@ -47,9 +47,14 @@
         </v-list>
     </AppBlogBox>
 
-    <AppBlogBox title="文章推荐">
+    <AppBlogBox :title="titles.articles">
         <v-list>
-            <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id">
+            <v-list-item 
+            v-for="(item, index) in hotBlogs" 
+            :key="item.id"  
+            :value="item.id"
+            :to="{name:'detail',params:{id:item.id}}"
+            >
                 <template v-slot:prepend>
                     <v-img
                     class="customImg"
@@ -67,12 +72,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted,onUnmounted,ref, watch } from 'vue'
 import AppBlogBox from './AppBlogBox.vue';
 import { hotListApi, tagListApi } from '@/api/article';
 const keyword = ref('')
 // 全局总线
 import emitter from '@/utils/event-bus.js'
+import { useRoute } from 'vue-router';
+const route = useRoute()
   
 const user = ref({
     username: 'JohnDoe',
@@ -81,6 +88,7 @@ const user = ref({
 
 const hotBlogs = ref([])
 
+// 搜索功能
 const onSearch = (type,param) => {
     // alert(123)
     emitter.emit('search',{type,param})
@@ -100,21 +108,60 @@ const onSearch = (type,param) => {
     {id:10,text: '关于2022年高考数学试题的一点点想法'}
 ] */
 
+// 动态标题状态
+const titles = ref({
+    articles:'文章推荐',
+    tags:'文章标签'
+})
+
 const renderHotList = async() => {
     const res = await hotListApi()
+    titles.value.articles = '文章推荐'
     hotBlogs.value =  res.data
 }
 
-renderHotList()
+
 
 const tagList = ref([])
 
 const renderTagList = async() =>{
     const res = await tagListApi()
+    titles.value.tags = '文章标签'
     tagList.value = res.data
 }
 
-renderTagList()
+
+// 处理详情页数据
+const handleDetailData = (data) => {
+    // 如果有分类文章数据，更新分类文章
+    if (data.cateArticles && data.cateArticles.length > 0) {
+        titles.value.articles = '相关文章'
+        hotBlogs.value = data.cateArticles
+    } 
+    // 如果有标签数据，更新标签数据
+    if (data.tags && data.tags.length > 0) {
+        titles.value.tags = '标签'
+        tagList.value = data.tags
+    }
+}
+
+onMounted(()=>{
+    renderHotList()
+    renderTagList()
+    emitter.on('detail-data',handleDetailData)
+})
+
+onUnmounted(() => {
+  emitter.off('detail-data', handleDetailData)
+})
+
+// 监听路由地址变化
+watch(() => route.path,(newPath) => {
+    if(!newPath.includes('/detail')){
+        renderHotList()
+        renderTagList()
+    }
+})
 
 </script>
 
