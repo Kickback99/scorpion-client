@@ -29,7 +29,7 @@
 <script setup>
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
-import { ref,onMounted,onUnmounted } from 'vue'
+import { ref,onMounted,onUnmounted,watch } from 'vue'
 
 
 
@@ -72,84 +72,66 @@ const renderArticleList = async() => {
 
 renderArticleList()
 
-let isProcessing = false; // 全局标志位
+// 处理状态
+const isProcessing = ref(false) // 全局标志位
+const history = {
+    keyword:'',
+    categoryId: null,
+    tagId: null
+}
 
 // 绑定总线事件
 onMounted(()=>{
-    emitter.on('search',receiveParam)
-        // 首次加载或路由跳转后检查 query 参数
-    if (route.query.type && route.query.param) {
-        console.log('首次加载')
-        receiveParam({
-            type: route.query.type,
-            param: route.query.param
-        })
-        
+  emitter.on('search', receiveParam)
+  
+  // 监听路由变化处理参数
+  watch(() => route.query, (newQuery) => {
+    if (newQuery.type && newQuery.param) {
+      updateSearchState({
+        type: newQuery.type,
+        param: newQuery.param
+      })
+      renderArticleList()
     }
+  }, { immediate: true })
 })
 
-    const history = {
-        keyword:'',
-        categoryId: null,
-        tagId: null
-    }
+
 
     /**
      * 搜索业务(增加用户有没有重复点击相同的按钮)
      * @param {*} data 
      */
-     const receiveParam = (data) => {
-        if (isProcessing) return; // 如果正在处理，直接返回
-        isProcessing = true; // 标记为正在处理
-        // 如果当前路由不是首页，就跳转到首页
-        if(route.path !='/') {
-            console.log(123)
-            router.push({
-            path: '/',
-            query: { type: data.type, param: data.param } // 通过 query 传递参数
-        }).then(() => {
-            // 跳转成功后替换当前历史记录，去掉query参数
-            router.replace({ path: '/' })
-        })
-            return // 不再继续执行
-        }
-        params.value.pageNum = 1 //重置分页
-        console.log('data',data)
-        history.keyword = searchData.value.keyword
-        history.categoryId = searchData.value.categoryId
-        history.tagId = searchData.value.tagId
-       /*  searchData.value.keyword = ''
-        searchData.value.categoryId = null
-        searchData.value.tagId = null */
-        searchData.value = { keyword: '', categoryId: null, tagId: null } // 清空
-        if(data.type === 'cate'){
-          searchData.value.categoryId = data.param
-          console.log('输出了吗',searchData.value.categoryId)
-            // 验证是否重复点击
-            if(history.categoryId === data.param){
-                console.log('你重复点击了，请求失败')
-                isProcessing = false; // 确保最终重置
-                return
-            }
-        }else if (data.type === 'tag'){
-          searchData.value.tagId = data.param
-            // 验证是否重复点击
-            if (history.tagId === data.param) {
-                console.log('你重复点击了，请求失败')
-                isProcessing = false; // 确保最终重置
-                return
-            }
-        }else if (data.type === 'keyword') {
-          searchData.value.keyword = data.param
-            // 验证是否重复点击
-            if (!data.param.trim() ||  history.keyword === data.param) {
-                console.log('你重复点击了，请求失败')
-                isProcessing = false; // 确保最终重置
-                return
-            }
-        }
-        isProcessing = false; // 确保最终重置
-        renderArticleList() 
+  const receiveParam = (data) => {
+    console.log("data",data)
+      if (isProcessing.value) return
+      isProcessing.value = true
+  
+  // 重复点击检测
+  if (data.type === 'cate' && history.categoryId === data.param) {
+    console.log('重复点击分类:', data.param)
+    isProcessing.value = false
+    return
+  }
+  if (data.type === 'tag' && history.tagId === data.param) {
+    console.log('重复点击标签:', data.param)
+    isProcessing.value = false
+    return
+  }
+  if (data.type === 'keyword' && 
+      (!data.param.trim() || history.keyword === data.param)) {
+    console.log('重复点击关键词或空输入')
+    isProcessing.value = false
+    return
+  }
+
+  // 统一使用带参URL确保历史记录正确
+  router.push({
+    path: '/',
+    query: { type: data.type, param: data.param }
+  }).finally(() => {
+    isProcessing.value = false
+  })
   
     }
 
@@ -157,6 +139,26 @@ onUnmounted(()=>{
     console.log("searchData.value.categoryId",searchData.value.categoryId)
     console.log('卸载了...')
 })
+
+
+// 更新搜索状态
+const updateSearchState = (data) => {
+  params.value.pageNum = 1
+  
+  // 记录历史值用于重复点击检测
+  history.keyword = searchData.value.keyword
+  history.categoryId = searchData.value.categoryId
+  history.tagId = searchData.value.tagId
+  
+  // 更新当前搜索参数
+  searchData.value = {
+    keyword: data.type === 'keyword' ? data.param : '',
+    categoryId: data.type === 'cate' ? data.param : null,
+    tagId: data.type === 'tag' ? data.param : null
+  }
+}
+
+
 </script>
 
 <style scoped lang="scss">
