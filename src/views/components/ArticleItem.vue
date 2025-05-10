@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :to="{name:'detail',params:{id}}">
         <v-list-item class="pa-0">
             <template v-slot:prepend>
                 <v-img
@@ -52,7 +52,7 @@ const display = useDisplay()
 ]) */
 
 
-defineProps(['title','cateName','cover','description','createTime','viewCount'])
+defineProps(['id','title','cateName','cover','description','createTime','viewCount'])
 </script>
 
 <style scoped>

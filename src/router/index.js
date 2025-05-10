@@ -1,5 +1,6 @@
 import AppAbout from '@/views/AppAbout.vue'
 import AppBlog from '@/views/AppBlog.vue'
+import AppDetail from '@/views/AppDetail.vue'
 import AppIndex from '@/views/AppIndex.vue'
 import AppLayout from '@/views/AppLayout.vue'
 import {createRouter, createWebHistory} from 'vue-router'
@@ -11,6 +12,7 @@ const routes = [
         {path:"",component:AppIndex},
         {path:"/blog",component:AppBlog},
         {path:"/about",component:AppAbout},
+        {path:"/detail/:id",name:'detail',component:AppDetail,props:true},
     ]}
 
 ]
