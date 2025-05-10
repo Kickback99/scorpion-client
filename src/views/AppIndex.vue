@@ -86,6 +86,7 @@ onMounted(()=>{
   
   // 监听路由变化处理参数
   watch(() => route.query, (newQuery) => {
+    console.log('路由变化了...')
     if (newQuery.type && newQuery.param) {
       updateSearchState({
         type: newQuery.type,
@@ -103,10 +104,8 @@ onMounted(()=>{
      * @param {*} data 
      */
   const receiveParam = (data) => {
-      if (isProcessing.value) return
-      isProcessing.value = true
-      console.log('执行了2次')
-    console.log("data",data)
+    if (isProcessing.value) return
+    isProcessing.value = true
 
     // 记录历史值用于重复点击检测
   history.keyword = searchData.value.keyword
