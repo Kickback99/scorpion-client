@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@kangc/v-md-editor": "^2.3.18",
     "axios": "^1.6.5",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
