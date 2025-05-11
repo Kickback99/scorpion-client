@@ -1,3 +1,50 @@
+<template>
+  <v-card>
+    <v-card-title class="d-flex justify-space-between align-center">
+      <span>{{ article.title }}</span>
+      <v-btn icon variant="text" @click.stop="showToc = !showToc">
+        <v-icon>mdi-text</v-icon>
+      </v-btn>
+    </v-card-title>
+
+    <div class="content-wrapper">
+      <div class="markdown-content">
+        <v-md-preview :text="article.content" ref="preview"></v-md-preview>
+      </div>
+
+      <v-card v-show="showToc" class="toc-card" elevation="4" :width="cardWidth">
+        <v-card-title class="py-2 text-caption d-flex justify-space-between">
+          <span>文章目录</span>
+          <v-btn icon variant="text" size="small" @click.stop="showToc = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-list density="compact">
+          <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
+            <!-- 二级标题 -->
+            <v-list-item
+              v-if="anchor.level === 2"
+              @click="scrollTo(anchor)"
+            >
+              <v-list-item-title>{{ anchor.title }}</v-list-item-title>
+            </v-list-item>
+
+            <!-- 三级标题（嵌套在最近的二级标题下） -->
+            <v-list-item
+              v-if="anchor.level === 4"
+              @click="scrollTo(anchor)"
+              class="pl-8"
+            >
+              <v-list-item-title>{{ anchor.title }}</v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-list>
+      </v-card>
+    </div>
+  </v-card>
+</template>
+
 <script setup>
 import { articleDetailApi } from '@/api/article';
 import { onMounted, ref, watch, nextTick,computed } from 'vue';
@@ -98,53 +145,6 @@ watch(() => route.params.id, (newId) => {
   if (newId) renderArticleItem();
 });
 </script>
-
-<template>
-  <v-card>
-    <v-card-title class="d-flex justify-space-between align-center">
-      <span>{{ article.title }}</span>
-      <v-btn icon variant="text" @click.stop="showToc = !showToc">
-        <v-icon>mdi-text</v-icon>
-      </v-btn>
-    </v-card-title>
-
-    <div class="content-wrapper">
-      <div class="markdown-content">
-        <v-md-preview :text="article.content" ref="preview"></v-md-preview>
-      </div>
-
-      <v-card v-show="showToc" class="toc-card" elevation="4" :width="cardWidth">
-        <v-card-title class="py-2 text-caption d-flex justify-space-between">
-          <span>文章目录</span>
-          <v-btn icon variant="text" size="small" @click.stop="showToc = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-list density="compact">
-          <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
-            <!-- 二级标题 -->
-            <v-list-item
-              v-if="anchor.level === 2"
-              @click="scrollTo(anchor)"
-            >
-              <v-list-item-title>{{ anchor.title }}</v-list-item-title>
-            </v-list-item>
-
-            <!-- 三级标题（嵌套在最近的二级标题下） -->
-            <v-list-item
-              v-if="anchor.level === 4"
-              @click="scrollTo(anchor)"
-              class="pl-8"
-            >
-              <v-list-item-title>{{ anchor.title }}</v-list-item-title>
-            </v-list-item>
-          </template>
-        </v-list>
-      </v-card>
-    </div>
-  </v-card>
-</template>
 
 <style scoped>
 /* 保持原有样式不变 */
