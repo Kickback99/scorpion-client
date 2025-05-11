@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
+import prismjs from 'vite-plugin-prismjs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,6 +12,9 @@ export default defineConfig({
     vuetify({
       autoImport: true,  // 必须启用自动导入
       styles: { configFile: 'src/assets/styles/variables.scss' },// 可选，用于自定义变量
+    }),
+      prismjs({
+      languages: ['json','xml','java'],
     }),
   ],
   resolve: {
