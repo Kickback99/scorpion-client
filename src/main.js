@@ -28,13 +28,28 @@ import VMdPreview from '@kangc/v-md-editor/lib/preview';
 import '@kangc/v-md-editor/lib/style/preview.css';
 import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
+import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
+import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
+import 'prismjs/themes/prism-tomorrow.css'; // Prism主题
 
 // highlightjs
-import hljs from 'highlight.js';
+// import hljs from 'highlight.js';
+import Prism from 'prismjs';
 
-VMdPreview.use(githubTheme, {
-  Hljs: hljs,
-});
+// 代码行号
+import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
+
+// 复制代码块
+import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index';
+import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
+
+// 高亮代码行
+import createHighlightLinesPlugin from '@kangc/v-md-editor/lib/plugins/highlight-lines/index';
+import '@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css';
+
+VMdPreview.use(vuepressTheme, {
+  Prism,
+}).use(createLineNumbertPlugin()).use(createCopyCodePlugin()).use(createHighlightLinesPlugin());
 
 
 
