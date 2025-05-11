@@ -29,7 +29,7 @@
 <script setup>
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
-import { ref,onMounted,onUnmounted,watch } from 'vue'
+import { ref,onMounted,onUnmounted,watch, provide } from 'vue'
 
 
 
@@ -83,6 +83,13 @@ const history = {
 // 绑定总线事件
 onMounted(()=>{
   emitter.on('search', receiveParam)
+  emitter.on('reset-search', () => {
+  searchData.value = {
+    keyword: '',
+    categoryId: null,
+    tagId: null
+  }
+})
   
   // 监听路由变化处理参数
   watch(() => route.query, (newQuery) => {
@@ -111,6 +118,7 @@ onMounted(()=>{
   history.keyword = searchData.value.keyword
   history.categoryId = searchData.value.categoryId
   history.tagId = searchData.value.tagId
+
   
   // 重复点击检测
   if (data.type === 'cate' && history.categoryId === data.param) {
@@ -144,6 +152,8 @@ onUnmounted(()=>{
     console.log("searchData.value.categoryId",searchData.value.categoryId)
     console.log('卸载了...')
 })
+
+
 
 
 // 更新搜索状态

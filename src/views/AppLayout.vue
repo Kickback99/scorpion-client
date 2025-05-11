@@ -31,7 +31,13 @@ import { cateListApi } from '@/api/article';
 import AppBar from '@/components/AppBar.vue';
 import AppCarousel from '@/components/AppCarousel.vue';
 import AppHeader from '@/components/AppHeader.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+// 全局总线
+import emitter from '@/utils/event-bus.js'
+
+
+const route = useRoute()
 
 const categories = ref([])
 
@@ -40,6 +46,12 @@ const renderCateList = async() => {
     categories.value = res.data
 }
 renderCateList()
+
+watch(()=>route.path,(newPath) => {
+    if (newPath !== '/') {
+      emitter.emit('reset-search')
+    }
+})
 
 </script>
 
