@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title class="d-flex justify-space-between align-center">
       <span>{{ article.title }}</span>
-      <v-btn icon variant="text" @click.stop="showToc = !showToc">
+      <v-btn v-if="hasToc" icon variant="text" @click.stop="showToc = !showToc">
         <v-icon>mdi-text</v-icon>
       </v-btn>
     </v-card-title>
@@ -54,6 +54,11 @@ import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
 // 1. 创建Markdown解析器
 const md = new MarkdownIt();
+
+// 计算是否有有效的目录项
+const hasToc = computed(() => {
+  return tocAnchors.value.some(anchor => [2, 3].includes(anchor.level));
+});
 
 const showToc = ref(false);
 const preview = ref(null);
