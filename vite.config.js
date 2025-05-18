@@ -14,7 +14,7 @@ export default defineConfig({
       styles: { configFile: 'src/assets/styles/variables.scss' },// 可选，用于自定义变量
     }),
       prismjs({
-      languages: ['json','xml','java'],
+      languages: ['json','xml','java','js'],
     }),
   ],
   resolve: {
