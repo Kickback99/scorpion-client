@@ -5,6 +5,10 @@
         <!-- 主内容 -->
         <v-main>
             <v-container>
+                <!-- 调试显示 -->
+                <p>display.mdAndUp: {{ display.mdAndUp }}</p>
+                <p>showSidebar: {{ showSidebar }}</p>
+                <p>组合条件: {{ showSidebar && display.mdAndUp }}</p>
                 <v-row>
                     <!-- 左侧内容：轮播图和文章列表 -->
                     <v-col :md="leftColMd" cols="12">
@@ -17,7 +21,7 @@
                     </v-col>
 
                     <!-- 右侧侧边栏 -->
-                    <v-col md="3" v-if="showSidebar && display.mdAndUp">
+                    <v-col md="3" v-show="showSidebar && display.mdAndUp">
                         <AppBar></AppBar>
                     </v-col>
                 </v-row>
@@ -36,6 +40,8 @@ import { useRoute } from 'vue-router';
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useDisplay } from 'vuetify';
+
+const display = useDisplay()
 
 
 const route = useRoute()
@@ -64,7 +70,7 @@ const isAboutPage = computed(() => route.path === '/about')
 const leftColMd = computed(() => isAboutPage.value ? 12 : 9)
 const showSidebar = computed(() => !isAboutPage.value)
 
-const display = useDisplay()
+
 
 console.log('route.path',route.path)
 

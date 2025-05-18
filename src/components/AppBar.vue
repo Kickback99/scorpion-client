@@ -95,6 +95,11 @@ const hotBlogs = ref([])
 const onSearch = (type,param) => {
     // alert(123)
     // emitter.emit('search',{type,param})
+    if(type === 'keyword'){
+        if(!param.trim()){
+            return
+        }
+    }
     triggerSearch(type,param)
     keyword.value = ''
 }

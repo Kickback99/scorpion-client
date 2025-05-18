@@ -1,4 +1,5 @@
 <template>
+  <v-container>
   <v-card>
     <v-card-title class="d-flex justify-space-between align-center">
       <span>{{ article.title }}</span>
@@ -61,6 +62,7 @@
       </v-list>
     </v-card>
   </v-card>
+  </v-container>
 </template>
 
 <script setup>
@@ -70,7 +72,6 @@ import { useRoute } from 'vue-router';
 import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
 
-const md = new MarkdownIt();
 const showToc = ref(false);
 const preview = ref(null);
 const route = useRoute();
@@ -90,6 +91,7 @@ const POSITION_CONFIG = {
   HORIZONTAL_OFFSET: -18, // 水平微调值（正值向右，负值向左）
   BUTTON_GAP: 15,      // 按钮与卡片的水平间距
   VERTICAL_GAP: 56,      //按钮与卡片之间的垂直间距（根据按钮高度40px+16px间距）
+  CONTAINER_PS: 32, //container左右内边距
 }
 
 const translateXValue = ref('0px')
@@ -102,7 +104,7 @@ const calculatePosition = () => {
   const contentWidth = leftContent.offsetWidth
   
   // 计算需要平移的距离 = 内容区右边缘到视口左侧的距离 + 手动微调
-  translateXValue.value = `calc(${contentWidth}px - 100% + ${POSITION_CONFIG.HORIZONTAL_OFFSET}px)`
+  translateXValue.value = `calc(${contentWidth}px - 100% + ${POSITION_CONFIG.HORIZONTAL_OFFSET}px - ${POSITION_CONFIG.CONTAINER_PS}px)`
 }
 
 const renderArticleItem = async() => {

@@ -103,7 +103,7 @@ onMounted(()=>{
   
   // 监听路由变化处理参数
   watch(() => route.query, (newQuery) => {
-    console.log('路由变化了...')
+    console.log('路由变化了...',newQuery)
     if (newQuery.type && newQuery.param) {
       updateSearchState({
         type: newQuery.type,
