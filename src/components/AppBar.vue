@@ -79,7 +79,10 @@ const keyword = ref('')
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useRoute } from 'vue-router';
+import { useSearch } from '@/utils/useSearch';
 const route = useRoute()
+
+const {triggerSearch} = useSearch()
   
 const user = ref({
     username: 'JohnDoe',
@@ -91,7 +94,8 @@ const hotBlogs = ref([])
 // 搜索功能
 const onSearch = (type,param) => {
     // alert(123)
-    emitter.emit('search',{type,param})
+    // emitter.emit('search',{type,param})
+    triggerSearch(type,param)
     keyword.value = ''
 }
 

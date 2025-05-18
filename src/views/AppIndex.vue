@@ -61,9 +61,7 @@ const params = ref({
 
 
 const renderArticleList = async() => {
-    let count = 0;
-    ++count;
-    console.log(`第${count}次`,searchData.value.categoryId)
+    console.log('renderArticleList函数执行...')
     const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
     // console.log('renderArticleList...')
     articleList.value = res.data.items
@@ -82,7 +80,7 @@ const history = {
 
 // 绑定总线事件
 onMounted(()=>{
-  emitter.on('search', receiveParam)
+  // emitter.on('search', receiveParam)
   emitter.on('reset-search', () => {
   searchData.value = {
     keyword: '',

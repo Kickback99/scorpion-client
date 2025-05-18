@@ -100,6 +100,9 @@ import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 // 全局总线
 import emitter from '@/utils/event-bus.js'
+import { useSearch } from '@/utils/useSearch'
+
+const {triggerSearch} = useSearch()
 
 const router = useRouter()
 const { smAndDown } = useDisplay()
@@ -165,7 +168,8 @@ const handleNavClick = (type,param) => {
   if (smAndDown.value) {
     drawer.value = false
   }
-  emitter.emit('search',{type,param})
+  // emitter.emit('search',{type,param})
+  triggerSearch(type,param)
 }
 </script>
 
