@@ -217,25 +217,13 @@ watch(() => route.params.id, (newId) => {
 
 /* 移动端适配 */
 @media (max-width: 960px) {
-  .toc-card {
-    width: 80%;
-    right: 10% !important;
-  }
-  
-  .toc-toggle-btn {
-    right: 20px !important;
-  }
-}
-
-/* 移动端适配 */
-@media (max-width: 960px) {
   .toc-toggle-btn,
   .toc-card {
     transform: none !important;
     right: 20px !important;
   }
   .toc-card {
-    width: 85%;
+    width: 50%;
   }
 }
 </style>
