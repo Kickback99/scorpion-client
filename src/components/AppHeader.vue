@@ -158,16 +158,18 @@ const handleNavClick = (type,param) => {
     router.push(item.to)
   } */
 
-  if(type === 'about'){
-    router.push('/about')
-  }
-
   // console.log(item)
   
   // 移动端点击后关闭抽屉
   if (smAndDown.value) {
     drawer.value = false
   }
+
+  if(type === 'about'){
+    router.push('/about')
+    return
+  }
+
   // emitter.emit('search',{type,param})
   triggerSearch(type,param)
 }
