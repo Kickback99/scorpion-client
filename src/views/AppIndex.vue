@@ -1,5 +1,17 @@
 <template>
     <v-container>
+            <!-- 空状态显示 -->
+             <v-card v-if="articleList.length === 0" >
+            <v-empty-state
+                icon="mdi-file-document-outline"
+                title="暂无文章"
+                text="当前没有找到任何文章内容"
+            >
+            </v-empty-state>
+            </v-card>
+
+              <!-- 正常文章列表 -->
+          <template v-else>
             <ArticleItem v-for="(item,index) in articleList" :key="item.id" 
                 :class="{'mt-5':(index !== 0)}"
                 :id="item.id"
@@ -23,6 +35,7 @@
             >
 
             </v-pagination>
+          </template>
     </v-container>
 </template>
 
@@ -30,7 +43,6 @@
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
 import { ref,onMounted,onUnmounted,watch, provide } from 'vue'
-
 
 
 // 全局总线
@@ -184,4 +196,5 @@ const updateSearchState = (data) => {
   max-width: calc(100% / 8); /* 根据 total-visible 调整 */
   margin: 0 !important; /* 移除默认外边距 */
 }
+
 </style>
