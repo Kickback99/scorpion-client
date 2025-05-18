@@ -4,7 +4,7 @@
       <!-- 将导航内容限制在容器内 -->
       <v-container class="d-flex align-center">
         <!-- 应用标题/Logo -->
-        <v-app-bar-title>My App</v-app-bar-title>
+        <v-app-bar-title>蝎子编程</v-app-bar-title>
         
         <!-- 桌面导航 (显示在 md 及以上屏幕) -->
         <div v-if="!smAndDown" class="d-flex ml-4">
