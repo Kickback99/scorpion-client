@@ -2,7 +2,7 @@
     <!-- 全宽应用栏 -->
     <v-app-bar app color="primary">
       <!-- 将导航内容限制在容器内 -->
-      <v-container class="d-flex align-center pa-0">
+      <v-container class="d-flex align-center">
         <!-- 应用标题/Logo -->
         <v-app-bar-title>My App</v-app-bar-title>
         
@@ -177,9 +177,9 @@ const handleNavClick = (type,param) => {
 
 <style scoped lang="scss">
 /* 可选的自定义样式 */
-.v-container {
-  max-width: 1280px; /* 根据设计系统调整 */
-}
+/* .v-container {
+  max-width: 1280px; 
+} */
 
 /* 移除按钮最小宽度 */
 .v-btn {
