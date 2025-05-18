@@ -7,6 +7,9 @@ import prismjs from 'vite-plugin-prismjs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  optimizeDeps:{
+    exclude: ['markdown-it-toc-done-right'] // 明确排除这个包
+  },
   plugins: [
     vue(),
     vuetify({
