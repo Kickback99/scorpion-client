@@ -28,7 +28,7 @@
             v-model="params.pageNum" 
             class="mt-5"
             :length="Math.ceil(total / params.pageSize)"
-            :total-visible="8"
+            :total-visible="smAndUp?8:4"
             :elevation="2"
             size="small"
             @update:modelValue="renderArticleList"
@@ -43,11 +43,16 @@
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
 import { ref,onMounted,onUnmounted,watch, provide } from 'vue'
+import { useDisplay } from 'vuetify';
+
+
+const {smAndUp} = useDisplay()
 
 
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useRoute, useRouter } from 'vue-router';
+
 
 const route = useRoute()
 const router = useRouter()

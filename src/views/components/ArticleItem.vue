@@ -14,7 +14,7 @@
             <!-- 右侧内容区域 -->
               <!-- <v-list-item-content class="d-flex flex-column justify-space-between"> -->
                 <v-list-item-title class="title-category">
-                  <h4 class="ma-0 title">{{ title }}</h4>
+                  <h4 class="ma-0 title" :class="display.mdAndUp.value ? 'truncate-multi' : 'truncate-single'">{{ title }}</h4>
                   <!-- <span class="category">{{ post.category }}</span> -->
                 </v-list-item-title>
   
@@ -75,16 +75,16 @@ defineProps(['id','title','cateName','cover','description','createTime','viewCou
   /* background: coral; */
 }
 
-/* 单行截断 */
-/* .v-list-item-title h4 {
+/* 移动端-单行截断 */
+.v-list-item-title .truncate-single{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-} */
+}
 
-/* 两行截断 */
-.v-list-item-title h4{
+/* pc端-两行截断 */
+.v-list-item-title .truncate-multi {
 
   display: -webkit-box;
   white-space: wrap !important;
