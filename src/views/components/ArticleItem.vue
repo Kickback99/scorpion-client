@@ -19,7 +19,7 @@
                 </v-list-item-title>
   
                 <v-list-item-subtitle class="description">
-                  <p class="ma-0">{{ description }}</p>
+                  <p class="ma-0 truncate-multi">{{ descriptionText }}</p>
                 </v-list-item-subtitle>
   
                 <v-list-item-subtitle class="metadata pb-1">
@@ -33,7 +33,8 @@
   </template>
 
 <script setup>
-import { ref } from 'vue'
+import { mdToPlainText } from '@/utils/useExtractText'
+import { computed, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 const display = useDisplay()
 
@@ -52,7 +53,12 @@ const display = useDisplay()
 ]) */
 
 
-defineProps(['id','title','cateName','cover','description','createTime','viewCount'])
+const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount'])
+
+const descriptionText = computed(()=>{
+   return mdToPlainText(props.description)
+})
+
 </script>
 
 <style scoped>
@@ -84,7 +90,8 @@ defineProps(['id','title','cateName','cover','description','createTime','viewCou
 }
 
 /* pc端-两行截断 */
-.v-list-item-title .truncate-multi {
+.v-list-item-title .truncate-multi,
+.v-list-item-subtitle .truncate-multi {
 
   display: -webkit-box;
   white-space: wrap !important;
