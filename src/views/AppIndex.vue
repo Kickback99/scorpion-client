@@ -78,7 +78,8 @@ const params = ref({
 
 
 const renderArticleList = async() => {
-    console.log('renderArticleList函数执行...')
+    // console.log('renderArticleList函数执行...')
+    console.log('searchData.value',searchData.value)
     const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
     // console.log('renderArticleList...')
     articleList.value = res.data.items
@@ -99,11 +100,14 @@ const history = {
 onMounted(()=>{
   // emitter.on('search', receiveParam)
   emitter.on('reset-search', () => {
+    console.log('触发了reset-search')
+  params.value.pageNum = 1
   searchData.value = {
     keyword: '',
     categoryId: null,
     tagId: null
   }
+  renderArticleList() // 主动刷新
 })
   
   // 监听路由变化处理参数
