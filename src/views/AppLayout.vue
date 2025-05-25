@@ -9,7 +9,7 @@
                     <!-- 左侧内容：轮播图和文章列表 -->
                     <v-col :md="leftColMd" cols="12">
                         <!-- 轮播图 -->
-                        <AppCarousel></AppCarousel>
+                        <!-- <AppCarousel></AppCarousel> -->
 
                         <v-row>
                             <router-view></router-view>
@@ -50,11 +50,11 @@ const renderCateList = async() => {
 }
 renderCateList()
 
-watch(()=>route.path,(newPath) => {
+/* watch(()=>route.path,(newPath) => {
     if (newPath !== '/') {
       emitter.emit('reset-search')
     }
-})
+}) */
 
 
 /* watch(route,(to,form) => {
