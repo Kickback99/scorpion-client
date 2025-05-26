@@ -19,7 +19,7 @@
                 </v-list-item-title>
   
                 <v-list-item-subtitle class="description">
-                  <p class="ma-0 truncate-multi">{{ descriptionText }}</p>
+                  <p class="ma-0 truncate-multi">{{ description }}</p>
                 </v-list-item-subtitle>
   
                 <v-list-item-subtitle class="metadata pb-1">
@@ -55,9 +55,11 @@ const display = useDisplay()
 
 const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount'])
 
-const descriptionText = computed(()=>{
+/* const descriptionText = computed(()=>{
    return mdToPlainText(props.description)
-})
+}) */
+
+
 
 </script>
 
