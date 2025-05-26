@@ -18,7 +18,7 @@
                 :title="item.title" 
                 :cateName="item.cateName"
                 :cover="item.cover" 
-                :description="item.description" 
+                :description="item.displayDescription" 
                 :createTime="item.createTime"
                 :viewCount="item.viewCount">
             </ArticleItem>
@@ -44,6 +44,7 @@ import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
 import { ref,onMounted,onUnmounted,watch, provide } from 'vue'
 import { useDisplay } from 'vuetify';
+import { mdToPlainText } from '@/utils/useExtractText'
 
 
 const {smAndUp} = useDisplay()
@@ -79,10 +80,14 @@ const params = ref({
 
 const renderArticleList = async() => {
     // console.log('renderArticleList函数执行...')
-    console.log('searchData.value',searchData.value)
+    // console.log('searchData.value',searchData.value)
     const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
     // console.log('renderArticleList...')
-    articleList.value = res.data.items
+    console.log('res.data.items',res.data.items)
+    articleList.value = res.data.items.map(item => ({
+      ...item,
+      displayDescription: handleAutoDescription(item)
+    }))
     total.value = res.data.total
 }
 
@@ -189,6 +194,16 @@ const updateSearchState = (data) => {
   }
 }
 
+const handleAutoDescription = (item) => {
+    switch (item.isAutoDescription) {
+    case 1: // 刻意留空
+      return '';
+    case 0: // 自动生成
+      return mdToPlainText(item.description) || '暂无内容摘要';
+    default: // 自定义或null
+      return item.description;
+  }
+}
 
 </script>
 
