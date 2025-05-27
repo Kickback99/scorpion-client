@@ -19,13 +19,22 @@
                 </v-list-item-title>
   
                 <v-list-item-subtitle class="description">
-                  <p class="ma-0 truncate-multi">{{ description }}</p>
+                  <p class="ma-0 truncate-multi d-none d-md-block">{{ description }}</p>
                 </v-list-item-subtitle>
   
                 <v-list-item-subtitle class="metadata pb-1">
-                  <span>{{  createTime }}</span>
-                  <span>{{ viewCount }} 评论</span>
-                  <span>{{ viewCount }} 阅读量</span>
+                  <span class="d-inline-flex mr-3">
+                       <v-icon icon="mdi-clock-outline" size="small" class="mr-1"></v-icon>
+                    {{  createTime }}
+                  </span>
+                  <span class="d-inline-flex mr-3">
+                      <v-icon icon="mdi-eye" size="small" class="mr-1"></v-icon>
+                    {{ viewCount }}
+                  </span>
+                  <span class="d-inline-flex mr-3">
+                    <v-icon icon="mdi-comment" size="small" class="mr-1"></v-icon>
+                    {{ viewCount }}
+                  </span>
                 </v-list-item-subtitle>
               <!-- </v-list-item-content> -->
         </v-list-item>
@@ -72,7 +81,7 @@ const props = defineProps(['id','title','cateName','cover','description','create
 } */
 
 .metadata{
-    padding-top: 8px;
+    padding-top: 4px;
     margin-top: auto;
 }
 
@@ -80,6 +89,9 @@ const props = defineProps(['id','title','cateName','cover','description','create
   display: flex;
   align-self: stretch !important;
   flex-direction: column;
+  .description {
+    margin-top: 10px;
+  }
   /* background: coral; */
 }
 
