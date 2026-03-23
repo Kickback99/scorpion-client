@@ -1,17 +1,8 @@
 <template>
     <v-container>
-            <!-- 空状态显示 -->
-             <v-card v-if="articleList.length === 0" >
-            <v-empty-state
-                icon="mdi-file-document-outline"
-                title="暂无文章"
-                text="当前没有找到任何文章内容"
-            >
-            </v-empty-state>
-            </v-card>
 
               <!-- 正常文章列表 -->
-          <template v-else>
+          <template v-if="articleList.length > 0">
             <ArticleItem v-for="(item,index) in articleList" :key="item.id" 
                 :class="{'mt-5':(index !== 0)}"
                 :id="item.id"
@@ -36,6 +27,17 @@
 
             </v-pagination>
           </template>
+
+            <!-- 空状态显示 -->
+             <v-card v-else-if="!isInitialLoading && articleList.length === 0">
+              <v-empty-state
+                  icon="mdi-file-document-outline"
+                  title="暂无文章"
+                  text="当前没有找到任何文章内容"
+              >
+              </v-empty-state>
+            </v-card>
+
     </v-container>
 </template>
 
@@ -49,6 +51,8 @@ import { mdToPlainText } from '@/utils/useExtractText'
 
 const {smAndUp} = useDisplay()
 
+
+const isInitialLoading = ref(true) // 标记是否首次加载中
 
 // 全局总线
 import emitter from '@/utils/event-bus.js'
@@ -89,6 +93,8 @@ const renderArticleList = async() => {
       displayDescription: handleAutoDescription(item)
     }))
     total.value = res.data.total
+    // 数据加载完成后，标记首次加载结束
+    isInitialLoading.value = false
 }
 
 renderArticleList()
