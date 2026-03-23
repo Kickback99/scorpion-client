@@ -27,7 +27,7 @@
               
               <!-- 二级菜单 (桌面端下拉) -->
               <v-menu
-                v-if="item.children"
+                v-if="hasChildren(item)"
                 activator="parent"
                 location="bottom"
                 open-on-hover
@@ -73,7 +73,7 @@
         <template v-for="item in categories" :key="item.id">
           <!-- 有子菜单的项 -->
           <v-list-group
-            v-if="item.children"
+            v-if="hasChildren(item)"
             :value="item.id"
             @click="!item.children && handleNavClick('cate',item.id)"
           >
@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref,watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 // 全局总线
@@ -117,6 +117,19 @@ const { smAndDown } = useDisplay()
 const drawer = ref(false)
 
 defineProps(['categories'])
+
+// 辅助函数：判断是否有子项
+const hasChildren = (item) => {
+  return item.children && item.children.length > 0
+}
+
+// 监听屏幕尺寸变化，当从移动端切换到桌面端时关闭抽屉
+watch(smAndDown, (newValue, oldValue) => {
+  // 当从移动端（true）切换到桌面端（false）时，关闭抽屉
+  if (oldValue === true && newValue === false) {
+    drawer.value = false
+  }
+})
 
 // 导航数据
 const navItems = ref([

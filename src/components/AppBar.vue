@@ -17,6 +17,7 @@
         density="compact" 
         append-inner-icon="mdi-magnify"
         @click:append-inner="onSearch('keyword',keyword)"
+        @keyup.enter="onSearch('keyword',keyword)"
         class="px-2"
         >
         </v-text-field>
