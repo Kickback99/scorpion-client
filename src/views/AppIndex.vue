@@ -11,7 +11,8 @@
                 :cover="item.cover" 
                 :description="item.displayDescription" 
                 :createTime="item.createTime"
-                :viewCount="item.viewCount">
+                :viewCount="item.viewCount"
+                :isTop="item.isTop">
             </ArticleItem>
 
             <v-pagination
