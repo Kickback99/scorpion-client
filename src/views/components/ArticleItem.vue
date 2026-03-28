@@ -2,20 +2,31 @@
   <v-card :to="{name:'detail',params:{id}}">
         <v-list-item class="pa-0">
             <template v-slot:prepend>
+              <div class="cover-container">
                 <v-img
                   src="https://img0.baidu.com/it/u=74028626,2723881857&fm=253&fmt=auto&app=138&f=JPEG"
                   :alt="title"
-                  class="cover-image"
+                  class="cover-image rounded-lg"
                   :width="display.smAndDown.value ? 150 : 250"
-                :aspect-ratio="16/9"
-                contain
+                  :aspect-ratio="16/9"
+                  contain
                 />
+                
+                <!-- 置顶徽章 -->
+                  <v-sheet color="customBlue" :class="display.smAndDown.value? 'ribbon-mobile':'ribbon-window' " v-if="isTop === '1'">
+                    <span>
+                        置顶
+                    </span>
+                  </v-sheet>
+                </div>
             </template>
             <!-- 右侧内容区域 -->
               <!-- <v-list-item-content class="d-flex flex-column justify-space-between"> -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title" :class="display.mdAndUp.value ? 'truncate-multi' : 'truncate-single'">{{ title }}</h4>
-                  <!-- <span class="category">{{ post.category }}</span> -->
+                  <v-chip v-if="cateName" color="purple" size="small" class="category mt-1 mr-2">
+                    {{ cateName }}
+                  </v-chip>
                 </v-list-item-title>
   
                 <v-list-item-subtitle class="description">
@@ -42,8 +53,6 @@
   </template>
 
 <script setup>
-import { mdToPlainText } from '@/utils/useExtractText'
-import { computed, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 const display = useDisplay()
 
@@ -62,7 +71,7 @@ const display = useDisplay()
 ]) */
 
 
-const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount'])
+const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount','isTop'])
 
 /* const descriptionText = computed(()=>{
    return mdToPlainText(props.description)
@@ -79,6 +88,54 @@ const props = defineProps(['id','title','cateName','cover','description','create
   align-items: center;
   margin-bottom: 10px;
 } */
+
+/* 封面容器 - 相对定位 */
+.cover-container {
+  position: relative;
+  display: inline-block;
+}
+
+.ribbon-window {
+  position: absolute;
+  top: 10%;
+  right: 11px;
+  padding: 2px 10px;
+  /* background-color: #57DD43; */
+  font-size: 12px;
+  color: #fff;
+
+  &::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -4px;
+    /* border-top: 4px solid #57DD43; */
+    border-top: 4px solid rgb(var(--v-theme-customBlue));
+    border-right: 4px solid transparent;
+  }
+}
+
+
+.ribbon-mobile {
+  position: absolute;
+  top: 10%;
+  right: 5px;
+  padding: 2px 8px;
+  /* background-color: #57DD43; */
+  font-size: 8px;
+  color: #fff;
+
+  &::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -4px;
+    /* border-top: 4px solid #57DD43; */
+    border-top: 4px solid rgb(var(--v-theme-customBlue));
+    border-right: 4px solid transparent;
+  }
+}
+
 
 .metadata{
     padding-top: 4px;
@@ -116,6 +173,34 @@ const props = defineProps(['id','title','cateName','cover','description','create
   word-break: break-word; 
 }
 
+
+
+.title-category {
+  display: flex;
+  justify-content: space-between; /* 两端对齐，标题在左，分类在右 */
+  align-items: center; /* 垂直居中 */
+  gap: 16px; /* 防止内容紧贴 */
+  width: 100%;
+  
+  h4 {
+    flex: 1; /* 标题占据剩余空间 */
+    min-width: 0; /* 允许收缩 */
+    margin: 0;
+  }
+}
+
+:deep(.v-img__img--contain){
+  /* padding-bottom: 10px;
+  padding-top: 10px; */
+}
+
+:deep(.v-list-item){
+  padding-bottom: 10px !important;
+  padding-top: 10px !important;
+  /* .v-img__img.v-img__img--contain {
+      border-radius: 20px; 
+  } */
+}
 
 /* .title-category h4 {
   font-size: 1.5rem;
