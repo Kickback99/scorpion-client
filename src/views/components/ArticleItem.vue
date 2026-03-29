@@ -12,12 +12,26 @@
                   contain
                 />
                 
-                <!-- 置顶徽章 -->
-                  <v-sheet color="customBlue" :class="display.smAndDown.value? 'ribbon-mobile':'ribbon-window' " v-if="isTop === '1'">
+                <!-- 桌面端置顶徽章 -->
+                  <v-sheet color="customBlue" class="ribbon-window" v-if="isTop === '1' && !display.smAndDown.value">
                     <span>
                         置顶
                     </span>
                   </v-sheet>
+
+                  <!-- 移动端置顶图标按钮 -->       
+                  <v-btn 
+                    v-if="isTop === '1' && display.smAndDown.value"
+                    class="top-btn-mobile"
+                    variant="flat"
+                    color="customBlue"
+                    density="comfortable"
+                    icon="mdi-pin"
+                    size="x-small"
+                    rounded="sm"
+                  >
+                    <v-icon size="14">mdi-pin</v-icon>
+                  </v-btn>
                 </div>
             </template>
             <!-- 右侧内容区域 -->
@@ -115,25 +129,25 @@ const props = defineProps(['id','title','cateName','cover','description','create
   }
 }
 
-
-.ribbon-mobile {
+/* 移动端置顶图标按钮样式 */
+.top-btn-mobile {
   position: absolute;
-  top: 10%;
+  top: 5px;
   right: 5px;
-  padding: 2px 8px;
-  /* background-color: #57DD43; */
-  font-size: 8px;
-  color: #fff;
-
-  &::before {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: -4px;
-    /* border-top: 4px solid #57DD43; */
-    border-top: 4px solid rgb(var(--v-theme-customBlue));
-    border-right: 4px solid transparent;
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  opacity: 0.9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  
+  &:active {
+    opacity: 1;
   }
+}
+
+/* 可选：添加点击波纹效果（如果需要） */
+.top-btn-mobile::before {
+  background-color: rgba(255,255,255,0.3);
 }
 
 
