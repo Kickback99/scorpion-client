@@ -49,17 +49,42 @@
             @click="handleNavClick('about')"
             class="text-none"
             >关于</v-btn>
+
+            <!-- 右侧登录按钮 - 桌面端 -->
+          <v-spacer></v-spacer>
+          <v-btn
+            color="white"
+            variant="outlined"
+            @click="handleLogin"
+            class="text-none"
+          >
+            <v-icon left>mdi-account</v-icon>
+            登录
+          </v-btn>
         </div>
         
+        <div v-else class="d-flex ml-auto">
+
+          <!-- 移动端登录按钮 -->
+          <v-btn
+            color="white"
+            variant="outlined"
+            @click="handleLogin"
+            class="text-none mr-2 mt-2"
+            size="small"
+          >
+            <v-icon>mdi-account</v-icon>
+            登录
+          </v-btn>
         <!-- 移动端菜单按钮 (显示在 sm 及以下屏幕) -->
         <v-btn
-          v-else
           icon
           @click="drawer = !drawer"
           class="ml-auto"
         >
           <v-icon>mdi-menu</v-icon>
         </v-btn>
+      </div>
       </v-container>
     </v-app-bar>
     
@@ -100,6 +125,7 @@
         </template>
       </v-list>
     </v-navigation-drawer>
+    <AppLogin></AppLogin>
 </template>
 
 <script setup>
@@ -109,6 +135,8 @@ import { useRouter } from 'vue-router'
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useSearch } from '@/utils/useSearch'
+import AppLogin from './AppLogin.vue'
+
 
 const {triggerSearch} = useSearch()
 
@@ -168,6 +196,17 @@ const navItems = ref([
     action: () => console.log('导航到联系我们')
   }
 ])
+
+// 处理登录点击
+const handleLogin = () => {
+  console.log('hello world')
+  // 移动端点击登录后可以选择关闭抽屉（如果登录按钮在抽屉内，但这里是独立按钮，所以不需要）
+  // 如果需要在移动端点击登录后也关闭抽屉，可以取消下面的注释
+  if (smAndDown.value) {
+     drawer.value = false
+   }
+   emitter.emit('loginDialogVisible',true)
+}
 
 
 // 处理Logo点击
