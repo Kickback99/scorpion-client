@@ -270,6 +270,8 @@ emitter.on('loginDialogVisible',param => {
 })
 
 import { onUnmounted } from 'vue'
+import { userLoginApi } from '@/api/user';
+import { useUserStore } from '@/store/user';
 onUnmounted(() => {
     emitter.off('loginDialogVisible')
 })
@@ -353,6 +355,8 @@ const loginRules = {
     ]
 }
 
+const userStore = useUserStore()
+
 // 登录处理
 const handleLogin = async () => {
     // if (!loginFormRef.value) return
@@ -369,8 +373,14 @@ const handleLogin = async () => {
             console.log('登录信息:', loginModel)
             console.log('是否同意条款:', loginTerm.value)
             
-            // 模拟登录请求
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            // 登录请求
+            const res = await userLoginApi(loginModel)
+
+            userStore.setToken(res.data.token)
+
+            userStore.setUser(res.data.userInfo)
+
+            dialogVisible.value = false
             
             // 登录成功后的处理
             // dialogVisible.value = false
