@@ -50,9 +50,49 @@
             class="text-none"
             >关于</v-btn>
 
-            <!-- 右侧登录按钮 - 桌面端 -->
+          <!-- 右侧用户区域 - 桌面端 -->
           <v-spacer></v-spacer>
+          <div v-if="isLoggedIn">
+            <!-- 用户信息下拉菜单 -->
+            <v-menu
+              location="bottom"
+              offset-y
+              transition="slide-y-transition"
+            >
+              <template v-slot:activator="{ props }">
+                <div 
+                  v-bind="props"
+                  class="user-info-wrapper cursor-pointer d-flex align-center"
+                  style="cursor: pointer;"
+                >
+                  <v-avatar size="36" color="white" class="mr-2">
+                    <v-icon color="primary" v-if="!userAvatar">mdi-account-circle</v-icon>
+                    <v-img v-else :src="userAvatar" alt="avatar"></v-img>
+                  </v-avatar>
+                  <span class="text-white text-body-2">{{ userName }}</span>
+                  <v-icon color="white" size="20" class="ml-1">mdi-menu-down</v-icon>
+                </div>
+              </template>
+              
+              <v-list density="compact" min-width="100">
+                <v-list-item @click="handleProfile">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-account-circle</v-icon>
+                  </template>
+                  <v-list-item-title>个人中心</v-list-item-title>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-list-item @click="handleLogout">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-logout</v-icon>
+                  </template>
+                  <v-list-item-title>退出登录</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
           <v-btn
+            v-else
             color="white"
             variant="outlined"
             @click="handleLogin"
@@ -65,8 +105,46 @@
         
         <div v-else class="d-flex ml-auto">
 
-          <!-- 移动端登录按钮 -->
+          <!-- 移动端用户区域 -->
+          <div v-if="isLoggedIn" style="margin-top: 7px;">
+            <v-menu
+              location="bottom"
+              offset-y
+              transition="slide-y-transition"
+            >
+              <template v-slot:activator="{ props }">
+                <div 
+                  v-bind="props"
+                  class="user-info-wrapper cursor-pointer d-flex align-center"
+                  style="cursor: pointer;"
+                >
+                  <v-avatar size="32" color="white">
+                    <v-icon color="primary" v-if="!userAvatar">mdi-account-circle</v-icon>
+                    <v-img v-else :src="userAvatar" alt="avatar"></v-img>
+                  </v-avatar>
+                  <v-icon color="white" size="20" class="ml-1">mdi-menu-down</v-icon>
+                </div>
+              </template>
+              
+              <v-list density="compact" min-width="80">
+                <v-list-item @click="handleProfile">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-account-circle</v-icon>
+                  </template>
+                  <v-list-item-title>个人中心</v-list-item-title>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-list-item @click="handleLogout">
+                  <template v-slot:prepend>
+                    <v-icon>mdi-logout</v-icon>
+                  </template>
+                  <v-list-item-title>退出登录</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
           <v-btn
+            v-else
             color="white"
             variant="outlined"
             @click="handleLogin"
@@ -129,13 +207,14 @@
 </template>
 
 <script setup>
-import { ref,watch } from 'vue'
+import { ref,watch,computed } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useSearch } from '@/utils/useSearch'
 import AppLogin from './AppLogin.vue'
+import { useUserStore } from '@/store/user'
 
 
 const {triggerSearch} = useSearch()
@@ -197,6 +276,34 @@ const navItems = ref([
   }
 ])
 
+// 判断登录
+const userStore = useUserStore()
+
+// 判断是否登录
+const isLoggedIn = computed(() => {
+  return !!userStore.token && Object.keys(userStore.user).length > 0
+})
+
+// 用户名（写死的数据，实际应该从 userStore.user 中获取）
+const userName = computed(() => {
+  // 优先从 store 中获取真实用户名
+  if (userStore.user && userStore.user.username) {
+    return userStore.user.username
+  }
+  // 写死的测试数据
+  return '张三'
+})
+
+// 用户头像（写死的数据，实际应该从 userStore.user 中获取）
+const userAvatar = computed(() => {
+  // 优先从 store 中获取真实头像
+  if (userStore.user && userStore.user.avatar) {
+    return userStore.user.avatar
+  }
+  // 写死的测试数据（返回空字符串表示使用默认图标）
+  return ''
+})
+
 // 处理登录点击
 const handleLogin = () => {
   console.log('hello world')
@@ -206,6 +313,40 @@ const handleLogin = () => {
      drawer.value = false
    }
    emitter.emit('loginDialogVisible',true)
+}
+
+// 处理个人中心点击
+const handleProfile = () => {
+  console.log('跳转到个人中心')
+  // 关闭移动端抽屉
+  if (smAndDown.value) {
+    drawer.value = false
+  }
+  // 跳转到个人中心页面
+  router.push('/profile')
+  // 或者触发事件
+  // emitter.emit('openProfile')
+}
+
+// 处理退出登录
+const handleLogout = () => {
+  console.log('退出登录')
+  // 清除用户信息
+  userStore.removeToken()
+  userStore.removeUser()
+  
+  // 关闭移动端抽屉
+  if (smAndDown.value) {
+    drawer.value = false
+  }
+
+  // 如果当前在个人中心页面，跳转到首页
+  if (router.currentRoute.value.path === '/profile') {
+    router.push('/')
+  }
+  
+  // 可以弹出提示
+  // emitter.emit('showMessage', { type: 'success', text: '已退出登录' })
 }
 
 
@@ -257,5 +398,22 @@ const handleNavClick = (type,param) => {
 /* 导航项悬停效果 */
 .v-btn:hover .v-btn__content {
   opacity: 0.8;
+}
+
+// 用户信息样式
+.user-info-wrapper {
+  transition: opacity 0.3s ease;
+}
+
+.user-info-wrapper:hover {
+  opacity: 0.8;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+:deep(div.v-list-item__prepend) {
+  flex-direction: column !important;
 }
 </style>
