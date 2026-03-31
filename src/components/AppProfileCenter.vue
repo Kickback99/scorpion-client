@@ -2,272 +2,277 @@
   <v-container class="profile-center py-6">
     <v-sheet elevation="2" rounded="lg">
       <!-- 使用动态 direction 属性 -->
-      <v-tabs 
-        v-model="tab" 
-        color="primary"
-        :direction="display.mobile.value ? 'vertical' : 'horizontal'"
-        :class="display.mobile.value ? 'mobile-tabs' : ''"
-        :grow="!display.mobile.value"
-      >
-        <v-tab value="profile" :class="display.mobile.value ? 'justify-start' : ''">
-          <v-icon left class="mr-2">mdi-account-circle</v-icon>
-          个人资料
-        </v-tab>
-        <v-tab value="feedback" :class="display.mobile.value ? 'justify-start' : ''">
-          <v-icon left class="mr-2">mdi-message-text</v-icon>
-          我的反馈
-        </v-tab>
-        <v-tab value="posts" :class="display.mobile.value ? 'justify-start' : ''">
-          <v-icon left class="mr-2">mdi-file-document</v-icon>
-          我的发布
-        </v-tab>
-        <v-tab value="comments" :class="display.mobile.value ? 'justify-start' : ''">
-          <v-icon left class="mr-2">mdi-comment</v-icon>
-          我的评论
-        </v-tab>
-        <v-tab value="favorites" :class="display.mobile.value ? 'justify-start' : ''">
-          <v-icon left class="mr-2">mdi-heart</v-icon>
-          我的收藏
-        </v-tab>
-      </v-tabs>
+      <div :class="display.mobile.value ? 'mobile-layout' : ''">
+        <v-tabs 
+          v-model="tab" 
+          color="primary"
+          :direction="display.mobile.value ? 'vertical' : 'horizontal'"
+          :class="display.mobile.value ? 'mobile-tabs' : ''"
+          :grow="!display.mobile.value"
+        >
+          <v-tab value="profile" :class="display.mobile.value ? 'justify-start' : ''">
+            <v-icon left class="mr-2">mdi-account-circle</v-icon>
+            个人资料
+          </v-tab>
+          <v-tab value="feedback" :class="display.mobile.value ? 'justify-start' : ''">
+            <v-icon left class="mr-2">mdi-message-text</v-icon>
+            我的反馈
+          </v-tab>
+          <v-tab value="posts" :class="display.mobile.value ? 'justify-start' : ''">
+            <v-icon left class="mr-2">mdi-file-document</v-icon>
+            我的发布
+          </v-tab>
+          <v-tab value="comments" :class="display.mobile.value ? 'justify-start' : ''">
+            <v-icon left class="mr-2">mdi-comment</v-icon>
+            我的评论
+          </v-tab>
+          <v-tab value="favorites" :class="display.mobile.value ? 'justify-start' : ''">
+            <v-icon left class="mr-2">mdi-heart</v-icon>
+            我的收藏
+          </v-tab>
+        </v-tabs>
 
-      <v-divider></v-divider>
+        <v-divider v-if="!display.mobile.value"></v-divider>
 
-      <v-tabs-window v-model="tab">
-        <!-- 个人资料 Tab -->
-        <v-tabs-window-item value="profile">
-          <v-sheet class="pa-6">
-            <v-form ref="profileFormRef">
-              <!-- 头像 -->
-              <v-row>
-                <v-col cols="12" class="text-center">
-                  <div class="avatar-wrapper mb-4">
-                    <v-avatar size="100" color="grey-lighten-2">
-                      <v-img v-if="profileData.avatar" :src="profileData.avatar"></v-img>
-                      <v-icon v-else size="60" color="grey">mdi-account-circle</v-icon>
-                    </v-avatar>
+        <v-tabs-window v-model="tab" :class="display.mobile.value ? 'mobile-window' : ''">
+          <!-- 个人资料 Tab -->
+          <v-tabs-window-item value="profile">
+            <v-sheet class="pa-6">
+              <v-form ref="profileFormRef">
+                <div class="d-flex justify-end mb-4">
+                  <v-btn
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                    @click="showChangePasswordDialog = true"
+                  >
+                    <v-icon left size="18">mdi-lock-reset</v-icon>
+                    修改密码
+                  </v-btn>
+                </div>
+
+                <!-- 头像 -->
+                <v-row>
+                  <v-col cols="12" class="text-center">
+                    <div class="avatar-wrapper mb-4">
+                      <v-avatar size="100" color="grey-lighten-2">
+                        <v-img v-if="profileData.avatar" :src="profileData.avatar"></v-img>
+                        <v-icon v-else size="60" color="grey">mdi-account-circle</v-icon>
+                      </v-avatar>
+                      <v-btn
+                        icon
+                        size="small"
+                        color="primary"
+                        class="edit-avatar-btn"
+                        @click="changeAvatar"
+                      >
+                        <v-icon size="18">mdi-camera</v-icon>
+                      </v-btn>
+                    </div>
                     <v-btn
-                      icon
-                      size="small"
+                      variant="text"
                       color="primary"
-                      class="edit-avatar-btn"
+                      size="small"
                       @click="changeAvatar"
                     >
-                      <v-icon size="18">mdi-camera</v-icon>
+                      更换头像
                     </v-btn>
-                  </div>
-                  <v-btn
-                    variant="text"
-                    color="primary"
-                    size="small"
-                    @click="changeAvatar"
-                  >
-                    更换头像
-                  </v-btn>
-                </v-col>
-              </v-row>
+                  </v-col>
+                </v-row>
 
-              <!-- 用户名（禁用状态） -->
-              <v-text-field
-                v-model="profileData.username"
-                label="用户名"
-                disabled
-                variant="outlined"
-                density="comfortable"
-                class="mb-3"
-              ></v-text-field>
-
-              <!-- 昵称 -->
-              <v-text-field
-                v-model="profileData.nickname"
-                label="昵称"
-                placeholder="请输入昵称"
-                variant="outlined"
-                density="comfortable"
-                class="mb-3"
-                :rules="[v => !!v || '昵称不能为空']"
-              ></v-text-field>
-
-              <!-- 手机号 -->
-              <v-text-field
-                v-model="profileData.phone"
-                label="手机号"
-                placeholder="请输入手机号"
-                variant="outlined"
-                density="comfortable"
-                class="mb-3"
-                :rules="[
-                  v => !v || /^1[3-9]\d{9}$/.test(v) || '请输入正确的手机号'
-                ]"
-              ></v-text-field>
-
-              <!-- 邮箱（只读） -->
-              <v-text-field
-                v-model="profileData.email"
-                label="邮箱"
-                disabled
-                variant="outlined"
-                density="comfortable"
-                class="mb-3"
-              ></v-text-field>
-
-              <!-- 操作按钮 -->
-              <div class="d-flex mt-4">
-                <v-btn
-                  color="warning"
+                <!-- 用户名（禁用状态） -->
+                <v-text-field
+                  v-model="profileData.username"
+                  label="用户名"
+                  disabled
                   variant="outlined"
-                  @click="showChangePasswordDialog = true"
-                >
-                  <v-icon left>mdi-lock-reset</v-icon>
-                  修改密码
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  class="ml-3"
-                  :loading="saving"
-                  @click="saveProfile"
-                >
-                  <v-icon left>mdi-content-save</v-icon>
-                  保存修改
-                </v-btn>
-              </div>
-            </v-form>
-          </v-sheet>
-        </v-tabs-window-item>
+                  density="comfortable"
+                  class="mb-3"
+                ></v-text-field>
 
-        <!-- 我的反馈 Tab -->
-        <v-tabs-window-item value="feedback">
-          <v-sheet class="pa-6">
-            <v-data-table
-              :headers="feedbackHeaders"
-              :items="feedbackList"
-              :loading="feedbackLoading"
-              hover
-            >
-              <template v-slot:item.status="{ item }">
-                <v-chip :color="getStatusColor(item.status)" size="small">
-                  {{ item.status }}
-                </v-chip>
-              </template>
-              <template v-slot:item.createdAt="{ item }">
-                {{ formatDate(item.createdAt) }}
-              </template>
-              <template v-slot:no-data>
-                <v-empty-state
-                  headline="暂无反馈"
-                  text="你还没有提交过任何反馈"
-                  icon="mdi-message-text-outline"
-                ></v-empty-state>
-              </template>
-            </v-data-table>
-          </v-sheet>
-        </v-tabs-window-item>
+                <!-- 昵称 -->
+                <v-text-field
+                  v-model="profileData.nickname"
+                  label="昵称"
+                  placeholder="请输入昵称"
+                  variant="outlined"
+                  density="comfortable"
+                  class="mb-3"
+                  :rules="[v => !!v || '昵称不能为空']"
+                ></v-text-field>
 
-        <!-- 我的发布 Tab -->
-        <v-tabs-window-item value="posts">
-          <v-sheet class="pa-6">
-            <v-data-table
-              :headers="postHeaders"
-              :items="postList"
-              :loading="postLoading"
-              hover
-            >
-              <template v-slot:item.title="{ item }">
-                <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
-                  {{ item.title }}
-                </router-link>
-              </template>
-              <template v-slot:item.createdAt="{ item }">
-                {{ formatDate(item.createdAt) }}
-              </template>
-              <template v-slot:no-data>
-                <v-empty-state
-                  headline="暂无发布"
-                  text="你还没有发布过任何内容"
-                  icon="mdi-file-document-outline"
-                ></v-empty-state>
-              </template>
-            </v-data-table>
-          </v-sheet>
-        </v-tabs-window-item>
+                <!-- 手机号 -->
+                <v-text-field
+                  v-model="profileData.phone"
+                  label="手机号"
+                  placeholder="请输入手机号"
+                  variant="outlined"
+                  density="comfortable"
+                  class="mb-3"
+                  :rules="[
+                    v => !v || /^1[3-9]\d{9}$/.test(v) || '请输入正确的手机号'
+                  ]"
+                ></v-text-field>
 
-        <!-- 我的评论 Tab -->
-        <v-tabs-window-item value="comments">
-          <v-sheet class="pa-6">
-            <v-list v-if="commentList.length > 0">
-              <v-list-item
-                v-for="comment in commentList"
-                :key="comment.id"
-                :title="comment.content"
-                :subtitle="`发布于 ${formatDate(comment.createdAt)} · ${comment.articleTitle}`"
-                lines="two"
-                class="comment-item"
+                <!-- 邮箱（只读） -->
+                <v-text-field
+                  v-model="profileData.email"
+                  label="邮箱"
+                  disabled
+                  variant="outlined"
+                  density="comfortable"
+                  class="mb-3"
+                ></v-text-field>
+
+                <!-- 操作按钮 -->
+                <div class="d-flex justify-center mt-6">
+                  <v-btn
+                    color="primary"
+                    :loading="saving"
+                    @click="saveProfile"
+                  >
+                    <v-icon left>mdi-content-save</v-icon>
+                    保存
+                  </v-btn>
+                </div>
+              </v-form>
+            </v-sheet>
+          </v-tabs-window-item>
+
+          <!-- 我的反馈 Tab -->
+          <v-tabs-window-item value="feedback">
+            <v-sheet class="pa-6">
+              <v-data-table
+                :headers="feedbackHeaders"
+                :items="feedbackList"
+                :loading="feedbackLoading"
+                hover
               >
-                <template v-slot:prepend>
-                  <v-avatar size="40" color="grey-lighten-2">
-                    <v-icon>mdi-comment</v-icon>
-                  </v-avatar>
+                <template v-slot:item.status="{ item }">
+                  <v-chip :color="getStatusColor(item.status)" size="small">
+                    {{ item.status }}
+                  </v-chip>
                 </template>
-                <template v-slot:append>
+                <template v-slot:item.createdAt="{ item }">
+                  {{ formatDate(item.createdAt) }}
+                </template>
+                <template v-slot:no-data>
+                  <v-empty-state
+                    headline="暂无反馈"
+                    text="你还没有提交过任何反馈"
+                    icon="mdi-message-text-outline"
+                  ></v-empty-state>
+                </template>
+              </v-data-table>
+            </v-sheet>
+          </v-tabs-window-item>
+
+          <!-- 我的发布 Tab -->
+          <v-tabs-window-item value="posts">
+            <v-sheet class="pa-6">
+              <v-data-table
+                :headers="postHeaders"
+                :items="postList"
+                :loading="postLoading"
+                hover
+              >
+                <template v-slot:item.title="{ item }">
+                  <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
+                    {{ item.title }}
+                  </router-link>
+                </template>
+                <template v-slot:item.createdAt="{ item }">
+                  {{ formatDate(item.createdAt) }}
+                </template>
+                <template v-slot:no-data>
+                  <v-empty-state
+                    headline="暂无发布"
+                    text="你还没有发布过任何内容"
+                    icon="mdi-file-document-outline"
+                  ></v-empty-state>
+                </template>
+              </v-data-table>
+            </v-sheet>
+          </v-tabs-window-item>
+
+          <!-- 我的评论 Tab -->
+          <v-tabs-window-item value="comments">
+            <v-sheet class="pa-6">
+              <v-list v-if="commentList.length > 0">
+                <v-list-item
+                  v-for="comment in commentList"
+                  :key="comment.id"
+                  :title="comment.content"
+                  :subtitle="`发布于 ${formatDate(comment.createdAt)} · ${comment.articleTitle}`"
+                  lines="two"
+                  class="comment-item"
+                >
+                  <template v-slot:prepend>
+                    <v-avatar size="40" color="grey-lighten-2">
+                      <v-icon>mdi-comment</v-icon>
+                    </v-avatar>
+                  </template>
+                  <template v-slot:append>
+                    <v-btn
+                      icon
+                      variant="text"
+                      size="small"
+                      @click="deleteComment(comment.id)"
+                    >
+                      <v-icon size="18" color="red">mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-list-item>
+              </v-list>
+              <v-empty-state
+                v-else
+                headline="暂无评论"
+                text="你还没有发表过任何评论"
+                icon="mdi-comment-outline"
+              ></v-empty-state>
+            </v-sheet>
+          </v-tabs-window-item>
+
+          <!-- 我的收藏 Tab -->
+          <v-tabs-window-item value="favorites">
+            <v-sheet class="pa-6">
+              <v-data-table
+                :headers="favoriteHeaders"
+                :items="favoriteList"
+                :loading="favoriteLoading"
+                hover
+              >
+                <template v-slot:item.title="{ item }">
+                  <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
+                    {{ item.title }}
+                  </router-link>
+                </template>
+                <template v-slot:item.createdAt="{ item }">
+                  {{ formatDate(item.createdAt) }}
+                </template>
+                <template v-slot:item.actions="{ item }">
                   <v-btn
                     icon
                     variant="text"
                     size="small"
-                    @click="deleteComment(comment.id)"
+                    color="red"
+                    @click="removeFavorite(item.id)"
                   >
-                    <v-icon size="18" color="red">mdi-delete</v-icon>
+                    <v-icon>mdi-heart-broken</v-icon>
                   </v-btn>
                 </template>
-              </v-list-item>
-            </v-list>
-            <v-empty-state
-              v-else
-              headline="暂无评论"
-              text="你还没有发表过任何评论"
-              icon="mdi-comment-outline"
-            ></v-empty-state>
-          </v-sheet>
-        </v-tabs-window-item>
-
-        <!-- 我的收藏 Tab -->
-        <v-tabs-window-item value="favorites">
-          <v-sheet class="pa-6">
-            <v-data-table
-              :headers="favoriteHeaders"
-              :items="favoriteList"
-              :loading="favoriteLoading"
-              hover
-            >
-              <template v-slot:item.title="{ item }">
-                <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
-                  {{ item.title }}
-                </router-link>
-              </template>
-              <template v-slot:item.createdAt="{ item }">
-                {{ formatDate(item.createdAt) }}
-              </template>
-              <template v-slot:item.actions="{ item }">
-                <v-btn
-                  icon
-                  variant="text"
-                  size="small"
-                  color="red"
-                  @click="removeFavorite(item.id)"
-                >
-                  <v-icon>mdi-heart-broken</v-icon>
-                </v-btn>
-              </template>
-              <template v-slot:no-data>
-                <v-empty-state
-                  headline="暂无收藏"
-                  text="你还没有收藏任何内容"
-                  icon="mdi-heart-outline"
-                ></v-empty-state>
-              </template>
-            </v-data-table>
-          </v-sheet>
-        </v-tabs-window-item>
-      </v-tabs-window>
+                <template v-slot:no-data>
+                  <v-empty-state
+                    headline="暂无收藏"
+                    text="你还没有收藏任何内容"
+                    icon="mdi-heart-outline"
+                  ></v-empty-state>
+                </template>
+              </v-data-table>
+            </v-sheet>
+          </v-tabs-window-item>
+        </v-tabs-window>
+      </div>
     </v-sheet>
 
     <!-- 修改密码弹窗 -->
@@ -554,5 +559,15 @@ watch(tab, (newTab) => {
 
 .mobile-tabs {
   width: 100%;
+}
+
+.mobile-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0;
+}
+
+.mobile-window {
+  overflow: auto;
 }
 </style>
