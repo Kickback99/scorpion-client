@@ -1,8 +1,8 @@
 <template>
   <v-container class="profile-center py-6">
     <v-sheet elevation="2" rounded="lg">
-      <!-- 使用动态 direction 属性 -->
-      <div :class="display.mobile.value ? 'mobile-layout' : ''">
+      <div :class="display.mobile.value ? 'd-flex flex-row' : ''">
+        <!-- 使用动态 direction 属性 -->
         <v-tabs 
           v-model="tab" 
           color="primary"
@@ -34,7 +34,7 @@
 
         <v-divider v-if="!display.mobile.value"></v-divider>
 
-        <v-tabs-window v-model="tab" :class="display.mobile.value ? 'mobile-window' : ''">
+        <v-tabs-window v-model="tab" :class="display.mobile.value ? 'flex-grow-1 overflow-auto' : ''">
           <!-- 个人资料 Tab -->
           <v-tabs-window-item value="profile">
             <v-sheet class="pa-6">
@@ -559,15 +559,7 @@ watch(tab, (newTab) => {
 
 .mobile-tabs {
   width: 100%;
-}
-
-.mobile-layout {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0;
-}
-
-.mobile-window {
-  overflow: auto;
+  min-width: 120px;
+  max-width: 140px;
 }
 </style>
