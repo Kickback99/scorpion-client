@@ -1,10 +1,28 @@
 //定制请求的实例
 
 //导入axios  npm install axios
+import { useUserStore } from '@/store/user';
 import axios from 'axios';
 //定义一个变量,记录公共的前缀  ,  baseURL
 const baseURL = import.meta.env.VITE_API;
 const instance = axios.create({baseURL,timeout:4000})
+
+import {isAuthRequired} from '@/api/authRequired'
+
+//添加请求拦截器
+instance.interceptors.request.use(
+    config => {
+        const userStore = useUserStore()
+        // 根据路径判断是否需要携带 token
+        if(userStore.token && isAuthRequired(config.url)){
+            config.headers.authorization = userStore.token
+        }
+
+        return config
+    },
+
+    err => Premise.reject(err)
+)
 
 
 //添加响应拦截器
@@ -15,8 +33,31 @@ instance.interceptors.response.use(
             return res.data
         }
 
+        //匹配状态码为40开头的正则 
+       let regex = /^40[0-9]$/
+
+              if(regex.test(res.data.code)) {
+
+            if(res.data.code === 401){
+                console.log('响应拦截器执行...')
+                // 处理token过期或者篡改
+                const userStore = useUserStore()
+                // 清空用户所有数据
+                userStore.clearUserStore()
+                // 提示信息
+                ElMessage.error(res.data.message)
+                // 跳转到登录页
+                router.replace('/login')
+
+            }else ElMessage.error(res.data.message)
+
+            // return Promise.reject(res.data.message)
+            // 关键：返回pending的Promise，阻止错误开始向上传递的后续执行
+             return new Promise(() => {})
+       }
+
         alert(res.data.message || '服务异常')
-        return Promise.reject(res.data)
+        return Promise.reject(res.data.message)
     },
     err=>{
         alert('服务异常');
