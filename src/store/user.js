@@ -29,6 +29,10 @@ export const useUserStore = defineStore('user',{
         },
         removeUser(){
             this.user = {}
+        },
+        // 清除当前用户所有数据
+        clearUserStore(){
+            this.$reset()
         }
     },
     persist:true
