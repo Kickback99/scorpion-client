@@ -241,14 +241,18 @@
                 :items="favoriteList"
                 :loading="favoriteLoading"
                 hover
+                hide-default-footer
               >
                 <template v-slot:item.title="{ item }">
                   <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
                     {{ item.title }}
                   </router-link>
                 </template>
+                <template v-slot:item.author="{ item }">
+                  {{ !item.create_by?'蝎子':item.create_by }}
+                </template>
                 <template v-slot:item.createdAt="{ item }">
-                  {{ formatDate(item.createdAt) }}
+                  {{ item.createTime }}
                 </template>
                 <template v-slot:item.actions="{ item }">
                   <v-btn
@@ -269,6 +273,18 @@
                   ></v-empty-state>
                 </template>
               </v-data-table>
+
+                <!-- -------------------- 添加分页组件 -------------------- -->
+              <div class="d-flex justify-center mt-4">
+                <v-pagination
+                  v-show=" Math.ceil(total / params.pageSize) > 1 " 
+                  v-model="params.pageNum"
+                  :length="Math.ceil(total / params.pageSize)"
+                  :total-visible="display.mobile.value ? 5 : 7"
+                  :disabled="favoriteLoading"
+                  @update:model-value="handleFavoritePageChange"
+                ></v-pagination>
+              </div>
             </v-sheet>
           </v-tabs-window-item>
         </v-tabs-window>
@@ -338,6 +354,7 @@ import { useDisplay } from 'vuetify'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue'
+import { userFavoritesApi } from '@/api/user'
 
 const display = useDisplay()
 const userStore = useUserStore()
@@ -501,12 +518,27 @@ const loadComments = async () => {
   ]
 }
 
+const params = reactive({
+    pageNum:1,
+    pageSize:5
+})
+const total = ref(null)
+
+const handleFavoritePageChange = (page) => {
+  params.pageNum = page
+  loadFavorites()
+}
+
 const loadFavorites = async () => {
   favoriteLoading.value = true
   try {
-    favoriteList.value = [
+    /* favoriteList.value = [
       { id: 1, title: 'JavaScript高级编程', author: '李四', createdAt: '2024-01-08' }
-    ]
+    ] */
+     const res = await userFavoritesApi(params)
+
+     favoriteList.value = res.data.items
+     total.value = res.data.total
   } finally {
     favoriteLoading.value = false
   }
@@ -525,7 +557,8 @@ watch(tab, (newTab) => {
       if (commentList.value.length === 0) loadComments()
       break
     case 'favorites':
-      if (favoriteList.value.length === 0) loadFavorites()
+      // if (favoriteList.value.length === 0) 
+      loadFavorites()
       break
   }
 })
@@ -561,5 +594,18 @@ watch(tab, (newTab) => {
   width: 100%;
   min-width: 120px;
   max-width: 140px;
+}
+
+:deep(.pagination-full-width .v-pagination__list) {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+:deep(.full-width-pagination .v-pagination__item,
+.full-width-pagination .v-pagination__navigation ){
+  flex: 1;  /* 让所有项均匀分配剩余空间 */
+  max-width: calc(100% / 8); /* 根据 total-visible 调整 */
+  margin: 0 !important; /* 移除默认外边距 */
 }
 </style>
