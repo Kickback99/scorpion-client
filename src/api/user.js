@@ -8,3 +8,6 @@ export const userInfoApi = () => http.get('/user/userDetailInfo')
 
 // 用户收藏
 export const userFavoritesApi = (params) => http.get(`/user/favorites/${params.pageNum}/${params.pageSize}`)
+
+// 取消收藏
+export const deleteFavoriteApi = (articleId) => http.delete(`/user/favorites/${articleId}`)

@@ -236,23 +236,22 @@
           <!-- 我的收藏 Tab -->
           <v-tabs-window-item value="favorites">
             <v-sheet class="pa-6">
-              <v-data-table
+              <v-data-table-virtual
                 :headers="favoriteHeaders"
                 :items="favoriteList"
                 :loading="favoriteLoading"
+                height="calc(100vh - 300px)"
                 hover
+                hide-default-header
                 hide-default-footer
               >
                 <template v-slot:item.title="{ item }">
-                  <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
+                  <router-link :to="{
+                    name:'detail',
+                    params:{id:item.articleId}
+                  }" class="text-decoration-none text-primary">
                     {{ item.title }}
                   </router-link>
-                </template>
-                <template v-slot:item.author="{ item }">
-                  {{ !item.create_by?'蝎子':item.create_by }}
-                </template>
-                <template v-slot:item.createdAt="{ item }">
-                  {{ item.createTime }}
                 </template>
                 <template v-slot:item.actions="{ item }">
                   <v-btn
@@ -260,7 +259,7 @@
                     variant="text"
                     size="small"
                     color="red"
-                    @click="removeFavorite(item.id)"
+                    @click="removeFavorite(item.articleId)"
                   >
                     <v-icon>mdi-heart-broken</v-icon>
                   </v-btn>
@@ -272,19 +271,7 @@
                     icon="mdi-heart-outline"
                   ></v-empty-state>
                 </template>
-              </v-data-table>
-
-                <!-- -------------------- 添加分页组件 -------------------- -->
-              <div class="d-flex justify-center mt-4">
-                <v-pagination
-                  v-show=" Math.ceil(total / params.pageSize) > 1 " 
-                  v-model="params.pageNum"
-                  :length="Math.ceil(total / params.pageSize)"
-                  :total-visible="display.mobile.value ? 5 : 7"
-                  :disabled="favoriteLoading"
-                  @update:model-value="handleFavoritePageChange"
-                ></v-pagination>
-              </div>
+              </v-data-table-virtual>
             </v-sheet>
           </v-tabs-window-item>
         </v-tabs-window>
@@ -354,7 +341,7 @@ import { useDisplay } from 'vuetify'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue'
-import { userFavoritesApi } from '@/api/user'
+import { deleteFavoriteApi, userFavoritesApi } from '@/api/user'
 
 const display = useDisplay()
 const userStore = useUserStore()
@@ -411,9 +398,9 @@ const commentList = ref([])
 // 收藏数据
 const favoriteHeaders = [
   { title: '标题', key: 'title', align: 'start' },
-  { title: '作者', key: 'author' },
-  { title: '收藏时间', key: 'createdAt' },
-  { title: '操作', key: 'actions', sortable: false }
+  // { title: '作者', key: 'author' },
+  // { title: '收藏时间', key: 'createdAt' },
+  { title: '操作', key: 'actions', sortable: false,align: 'end'  }
 ]
 const favoriteList = ref([])
 const favoriteLoading = ref(false)
@@ -468,8 +455,22 @@ const deleteComment = (id) => {
   console.log('删除评论:', id)
 }
 
-const removeFavorite = (id) => {
-  // TODO: 实现取消收藏
+// --------------- 记录正在删除的收藏ID，用于显示加载状态 ---------------
+const deletingIds = ref([])
+
+const removeFavorite = async(articleId) => {
+
+    console.log(typeof articleId)
+
+    // 添加到删除中的列表，显示按钮加载状态
+    deletingIds.value.push(articleId)
+
+    // 调用取消收藏接口
+    await deleteFavoriteApi(articleId)
+    
+    // 从列表中移除该项
+    favoriteList.value = favoriteList.value.filter(item => item.articleId !== articleId)
+
   console.log('取消收藏:', id)
 }
 
@@ -520,14 +521,11 @@ const loadComments = async () => {
 
 const params = reactive({
     pageNum:1,
-    pageSize:5
+    pageSize:9999
 })
-const total = ref(null)
 
-const handleFavoritePageChange = (page) => {
-  params.pageNum = page
-  loadFavorites()
-}
+
+const total = ref(null)
 
 const loadFavorites = async () => {
   favoriteLoading.value = true
