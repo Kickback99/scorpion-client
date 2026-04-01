@@ -2,6 +2,7 @@
 export const AUTH_REQUIRED_PATHS = [
   '/test',
   '/user/userDetailInfo',
+  '/user/favorites'
 
   // 订单相关
   /* '/order/',
