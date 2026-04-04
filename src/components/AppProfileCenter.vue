@@ -279,7 +279,7 @@
                     variant="text"
                     size="small"
                     color="red"
-                    @click="removeFavorite(item.articleId)"
+                    @click="removeFavorite(item.articleId,item.title)"
                   >
                     <v-icon>mdi-heart-broken</v-icon>
                   </v-btn>
@@ -500,7 +500,7 @@ const deleteComment = (id) => {
 // --------------- 记录正在删除的收藏ID，用于显示加载状态 ---------------
 const deletingIds = ref([])
 
-const removeFavorite = async(articleId) => {
+const removeFavorite = async(articleId,title) => {
 
     console.log(typeof articleId)
 
@@ -513,7 +513,9 @@ const removeFavorite = async(articleId) => {
     // 从列表中移除该项
     favoriteList.value = favoriteList.value.filter(item => item.articleId !== articleId)
 
-  console.log('取消收藏:', id)
+    window.$snackbar?.success(`取消收藏: ${title}`)
+
+    // console.log('取消收藏:', id)
 }
 
 const getStatusColor = (status) => {
