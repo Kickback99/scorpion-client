@@ -4,25 +4,37 @@
     z-index="9999"
     :color="config.color"
     :location="config.location"
-    :prepend-icon="config.icon"
     :timeout="config.timeout"
-    :title="config.title"
-    :text="config.text"
     :variant="config.variant"
     :rounded="config.rounded"
     multi-line
     contained
   >
-    <template v-slot:actions>
+    <div class="d-flex align-center" style="gap: 12px;">
+      <!-- 图标 -->
+      <v-icon v-if="config.icon" :icon="config.icon" :color="config.iconColor" size="24"></v-icon>
+      
+      <!-- 内容区域 -->
+      <div class="flex-grow-1">
+        <div v-if="config.showTitle && config.title" class="text-subtitle-1 font-weight-bold mb-1">
+          {{ config.title }}
+        </div>
+        <div class="text-body-2">
+          {{ config.text }}
+        </div>
+      </div>
+
+      <!-- 关闭按钮 -->
       <v-btn
         v-if="config.showCloseBtn"
         :color="config.btnColor"
         variant="text"
+        size="small"
         @click="visible = false"
       >
         {{ config.btnText }}
       </v-btn>
-    </template>
+    </div>
   </v-snackbar>
 </template>
 
@@ -36,76 +48,131 @@ const config = reactive({
   color: 'success',
   location: 'top center',
   icon: '',
+  iconColor: '',
   title: '',
+  showTitle: false,
   timeout: 3000,
   variant: 'elevated',
   rounded: 'md',
   showCloseBtn: true,
   btnText: '关闭',
-  btnColor: 'white'
+  btnColor: 'white',
+  persistent: false
 })
 
 // 显示消息的方法
 const show = (options) => {
-  // 如果是字符串，直接作为文本显示
   if (typeof options === 'string') {
     config.text = options
     config.color = 'success'
     config.title = ''
+    config.showTitle = false
     config.icon = ''
+    config.iconColor = ''
+    config.persistent = false
+    config.timeout = 3000
   } else {
     Object.assign(config, {
       text: options.text || '',
       color: options.color || 'success',
       location: options.location || 'top center',
       icon: options.icon || '',
+      iconColor: options.iconColor || '',
       title: options.title || '',
-      timeout: options.timeout !== undefined ? options.timeout : 3000,
+      showTitle: !!options.title,
+      timeout: options.persistent ? -1 : (options.timeout !== undefined ? options.timeout : 3000),
       variant: options.variant || 'elevated',
       rounded: options.rounded || 'md',
       showCloseBtn: options.showCloseBtn !== false,
       btnText: options.btnText || '关闭',
-      btnColor: options.btnColor || 'white'
+      btnColor: options.btnColor || 'white',
+      persistent: options.persistent || false
     })
   }
   
   visible.value = true
 }
 
-// 快捷方法
-const error = (text, title = '错误') => {
+// 统一参数处理函数
+const normalizeParams = (text, title, options) => {
+  let finalTitle = ''
+  let finalOptions = {}
+  
+  if (typeof title === 'string') {
+    finalTitle = title
+    finalOptions = options || {}
+  } else if (typeof title === 'object' && title !== null) {
+    finalTitle = ''
+    finalOptions = title
+  } else {
+    finalTitle = ''
+    finalOptions = options || {}
+  }
+  
+  return { title: finalTitle, options: finalOptions }
+}
+
+// error 方法
+const error = (text, title, options = {}) => {
+  const { title: finalTitle, options: finalOptions } = normalizeParams(text, title, options)
+  
   show({
     text,
-    title,
+    title: finalTitle,
     color: 'error',
-    icon: 'mdi-cancel'
+    icon: finalOptions.icon || 'mdi-cancel',
+    iconColor: finalOptions.iconColor || '',
+    persistent: finalOptions.persistent || false,
+    timeout: finalOptions.persistent ? -1 : (finalOptions.timeout || 3000),
+    ...finalOptions
   })
 }
 
-const success = (text, title = '成功') => {
+// success 方法
+const success = (text, title, options = {}) => {
+  const { title: finalTitle, options: finalOptions } = normalizeParams(text, title, options)
+  
   show({
     text,
-    title,
+    title: finalTitle,
     color: 'success',
-    icon: 'mdi-check-circle'
+    icon: finalOptions.icon || 'mdi-check-circle',
+    iconColor: finalOptions.iconColor || '',
+    persistent: finalOptions.persistent || false,
+    timeout: finalOptions.persistent ? -1 : (finalOptions.timeout || 3000),
+    ...finalOptions
   })
 }
 
-const warning = (text, title = '警告') => {
+// warning 方法
+const warning = (text, title, options = {}) => {
+  const { title: finalTitle, options: finalOptions } = normalizeParams(text, title, options)
+  
   show({
     text,
-    title,
+    title: finalTitle,
     color: 'warning',
-    icon: 'mdi-alert'
+    icon: finalOptions.icon || 'mdi-alert',
+    iconColor: finalOptions.iconColor || '',
+    persistent: finalOptions.persistent || false,
+    timeout: finalOptions.persistent ? -1 : (finalOptions.timeout || 3000),
+    ...finalOptions
   })
 }
 
-const info = (text, title = '提示') => {
+// info 方法
+const info = (text, title, options = {}) => {
+  const { title: finalTitle, options: finalOptions } = normalizeParams(text, title, options)
+  
   show({
     text,
-    title,
+    title: finalTitle,
     color: 'info',
-    icon: 'mdi-information'
+    icon: finalOptions.icon || 'mdi-information',
+    iconColor: finalOptions.iconColor || '',
+    persistent: finalOptions.persistent || false,
+    timeout: finalOptions.persistent ? -1 : (finalOptions.timeout || 3000),
+    ...finalOptions
   })
 }
 
