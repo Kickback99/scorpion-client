@@ -272,6 +272,12 @@ watch(() => route.params.id, (newId) => {
   cursor: pointer;
 }
 
+/* t_todo 文章详情页深色背景下的颜色 */
+/* :deep(.vuepress-markdown-body){
+  background: black;
+  color: #fff;
+} */
+
 /* 移动端适配 */
 @media (max-width: 960px) {
   .toc-toggle-btn,

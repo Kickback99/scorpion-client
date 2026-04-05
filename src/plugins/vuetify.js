@@ -2,16 +2,27 @@
 import { VBtn } from 'vuetify/components/VBtn'
 export default {
     theme: {
-      defaultTheme: 'custom',
+      defaultTheme: 'light',
       themes: {
-        custom: {
+        light: {
           dark: false, // 必须指定亮色/暗色模式
           colors: {
             /* primary: '#3f51b5', 
             secondary: '#673ab7',
             error: '#f44336', */
+            primary: '#1976D2',
             customBlue: '#2196F3', // 自定义颜色
-            background: '#f5f5f5'
+            background: '#f5f5f5',
+            surface: '#FFFFFF',
+          }
+        },
+        dark: {
+          dark: true,
+          colors: {
+            primary: '#2196F3',
+            customBlue: '#f0f', // 自定义颜色
+            background: '#121212',
+            surface: '#1E1E1E',
           }
         }
       }

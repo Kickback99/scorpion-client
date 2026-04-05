@@ -2,12 +2,12 @@
   <v-container class="profile-center py-6">
       <div :class="display.mobile.value ? 'd-flex flex-row' : ''">
         <!-- 使用动态 direction 属性 -->
-        <v-tabs 
+        <v-sheet>
+          <v-tabs 
           v-model="tab" 
           color="primary"
           :direction="display.mobile.value ? 'vertical' : 'horizontal'"
           :grow="!display.mobile.value"
-          style="background: white;"
           :class="[
             display.mobile.value ? 'mobile-tabs' : '',
             display.mobile.value ? 'mr-4' : 'mb-4'  // 非移动端时，tabs 右侧添加间距
@@ -33,7 +33,8 @@
             <v-icon left class="mr-2">mdi-heart</v-icon>
             我的收藏
           </v-tab>
-        </v-tabs>
+          </v-tabs>
+        </v-sheet>
 
         <v-divider v-if="!display.mobile.value"></v-divider>
 
