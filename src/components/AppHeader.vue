@@ -52,6 +52,16 @@
 
           <!-- 右侧用户区域 - 桌面端 -->
           <v-spacer></v-spacer>
+
+          <!-- ========== 桌面端主题切换按钮 ========== -->
+          <v-btn
+            @click="handleToggleTheme"
+            variant="text"
+            class="mr-2"
+          >
+            <v-icon>{{ themeStore.isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}</v-icon>
+          </v-btn>
+
           <div v-if="isLoggedIn">
             <!-- 用户信息下拉菜单 -->
             <v-menu
@@ -103,10 +113,10 @@
           </v-btn>
         </div>
         
-        <div v-else class="d-flex ml-auto">
+        <div v-else class="d-flex ml-auto align-center">
 
           <!-- 移动端用户区域 -->
-          <div v-if="isLoggedIn" style="margin-top: 7px;">
+          <div v-if="isLoggedIn">
             <v-menu
               location="bottom"
               offset-y
@@ -154,6 +164,15 @@
             <v-icon>mdi-account</v-icon>
             登录
           </v-btn>
+
+          <!-- ========== 移动端主题切换按钮（图标按钮） ========== -->
+          <v-btn
+            @click="handleToggleTheme"
+            icon
+          >
+            <v-icon>{{ themeStore.isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}</v-icon>
+          </v-btn>
+
         <!-- 移动端菜单按钮 (显示在 sm 及以下屏幕) -->
         <v-btn
           icon
@@ -207,14 +226,15 @@
 </template>
 
 <script setup>
-import { ref,watch,computed } from 'vue'
-import { useDisplay } from 'vuetify'
+import { ref,watch,computed, onMounted } from 'vue'
+import { useDisplay,useTheme  } from 'vuetify'
 import { useRouter } from 'vue-router'
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useSearch } from '@/utils/useSearch'
 import AppLogin from './AppLogin.vue'
 import { useUserStore } from '@/store/user'
+import { useThemeStore } from '@/store/theme'
 
 
 const {triggerSearch} = useSearch()
@@ -382,6 +402,74 @@ const handleNavClick = (type,param) => {
   // emitter.emit('search',{type,param})
   triggerSearch(type,param)
 }
+
+
+// ========== 主题切换业务 ==========
+
+const vuetifyTheme = useTheme()
+
+const themeStore = useThemeStore() 
+
+
+/**
+ * 处理主题切换
+ * 1. 调用 Pinia store 的 toggleTheme 方法更新状态
+ * 2. 同步更新 Vuetify 的主题
+ * 3. 状态会自动持久化到 localStorage
+ */
+const handleToggleTheme = () => {
+  // 切换 Pinia store 中的主题状态
+  themeStore.toggleTheme()
+  
+  // 同步到 Vuetify 主题系统
+  vuetifyTheme.global.name.value = themeStore.currentTheme
+}
+
+/**
+ * 初始化主题
+ * 1. 从 Pinia store 读取持久化的主题设置
+ * 2. 同步到 Vuetify 主题系统
+ */
+const initTheme = () => {
+  // Pinia persist 会自动从 localStorage 恢复 themeStore.currentTheme
+  // 我们只需要将 store 中的主题同步到 Vuetify 即可
+  vuetifyTheme.global.name.value = themeStore.currentTheme
+}
+
+// ========== 监听 Pinia store 主题变化 ==========
+/**
+ * 监听 themeStore.currentTheme 的变化
+ * 确保 Vuetify 主题与 store 保持同步
+ */
+watch(
+  () => themeStore.currentTheme,
+  (newTheme) => {
+    // 当 store 中的主题改变时，同步到 Vuetify
+    if (vuetifyTheme.global.name.value !== newTheme) {
+      vuetifyTheme.global.name.value = newTheme
+    }
+  }
+)
+
+/**
+ * 可选：监听 Vuetify 主题变化（如果外部直接修改了 Vuetify 主题）
+ * 反向同步到 Pinia store
+ */
+watch(
+  () => vuetifyTheme.global.name.value,
+  (newTheme) => {
+    if (themeStore.currentTheme !== newTheme) {
+      themeStore.setTheme(newTheme)
+    }
+  }
+)
+
+
+onMounted(()=>{
+  // 初始化主题
+  initTheme()
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -419,6 +507,6 @@ const handleNavClick = (type,param) => {
 
 :deep(div.scorpion-list-mobile) {
   // 如果需要微调位置
-  transform: translateX(25px) !important;
+  transform: translateX(-50px) !important;
 }
 </style>
