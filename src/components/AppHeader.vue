@@ -74,7 +74,7 @@
                 </div>
               </template>
               
-              <v-list density="compact" min-width="100">
+              <v-list density="compact" min-width="100" class="mt-2">
                 <v-list-item @click="handleProfile">
                   <template v-slot:prepend>
                     <v-icon>mdi-account-circle</v-icon>
@@ -126,7 +126,7 @@
                 </div>
               </template>
               
-              <v-list density="compact" min-width="80">
+              <v-list density="compact" min-width="80" class="mt-2 scorpion-list-mobile">
                 <v-list-item @click="handleProfile">
                   <template v-slot:prepend>
                     <v-icon>mdi-account-circle</v-icon>
@@ -415,5 +415,10 @@ const handleNavClick = (type,param) => {
 
 :deep(div.v-list-item__prepend) {
   flex-direction: column !important;
+}
+
+:deep(div.scorpion-list-mobile) {
+  // 如果需要微调位置
+  transform: translateX(25px) !important;
 }
 </style>

@@ -11,6 +11,7 @@ export default {
             secondary: '#673ab7',
             error: '#f44336', */
             customBlue: '#2196F3', // 自定义颜色
+            background: '#f5f5f5'
           }
         }
       }
