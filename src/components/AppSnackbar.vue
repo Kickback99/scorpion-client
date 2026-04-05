@@ -8,7 +8,7 @@
     :variant="config.variant"
     :rounded="config.rounded"
     multi-line
-    contained
+    position="fixed"
   >
     <div class="d-flex align-center" style="gap: 12px;">
       <!-- 图标 -->
@@ -120,7 +120,7 @@ const error = (text, title, options = {}) => {
     text,
     title: finalTitle,
     color: 'error',
-    icon: finalOptions.icon || 'mdi-cancel',
+    icon: finalOptions.icon || 'mdi-alert-circle-outline',
     iconColor: finalOptions.iconColor || '',
     persistent: finalOptions.persistent || false,
     timeout: finalOptions.persistent ? -1 : (finalOptions.timeout || 3000),
