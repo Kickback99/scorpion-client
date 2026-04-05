@@ -62,7 +62,7 @@ renderCateList()
   sidebarVisible.value = to.path != '/about'
 },{immediate:true}) */
 
-const isAboutPage = computed(() => route.path === '/about')
+const isAboutPage = computed(() => route.path === '/about' || route.path === '/profile')
 const leftColMd = computed(() => isAboutPage.value ? 12 : 9)
 const showSidebar = computed(() => !isAboutPage.value)
 

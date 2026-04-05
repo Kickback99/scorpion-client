@@ -1,14 +1,17 @@
 <template>
   <v-container class="profile-center py-6">
-    <v-sheet elevation="2" rounded="lg">
       <div :class="display.mobile.value ? 'd-flex flex-row' : ''">
         <!-- 使用动态 direction 属性 -->
         <v-tabs 
           v-model="tab" 
           color="primary"
           :direction="display.mobile.value ? 'vertical' : 'horizontal'"
-          :class="display.mobile.value ? 'mobile-tabs' : ''"
           :grow="!display.mobile.value"
+          style="background: white;"
+          :class="[
+            display.mobile.value ? 'mobile-tabs' : '',
+            display.mobile.value ? 'mr-4' : 'mb-4'  // 非移动端时，tabs 右侧添加间距
+        ]"
         >
           <v-tab value="profile" :class="display.mobile.value ? 'justify-start' : ''">
             <v-icon left class="mr-2">mdi-account-circle</v-icon>
@@ -34,6 +37,10 @@
 
         <v-divider v-if="!display.mobile.value"></v-divider>
 
+        <v-sheet elevation="2" rounded="lg"
+         :class="display.mobile.value ? 'flex-grow-1' : ''"
+         style="overflow: hidden; min-width: 0;"
+        >
         <v-tabs-window v-model="tab" :class="display.mobile.value ? 'flex-grow-1 overflow-auto' : ''">
           <!-- 个人资料 Tab -->
           <v-tabs-window-item value="profile">
@@ -317,8 +324,8 @@
             </v-sheet>
           </v-tabs-window-item>
         </v-tabs-window>
+        </v-sheet>
       </div>
-    </v-sheet>
 
     <!-- 修改密码弹窗 -->
     <v-dialog v-model="showChangePasswordDialog" max-width="500">
@@ -640,7 +647,7 @@ watch(tab, (newTab) => {
 
 <style scoped>
 .profile-center {
-  max-width: 1200px;
+  max-width: 75%;
   margin: 0 auto;
 }
 
