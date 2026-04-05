@@ -21,6 +21,13 @@
 
     <div class="markdown-content">
       <v-md-preview :text="article.content" ref="preview"></v-md-preview>
+
+      <component 
+      :is="MarkdownPreview" 
+      :text="article.content"
+      ref="preview"
+      :key="themeStore.isDark"
+      /> 
     </div>
 
     <!-- 底部操作栏 -->
@@ -92,6 +99,8 @@ import { useRoute } from 'vue-router';
 import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
 import { useUserStore } from '@/store/user';
+import { useThemeStore } from '@/store/theme';
+import { createMarkdownPreview } from '@/utils/markdown-config';
 const userStore = useUserStore()
 
 const showToc = ref(false);
@@ -219,6 +228,18 @@ const scrollTo = (anchor) => {
   showToc.value = true;
 };
 
+
+// ========== 主题切换业务 ==========
+
+const themeStore = useThemeStore()
+
+// 使用 computed 每次重新创建组件
+const MarkdownPreview = computed(() => {
+  console.log('创建主题:', themeStore.isDark?"vuepress":"github")
+  return createMarkdownPreview(themeStore.isDark?"vuepress":"github")
+})
+
+
 onMounted(() => {
   renderArticleItem();
   window.addEventListener('resize', calculatePosition);
@@ -273,10 +294,14 @@ watch(() => route.params.id, (newId) => {
 }
 
 /* t_todo 文章详情页深色背景下的颜色 */
-/* :deep(.vuepress-markdown-body){
-  background: black;
+:deep(.v-md-editor-preview .vuepress-markdown-body){
+  background: var(--v-theme-surface);
   color: #fff;
-} */
+  code:not(pre code) {
+    background-color: #333;
+    color: #fff;
+  }
+}
 
 /* 移动端适配 */
 @media (max-width: 960px) {
@@ -289,4 +314,9 @@ watch(() => route.params.id, (newId) => {
     width: 50%;
   }
 }
+</style>
+
+<style>
+
+
 </style>
