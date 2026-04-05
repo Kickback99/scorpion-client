@@ -23,6 +23,26 @@
       <v-md-preview :text="article.content" ref="preview"></v-md-preview>
     </div>
 
+    <!-- 底部操作栏 -->
+    <v-card-actions class="d-flex justify-center py-4">
+      <v-btn
+        :color="isFavorite ? 'red' : 'grey'"
+        @click="handleFavoriteToggle"
+        :loading="favoriteLoading"
+        stacked
+      >
+        <v-icon size="15" class="mb-1">
+          {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
+        </v-icon>
+        <div class="d-flex align-center">
+          <span>收藏</span>
+          <span v-if="article.favoriteCount > 0">
+            {{ article.favoriteCount }}
+          </span>
+        </div>
+      </v-btn>
+    </v-card-actions>
+
     <!-- 固定在右侧的目录卡 -->
     <v-card 
       v-show="showToc" 
@@ -66,11 +86,13 @@
 </template>
 
 <script setup>
-import { articleDetailApi } from '@/api/article';
+import { articleDetailApi, toggleFavoriteApi } from '@/api/article';
 import { onMounted, ref, watch, nextTick, computed, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
+import { useUserStore } from '@/store/user';
+const userStore = useUserStore()
 
 const showToc = ref(false);
 const preview = ref(null);
@@ -80,6 +102,8 @@ const article = ref({ title: '', content: '' });
 const cateArticles = ref([]);
 const tags = ref([]);
 const tocAnchors = ref([]);
+const isFavorite = ref(false);
+const favoriteLoading = ref(false);
 
 const hasToc = computed(() => {
   return tocAnchors.value.some(anchor => [2, 3].includes(anchor.level));
@@ -110,6 +134,7 @@ const calculatePosition = () => {
 const renderArticleItem = async() => {
   const res = await articleDetailApi(props.id);
   article.value = res.data.articleItem;
+  isFavorite.value = res.data.isFavorite || false;
   cateArticles.value = res.data.cateArticles;
   tags.value = res.data.tags;
   emitter.emit('detail-data', {
@@ -121,6 +146,38 @@ const renderArticleItem = async() => {
     generateTocAnchors();
     calculatePosition(); // 初始化时计算一次
   });
+};
+
+// 处理收藏切换
+const handleFavoriteToggle = async () => {
+  // 检查是否登录
+  if (!userStore.token) {
+    // 未登录，触发登录弹窗
+    // 提示信息
+    // t_question：不显示提示消息
+    window.$snackbar?.error('请登录','')
+    emitter.emit('loginDialogVisible', true);
+    return;
+  }
+  
+  favoriteLoading.value = true;
+  try {
+    const res = await toggleFavoriteApi(props.id);
+    isFavorite.value = res.data.isFavorite;
+      // 更新文章收藏数显示
+      if (res.data.isFavorite) {
+        article.value.favoriteCount = (article.value.favoriteCount || 0) + 1;
+      } else {
+        article.value.favoriteCount = Math.max(0, (article.value.favoriteCount || 0) - 1);
+      }
+  } catch (error) {
+    console.error('收藏操作失败', error);
+    if (error.response?.status === 401) {
+      emitter.emit('loginDialogVisible', true);
+    }
+  } finally {
+    favoriteLoading.value = false;
+  }
 };
 
 const generateTocAnchors = () => {
