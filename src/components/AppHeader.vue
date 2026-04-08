@@ -422,29 +422,22 @@ const handleToggleTheme = () => {
  * 初始化主题：从 Vuetify 同步到 store
  */
 const initTheme = () => {
-  const currentVuetifyTheme = vuetifyTheme.global.name.value
-  themeStore.setTheme(currentVuetifyTheme)
+  themeStore.initTheme(vuetifyTheme)
 }
 
-// ========== 监听 Pinia store 主题变化 ==========
-/**
- * 监听 themeStore.currentTheme 的变化
- * 确保 Vuetify 主题与 store 保持同步
- */
+// ========== 双向同步 ==========
+
+// 监听 Store 变化，同步到 Vuetify
 watch(
   () => themeStore.currentTheme,
   (newTheme) => {
-    // 当 store 中的主题改变时，同步到 Vuetify
     if (vuetifyTheme.global.name.value !== newTheme) {
-      vuetifyTheme.global.name.value = newTheme
+      themeStore.applyTheme(vuetifyTheme, newTheme)
     }
   }
 )
 
-/**
- * 可选：监听 Vuetify 主题变化（如果外部直接修改了 Vuetify 主题）
- * 反向同步到 Pinia store
- */
+// 监听 Vuetify 变化，同步到 Store
 watch(
   () => vuetifyTheme.global.name.value,
   (newTheme) => {
