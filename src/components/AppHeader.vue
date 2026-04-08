@@ -1,6 +1,6 @@
 <template>
     <!-- 全宽应用栏 -->
-    <v-app-bar app color="primary">
+    <v-app-bar app color="secondary">
       <!-- 将导航内容限制在容器内 -->
       <v-container class="d-flex align-center">
         <!-- 应用标题/Logo -->
@@ -413,27 +413,17 @@ const themeStore = useThemeStore()
 
 /**
  * 处理主题切换
- * 1. 调用 Pinia store 的 toggleTheme 方法更新状态
- * 2. 同步更新 Vuetify 的主题
- * 3. 状态会自动持久化到 localStorage
  */
 const handleToggleTheme = () => {
-  // 切换 Pinia store 中的主题状态
-  themeStore.toggleTheme()
-  
-  // 同步到 Vuetify 主题系统
-  vuetifyTheme.global.name.value = themeStore.currentTheme
+  themeStore.toggleTheme(vuetifyTheme)
 }
 
 /**
- * 初始化主题
- * 1. 从 Pinia store 读取持久化的主题设置
- * 2. 同步到 Vuetify 主题系统
+ * 初始化主题：从 Vuetify 同步到 store
  */
 const initTheme = () => {
-  // Pinia persist 会自动从 localStorage 恢复 themeStore.currentTheme
-  // 我们只需要将 store 中的主题同步到 Vuetify 即可
-  vuetifyTheme.global.name.value = themeStore.currentTheme
+  const currentVuetifyTheme = vuetifyTheme.global.name.value
+  themeStore.setTheme(currentVuetifyTheme)
 }
 
 // ========== 监听 Pinia store 主题变化 ==========

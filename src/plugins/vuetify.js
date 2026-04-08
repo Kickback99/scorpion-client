@@ -1,33 +1,8 @@
 // src/plugins/vuetify.js
 import { VBtn } from 'vuetify/components/VBtn'
+import { themeConfig } from './theme-config'
 export default {
-    theme: {
-      defaultTheme: 'light',
-      themes: {
-        light: {
-          dark: false, // 必须指定亮色/暗色模式
-          colors: {
-            /* primary: '#3f51b5', 
-            secondary: '#673ab7',
-            error: '#f44336', */
-            primary: '#1976D2',
-            customBlue: '#2196F3', // 自定义颜色
-            background: '#f5f5f5',
-            surface: '#FFFFFF',
-          }
-        },
-        dark: {
-          dark: true,
-          colors: {
-            primary: '#2196F3',
-            customBlue: '#f0f', // 自定义颜色
-            background: '#121212',
-            surface: '#1E1E1E',
-          }
-        }
-      }
-    },
-
+    theme: themeConfig,
     defaults: {
       VBtn: { variant: 'outlined'},
       MyButton: { variant: 'tonal',color:'primary'},

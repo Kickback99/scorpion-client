@@ -6,6 +6,7 @@ import AppLayout from '@/views/AppLayout.vue'
 import {createRouter, createWebHistory} from 'vue-router'
 import { useUserStore } from '@/store/user'
 import AppProfileCenter from '@/components/AppProfileCenter.vue'
+import Test from '@/views/Test.vue'
 
 
 // 路由规则
@@ -19,6 +20,7 @@ const routes = [
             name: 'Profile',
             component: AppProfileCenter
         },
+        {path:'/test',component:Test},
         {path:"/detail/:id",name:'detail',component:AppDetail,props:true},
     ]}
 
