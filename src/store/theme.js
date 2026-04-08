@@ -2,8 +2,25 @@
 import { defineStore } from 'pinia'
 import { themeConfig } from '@/plugins/theme-config'
 
+// 计算配置的哈希值（简单版）
+const getConfigHash = () => {
+  const configStr = JSON.stringify({
+    defaultTheme: themeConfig.defaultTheme,
+    themeKeys: Object.keys(themeConfig.themes)
+  })
+  // 简单的哈希
+  let hash = 0
+  for (let i = 0; i < configStr.length; i++) {
+    hash = ((hash << 5) - hash) + configStr.charCodeAt(i)
+    hash |= 0
+  }
+  return hash.toString()
+}
+
+
 export const useThemeStore = defineStore('theme', {
   state: () => ({
+    configHash: getConfigHash(),  // 存储配置哈希
     currentTheme: themeConfig.defaultTheme
   }),
   
@@ -17,6 +34,14 @@ export const useThemeStore = defineStore('theme', {
   },
   
   actions: {
+    /**
+     * 检查配置是否变化
+     */
+    isConfigChanged() {
+      return this.configHash !== getConfigHash()
+    },
+
+
     /**
      * 设置当前主题（直接设置，不验证）
      */
@@ -92,17 +117,21 @@ export const useThemeStore = defineStore('theme', {
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
      */
     initTheme(vuetifyTheme) {
-      const savedTheme = this.currentTheme
-      const defaultTheme = themeConfig.defaultTheme
-      
-      // 快速路径：保存的主题就是默认主题，直接使用
-      if (savedTheme === defaultTheme) {
-        vuetifyTheme.global.name.value = defaultTheme
-        return
+      // 配置变化了，清除旧数据
+      if (this.isConfigChanged()) {
+        console.log('主题配置已更新，重置缓存')
+        this.configHash = getConfigHash()
+        this.currentTheme = themeConfig.defaultTheme
+      }
+
+        // 验证主题有效性
+      if (!this.isValidTheme(vuetifyTheme, this.currentTheme)) {
+        console.warn(`主题 "${this.currentTheme}" 不存在，回退到默认主题`)
+        this.currentTheme = themeConfig.defaultTheme
       }
       
       // 验证并应用主题
-      this.applyTheme(vuetifyTheme, savedTheme)
+      this.applyTheme(vuetifyTheme, this.currentTheme)
     },
     
     /**
