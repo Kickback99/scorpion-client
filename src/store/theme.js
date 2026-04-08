@@ -1,5 +1,6 @@
 // src/store/theme.js
 import { defineStore } from 'pinia'
+import { themeConfig } from '@/plugins/theme-config'
 
 /**
  * 主题管理 Store
@@ -8,7 +9,7 @@ import { defineStore } from 'pinia'
 export const useThemeStore = defineStore('theme', {
   state: () => ({
     // 当前主题名称：'light' 或 'dark'
-    currentTheme: 'light'
+    currentTheme: themeConfig.defaultTheme
   }),
   
   getters: {
@@ -16,68 +17,59 @@ export const useThemeStore = defineStore('theme', {
      * 判断当前是否为深色模式
      * @returns {boolean} true-深色模式，false-浅色模式
      */
-    isDark: (state) => state.currentTheme === 'dark',
+    isDark: (state) => state.currentTheme?.endsWith('-dark') || false,
     
-    /**
-     * 获取当前主题名称
-     * @returns {string} 'light' 或 'dark'
-     */
-    themeName: (state) => state.currentTheme,
-    
-    /**
-     * 获取下一个主题名称（用于切换）
-     * @returns {string} 'light' 或 'dark'
-     */
-    nextTheme: (state) => state.currentTheme === 'light' ? 'dark' : 'light'
+    // 获取当前主题的基础名（如 scorpion-light → scorpion）
+    currentBase: (state) => {
+      if (!state.currentTheme) return 'default'
+      return state.currentTheme.replace('-light', '').replace('-dark', '')
+    }
+
   },
   
   actions: {
-    /**
-     * 切换主题（light <-> dark）
-     * 会自动保存到 localStorage
+        /**
+     * 设置当前主题
      */
-    toggleTheme() {
-      this.currentTheme = this.nextTheme
+    setTheme(themeName) {
+      this.currentTheme = themeName
     },
     
     /**
-     * 设置主题为浅色模式
+     * 切换主题（深浅切换）
+     * @param {Object} vuetifyTheme - useTheme() 返回的对象
      */
-    setLightTheme() {
-      this.currentTheme = 'light'
-    },
-    
-    /**
-     * 设置主题为深色模式
-     */
-    setDarkTheme() {
-      this.currentTheme = 'dark'
-    },
-    
-    /**
-     * 设置主题（通用方法）
-     * @param {string} theme - 'light' 或 'dark'
-     */
-    setTheme(theme) {
-      if (theme === 'light' || theme === 'dark') {
-        this.currentTheme = theme
+    toggleTheme(vuetifyTheme) {
+      const currentName = vuetifyTheme.global.name.value
+      const currentBase = currentName.replace('-light', '').replace('-dark', '')
+      const isDark = currentName.endsWith('-dark')
+      const targetSuffix = isDark ? 'light' : 'dark'
+      const targetTheme = `${currentBase}-${targetSuffix}`
+      
+      // 获取所有可用主题
+      const availableThemes = Object.keys(vuetifyTheme.themes.value)
+      
+      // 检查目标主题是否存在
+      if (availableThemes.includes(targetTheme)) {
+        vuetifyTheme.global.name.value = targetTheme
+        this.currentTheme = targetTheme
       } else {
-        console.warn(`Invalid theme: ${theme}. Use 'light' or 'dark'`)
+        // 兜底：切换到 default 的对应模式
+        const fallbackTheme = `default-${targetSuffix}`
+        if (availableThemes.includes(fallbackTheme)) {
+          vuetifyTheme.global.name.value = fallbackTheme
+          this.currentTheme = fallbackTheme
+        }
       }
     },
     
     /**
-     * 重置主题为默认值（浅色模式）
+     * 重置主题到配置的默认值
      */
-    resetTheme() {
-      this.currentTheme = 'light'
-    },
-    
-    /**
-     * 清除所有主题数据（重置 store）
-     */
-    clearThemeStore() {
-      this.$reset()
+    resetToDefaultTheme(vuetifyTheme) {
+      const defaultTheme = vuetifyConfig.theme.defaultTheme
+      vuetifyTheme.global.name.value = defaultTheme
+      this.currentTheme = defaultTheme
     }
   },
   
