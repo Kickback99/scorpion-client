@@ -31,6 +31,7 @@
                             >
                                 <!-- 账号文本框 -->
                                 <v-text-field
+                                    color="primary"
                                     variant="outlined"
                                     density="compact"
                                     v-model="loginModel.username"
@@ -42,6 +43,7 @@
                                 ></v-text-field>        
                                 <!-- 密码文本框 -->
                                 <v-text-field
+                                    color="primary"
                                     variant="outlined"
                                     density="compact"
                                     v-model="loginModel.password"
@@ -57,6 +59,7 @@
 
                                 <!-- 条款与协议 -->
                                 <v-checkbox
+                                color="primary"
                                 density="compact"
                                 style="--v-input-control-height: 20px; --v-input-padding-top: 8px;"
                                 class="my-4" 
@@ -72,7 +75,7 @@
 
                                 <v-btn 
                                 block 
-                                color="success" 
+                                color="primary" 
                                 :loading="loading"
                                 type="submit"
                                 >登录</v-btn>
@@ -121,6 +124,7 @@
                             @submit.prevent="handleRegister"
                             >
                                 <v-text-field
+                                    color="primary"
                                     variant="outlined"
                                     density="compact"
                                     v-model="registerModel.username"
@@ -132,6 +136,7 @@
                                 >
                                 </v-text-field>
                                 <v-text-field
+                                    color="primary"
                                     variant="outlined"
                                     density="compact"
                                     v-model="registerModel.password"
@@ -146,6 +151,7 @@
                                 >
                                 </v-text-field>
                                 <v-text-field
+                                    color="primary"
                                     variant="outlined"
                                     density="compact"
                                     v-model="registerModel.rePassword"
@@ -160,6 +166,7 @@
                                 >
                                 </v-text-field>
                                 <v-text-field
+                                    color="primary"
                                     variant="outlined"
                                     density="compact"
                                     v-model="registerModel.email"
@@ -174,6 +181,7 @@
                                 <v-row  style="margin-bottom: -20px;">
                                     <v-col :cols="!display.mobile.value?8:7">
                                         <v-text-field
+                                        color="primary"
                                         variant="outlined"
                                         density="compact"
                                         v-model="registerModel.verifyCode"
@@ -185,7 +193,7 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col :cols="!display.mobile.value?4:5">
-                                        <v-btn block color="info" :disabled="countdown > 0 || isSending"
+                                        <v-btn block color="primary" :disabled="countdown > 0 || isSending"
                                         @click="sendVerifyCode"
                                         >
                                             <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
@@ -195,6 +203,7 @@
                                 </v-row>
                                     <!-- 条款与协议 -->
                                 <v-checkbox
+                                color="primary"
                                 density="compact"
                                 style="--v-input-control-height: 20px; --v-input-padding-top: 8px;"
                                 class="my-4" 
@@ -208,9 +217,9 @@
                                     </template> 
                                 </v-checkbox>
                                 
-                                <v-btn 
+                                <v-btn
                                 block 
-                                color="success" 
+                                color="primary" 
                                 :loading="registerLoading"
                                 type="submit"
                                 >注册</v-btn>
@@ -287,7 +296,7 @@ const loginTerm = ref(false)
 const chats = reactive([
     {id:'001',icon:'mdi-qqchat',color:'info',to:''},
     {id:'002',icon:'mdi-wechat',color:'success',to:''},
-    {id:'001',icon:'mdi-github',color:'black',to:''},
+    {id:'001',icon:'mdi-github',color:'on-primary',to:''},
 ])
 
 const eyeLoginPwd = () => {

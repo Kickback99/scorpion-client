@@ -13,10 +13,10 @@ export const themeConfig = {
           primary: '#5B4BCF',
           secondary: '#6C5CE7',
           accent: '#8B7EED',
-          // background: '#F5F3FF', F0EFF8|F8F7FF|F5F3FF
+          // background: '#F5F3FF', F0EFF8|F8F7FF|F5F3FF|E8E6F5
           background: '#F0EFF8',        // 整体背景：纯白（最亮）
           surface: '#F5F3FF',          // 卡片背景：淡紫灰（比背景稍深，带紫色调）
-          'surface-variant': '#F0EFF8', // 次级表面：更明显的淡紫色
+          'surface-variant': '#E8E6F5', // 次级表面：更明显的淡紫色
           error: '#B00020',
           info: '#2196F3',
           success: '#4CAF50',
