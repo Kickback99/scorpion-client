@@ -62,6 +62,7 @@
         top: `${POSITION_CONFIG.TOP + POSITION_CONFIG.VERTICAL_GAP}px` // 关键修改
       }"
     >
+      <div class="toc-header-fixed">
       <v-card-title class="py-2 text-caption d-flex justify-space-between alien-item-center bg-surface">
         <span style="align-self: center;">文章目录</span>
         <v-btn icon variant="text" size="small" @click.stop="showToc = false">
@@ -69,6 +70,7 @@
         </v-btn>
       </v-card-title>
       <v-divider color="primary" opacity=".7" gradient></v-divider>
+      </div>
       <v-list density="compact" v-model:selected="selectedTocItem">
         <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
           <v-list-item
@@ -339,6 +341,88 @@ onUnmounted(() => {
   window.removeEventListener('scroll', scrollHandler); // 清理滚动监听
 });
 
+// 目录卡滚动到当前高亮项
+const scrollTocToActive = () => {
+  if (!showToc.value) return;
+  
+  // 延迟一下，确保 DOM 更新完成
+  setTimeout(() => {
+    const activeElement = document.querySelector('.v-list-item--active');
+    if (!activeElement) return;
+    
+    // 直接让元素滚动到可视区域
+    activeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',  // 让元素居中显示，更容易看到
+      inline: 'nearest'
+    });
+  }, 50);
+};
+
+// 使用防抖
+const debouncedScrollToc = debounce(scrollTocToActive, 50);
+
+// 重新初始化目录（主题切换时调用）
+const reinitializeToc = async () => {
+  // 保存当前高亮的目录项
+  const currentActiveAnchor = selectedTocItem.value[0];
+  const wasVisible = showToc.value;
+  
+  await nextTick();
+  await nextTick();
+  
+  setTimeout(() => {
+    if (preview.value) {
+      generateTocAnchors();
+      calculatePosition();
+      
+      // 恢复之前的高亮项
+      if (currentActiveAnchor) {
+        const restoredAnchor = tocAnchors.value.find(
+          anchor => anchor.title === currentActiveAnchor.title
+        );
+        if (restoredAnchor) {
+          selectedTocItem.value = [restoredAnchor];
+          
+          // 关键：滚动到对应的标题位置
+          // 使用 requestAnimationFrame 确保 DOM 完全渲染后再滚动
+          requestAnimationFrame(() => {
+            const heading = preview.value.$el.querySelector(
+              `[data-v-md-line="${restoredAnchor.lineIndex}"]`
+            );
+            if (heading) {
+              heading.scrollIntoView({
+                behavior: 'instant',
+                block: 'start'
+              });
+              // 微调偏移量，避免被固定头部遮挡
+              window.scrollBy({
+                top: -80,
+                behavior: 'instant'
+              });
+            }
+          });
+        } else {
+          updateActiveToc();
+        }
+      } else {
+        updateActiveToc();
+      }
+      
+      if (wasVisible) {
+        showToc.value = true;
+      }
+    }
+  }, 100);
+};
+
+// 监听高亮项变化
+watch(() => selectedTocItem.value[0], () => {
+  nextTick(() => {
+    debouncedScrollToc();
+  });
+});
+
 watch(() => route.params.id, (newId) => {
   if (newId) renderArticleItem();
 });
@@ -349,6 +433,11 @@ watch(() => tocLevels.value, () => {
     generateTocAnchors();
   });
 }, { deep: true });
+
+// 监听主题切换
+watch(() => themeStore.isDark, () => {
+  reinitializeToc();
+});
 </script>
 
 <style scoped>
@@ -459,6 +548,23 @@ watch(() => tocLevels.value, () => {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.toc-header-fixed {
+  flex-shrink: 0; /* 防止被压缩 */
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 10;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 可滚动内容区域 */
+.toc-content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 260px); /* 根据头部高度调整 */
+  min-height: 100px;
 }
 </style>
 
