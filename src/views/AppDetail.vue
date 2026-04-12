@@ -27,6 +27,7 @@
         :is="MarkdownPreview" 
         :text="article.content"
         ref="preview"
+        @copy-code-success="handleCopySuccess"
         :key="themeStore.isDark"
         /> 
     </div>
@@ -67,7 +68,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-divider color="primary" opacity=".7"></v-divider>
+      <v-divider color="primary" opacity=".7" gradient></v-divider>
       <v-list density="compact">
         <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
           <!-- 二级标题 -->
@@ -229,6 +230,20 @@ const scrollTo = (anchor) => {
   showToc.value = true;
 };
 
+// ========== 代码块复制业务 ==========
+const handleCopySuccess = () => {
+  const copyButtons = document.querySelectorAll('.v-md-copy-code-btn')
+  
+  copyButtons.forEach(btn => {
+    // 添加copied类
+    btn.classList.add('copied')
+    
+    // 1.5秒后移除
+    setTimeout(() => {
+      btn.classList.remove('copied')
+    }, 1500)
+  })
+}
 
 // ========== 主题切换业务 ==========
 
@@ -253,6 +268,12 @@ onMounted(() => {
       showToc.value = true;
     }
   });
+  const preview = document.querySelector('.v-md-editor-preview')
+  if (preview) {
+    new MutationObserver(() => {
+      // 重新绑定事件监听器
+    }).observe(preview, { childList: true, subtree: true })
+  }
 });
 
 onUnmounted(() => {
@@ -286,7 +307,7 @@ watch(() => route.params.id, (newId) => {
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   width: 280px;
-  background-color: rgba(255, 255, 255, 0.95);
+  /* background-color: rgba(255, 255, 255, 0.95); */
 }
 
 /* 列表项悬停效果 */
@@ -323,6 +344,24 @@ watch(() => route.params.id, (newId) => {
   .toc-card {
     width: 50%;
   }
+}
+
+:deep(.v-md-copy-code-btn){
+  background-color: rgb(var(--v-theme-primary),.7) !important;
+}
+
+:deep(.v-md-copy-code-btn.copied svg) {
+  display: none;
+}
+
+:deep(.v-md-copy-code-btn.copied::after) {
+  content: "✓";
+  color: rgb(var(--v-theme-on-primary)) !important;
+  font-size: 16px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
 

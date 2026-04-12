@@ -4,13 +4,14 @@
             <div class="dialog-container">
                 <v-btn
                     icon
-                    active="grey"
+                    color="primary"
+                    active="primary"
                     variant="text"
                     size="0"
                     class="dialog-close-btn"
                     @click="dialogVisible = false"
                 >
-                    <v-icon size="30" color="grey">mdi-close-circle</v-icon>
+                    <v-icon size="30">mdi-close-circle</v-icon>
                 </v-btn>
                 <v-window v-model="step"
                 >
@@ -86,11 +87,15 @@
                             </v-container>
                             <!-- 其他登录方式 -->
                             <v-container class="mt-auto pt-0">
-                                <v-sheet class="d-flex align-center mb-3">
+                                <!-- <v-sheet class="d-flex align-center mb-3">
                                     <v-divider class="flex-grow-1" />
                                     <span class="text-caption mx-4 text-grey" style="flex-shrink: 0;">其他的登录方式</span>
                                     <v-divider class="flex-grow-1" />
+                                </v-sheet> -->
+                                <v-sheet class="mb-4">
+                                    <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">其他的登录方式</span></v-divider>
                                 </v-sheet>
+                                
                                 <!-- 图标 -->
                                 <v-sheet class="text-center py-0">
                                     <v-btn
