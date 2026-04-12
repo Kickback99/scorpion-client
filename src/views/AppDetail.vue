@@ -6,7 +6,8 @@
       <!-- 固定在右上角的目录按钮 -->
       <v-btn 
         v-if="hasToc" 
-        icon 
+        icon
+        size="small" 
         variant="text" 
         @click.stop="showToc = !showToc"
         class="toc-toggle-btn"
@@ -22,12 +23,12 @@
     <div class="markdown-content">
       <v-md-preview :text="article.content" ref="preview"></v-md-preview>
 
-      <component 
-      :is="MarkdownPreview" 
-      :text="article.content"
-      ref="preview"
-      :key="themeStore.isDark"
-      /> 
+        <component 
+        :is="MarkdownPreview" 
+        :text="article.content"
+        ref="preview"
+        :key="themeStore.isDark"
+        /> 
     </div>
 
     <!-- 底部操作栏 -->
@@ -60,13 +61,13 @@
         top: `${POSITION_CONFIG.TOP + POSITION_CONFIG.VERTICAL_GAP}px` // 关键修改
       }"
     >
-      <v-card-title class="py-2 text-caption d-flex justify-space-between">
-        <span>文章目录</span>
+      <v-card-title class="py-2 text-caption d-flex justify-space-between alien-item-center bg-surface">
+        <span style="align-self: center;">文章目录</span>
         <v-btn icon variant="text" size="small" @click.stop="showToc = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-divider></v-divider>
+      <v-divider color="primary" opacity=".7"></v-divider>
       <v-list density="compact">
         <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
           <!-- 二级标题 -->
@@ -122,7 +123,7 @@ const hasToc = computed(() => {
 const POSITION_CONFIG = {
   TOP: 150,           // 固定定位的顶部距离
   HORIZONTAL_OFFSET: -18, // 水平微调值（正值向右，负值向左）
-  BUTTON_GAP: 15,      // 按钮与卡片的水平间距
+  BUTTON_GAP: 18,      // 按钮与卡片的水平间距
   VERTICAL_GAP: 56,      //按钮与卡片之间的垂直间距（根据按钮高度40px+16px间距）
   CONTAINER_PS: 32, //container左右内边距
 }
@@ -275,7 +276,8 @@ watch(() => route.params.id, (newId) => {
 .toc-card {
   position: fixed;
   z-index: 999;
-  background-color: rgba(255, 255, 255, 0.8);
+  max-width: 280px;
+  /* background-color: rgba(255, 255, 255, 0.8); */
   transition: transform 0.3s ease;
 }
 
@@ -293,13 +295,21 @@ watch(() => route.params.id, (newId) => {
   cursor: pointer;
 }
 
-/* t_todo 文章详情页深色背景下的颜色 */
+/* 文章详情页深色背景下的颜色 */
 :deep(.v-md-editor-preview .vuepress-markdown-body){
   background: var(--v-theme-surface);
   color: #fff;
   code:not(pre code) {
-    background-color: #333;
-    color: #fff;
+    background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+}
+
+/* 文章详情页浅色背景下的颜色 */
+:deep(.v-md-editor-preview .github-markdown-body){
+  code:not(pre code) {
+    background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
+    color: rgb(var(--v-theme-primary)) !important;
   }
 }
 

@@ -158,7 +158,7 @@
             color="white"
             variant="outlined"
             @click="handleLogin"
-            class="text-none mr-2 mt-2"
+            class="text-none"
             size="small"
           >
             <v-icon>mdi-account</v-icon>
@@ -167,6 +167,7 @@
 
           <!-- ========== 移动端主题切换按钮（图标按钮） ========== -->
           <v-btn
+            size="small"
             @click="handleToggleTheme"
             icon
           >
@@ -175,6 +176,7 @@
 
         <!-- 移动端菜单按钮 (显示在 sm 及以下屏幕) -->
         <v-btn
+          size="small"
           icon
           @click="drawer = !drawer"
           class="ml-auto"
@@ -191,7 +193,7 @@
       temporary
       location="left"
     >
-      <v-list nav density="compact">
+      <v-list nav density="compact" color="primary">
         <template v-for="item in categories" :key="item.id">
           <!-- 有子菜单的项 -->
           <v-list-group

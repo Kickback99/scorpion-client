@@ -24,9 +24,9 @@
     </AppBlogBox>
 
     <AppBlogBox :title="titles.tags">
-        <v-chip-group column class="pa-2"  selected-class="light-blue-darken-3" mandatory>
+        <v-chip-group column class="pa-2" mandatory>
         <v-chip label v-for="item in tagList" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id" 
-        base-color="light-blue-darken-1"
+        base-color="primary"
         >{{ item.name }}</v-chip>
         </v-chip-group>
     </AppBlogBox>
@@ -37,10 +37,10 @@
     </AppBlogBox>
 
     <AppBlogBox title="热门文章">
-        <v-list color="error">
+        <v-list color="primary">
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact>
                 <template v-slot:prepend>
-                    <v-icon color="error">mdi-numeric-{{index+1}}-box</v-icon>
+                    <v-icon color="primary">mdi-numeric-{{index+1}}-box</v-icon>
                 </template>
 
                 <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>

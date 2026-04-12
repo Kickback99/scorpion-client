@@ -13,7 +13,10 @@
                 />
                 
                 <!-- 桌面端置顶徽章 -->
-                  <v-sheet color="customBlue" class="ribbon-window" v-if="isTop === '1' && !display.smAndDown.value">
+                  <v-sheet :class="[
+                    'ribbon-window',
+                    themeStore.isDark ? 'bg-secondary-darken-1' : 'bg-secondary-lighten-1'
+                  ]" v-if="isTop === '1' && !display.smAndDown.value">
                     <span>
                         置顶
                     </span>
@@ -24,7 +27,7 @@
                     v-if="isTop === '1' && display.smAndDown.value"
                     class="top-btn-mobile"
                     variant="flat"
-                    color="customBlue"
+                    color="primary"
                     density="comfortable"
                     icon="mdi-pin"
                     size="x-small"
@@ -38,7 +41,7 @@
               <!-- <v-list-item-content class="d-flex flex-column justify-space-between"> -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title" :class="display.mdAndUp.value ? 'truncate-multi' : 'truncate-single'">{{ title }}</h4>
-                  <v-chip v-if="cateName" color="purple" size="small" class="category mt-1 mr-2">
+                  <v-chip v-if="cateName" color="accent" size="small" class="category mt-1 mr-2">
                     {{ cateName }}
                   </v-chip>
                 </v-list-item-title>
@@ -67,6 +70,7 @@
   </template>
 
 <script setup>
+import { useThemeStore } from '@/store/theme';
 import { useDisplay } from 'vuetify'
 const display = useDisplay()
 
@@ -91,7 +95,7 @@ const props = defineProps(['id','title','cateName','cover','description','create
    return mdToPlainText(props.description)
 }) */
 
-
+const themeStore = useThemeStore()
 
 </script>
 
@@ -116,7 +120,7 @@ const props = defineProps(['id','title','cateName','cover','description','create
   padding: 2px 10px;
   /* background-color: #57DD43; */
   font-size: 12px;
-  color: #fff;
+  /* color: #fff; */
 
   &::before {
     content: "";
@@ -124,7 +128,7 @@ const props = defineProps(['id','title','cateName','cover','description','create
     right: 0;
     bottom: -4px;
     /* border-top: 4px solid #57DD43; */
-    border-top: 4px solid rgb(var(--v-theme-customBlue));
+    border-top: 4px solid rgb(var(--v-theme-primary));
     border-right: 4px solid transparent;
   }
 }
@@ -132,8 +136,8 @@ const props = defineProps(['id','title','cateName','cover','description','create
 /* 移动端置顶图标按钮样式 */
 .top-btn-mobile {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 9px;
+  right: 7px;
   min-width: 24px;
   width: 24px;
   height: 24px;
