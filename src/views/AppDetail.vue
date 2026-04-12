@@ -71,22 +71,11 @@
       <v-divider color="primary" opacity=".7" gradient></v-divider>
       <v-list density="compact" v-model:selected="selectedTocItem">
         <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
-          <!-- 二级标题 -->
           <v-list-item
-            v-if="anchor.level === 2"
-            :value="anchor"
-            @click="scrollTo(anchor)"
-          >
-            <v-list-item-title>{{ anchor.title }}</v-list-item-title>
-          </v-list-item>
-
-          <!-- 三级标题（嵌套在最近的二级标题下） -->
-          <v-list-item
-            v-if="anchor.level === 4"
-            :value="anchor"
-            @click="scrollTo(anchor)"
-            class="pl-8"
-          >
+              :value="anchor"
+              @click="scrollTo(anchor)"
+              :class="getIndentClass(anchor.level)"
+            >
             <v-list-item-title>{{ anchor.title }}</v-list-item-title>
           </v-list-item>
         </template>
@@ -118,10 +107,28 @@ const tocAnchors = ref([]);
 const isFavorite = ref(false);
 const favoriteLoading = ref(false);
 const selectedTocItem = ref([])
+// 配置需要显示的标题级别（例如：[2, 3] 表示显示 h2 和 h3）
+const tocLevels = ref([1, 2, 3, 4, 5, 6]); // 当前显示 h1 ~ h6
+
+// 根据 tocLevels 动态生成选择器字符串
+const getSelectorString = () => {
+  return tocLevels.value.map(level => `h${level}`).join(',');
+};
 
 const hasToc = computed(() => {
-  return tocAnchors.value.some(anchor => [2, 3].includes(anchor.level));
+  // return tocAnchors.value.some(anchor => tocLevels.value.includes(anchor.level));
+  // 至少要有 2 个目录项才显示目录按钮
+  return tocAnchors.value.length >= 2;
 });
+
+// 根据标题级别返回对应的 CSS 类（控制缩进）
+const getIndentClass = (level) => {
+  // 获取当前级别在配置中的索引位置
+  const index = tocLevels.value.indexOf(level);
+  // 根据索引设置缩进级别（索引0表示最外层，索引1缩进一级，索引2缩进两级...）
+  const indentLevel = index;
+  return `toc-level-${indentLevel}`;
+};
 
 // 可手动调整的常量（单位：px）
 const POSITION_CONFIG = {
@@ -196,8 +203,10 @@ const handleFavoriteToggle = async () => {
 
 const generateTocAnchors = () => {
   if (!preview.value) return;
-  
-  const anchors = preview.value.$el.querySelectorAll('h2,h4');
+  // 使用动态生成的选择器
+  const selector = getSelectorString();
+  console.log('选择器:', selector); // 应该输出 "h1,h2,h3,h4,h5,h6"
+  const anchors = preview.value.$el.querySelectorAll(selector);
   const titles = Array.from(anchors).filter(title => !!title.innerText.trim());
   
   if (!titles.length) {
@@ -236,7 +245,7 @@ const updateActiveToc = () => {
   if (!preview.value || tocAnchors.value.length === 0) return;
   
   // 获取当前滚动位置（加上偏移量，让高亮更灵敏）
-  const scrollTop = window.scrollY + 50; // +100 让标题到达视口顶部前就高亮
+  const scrollTop = window.scrollY + 20; // +100 让标题到达视口顶部前就高亮
   
   // 找到最后一个 offsetTop 小于等于当前滚动位置的标题
   let activeAnchor = [...tocAnchors.value]
@@ -333,6 +342,13 @@ onUnmounted(() => {
 watch(() => route.params.id, (newId) => {
   if (newId) renderArticleItem();
 });
+
+// 监听 tocLevels 变化，重新生成目录
+watch(() => tocLevels.value, () => {
+  nextTick(() => {
+    generateTocAnchors();
+  });
+}, { deep: true });
 </script>
 
 <style scoped>
@@ -354,10 +370,41 @@ watch(() => route.params.id, (newId) => {
 
 /* 固定在右侧的目录卡 */
 .toc-card {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 250px);
   overflow-y: auto;
   width: 280px;
   /* background-color: rgba(255, 255, 255, 0.95); */
+}
+
+/* 动态缩进样式 */
+/* 一级缩进（最外层） */
+.toc-level-0 {
+  padding-left: 8px !important;
+}
+
+/* 二级缩进 */
+.toc-level-1 {
+  padding-left: 16px !important;
+}
+
+/* 三级缩进 */
+.toc-level-2 {
+  padding-left: 24px !important;
+}
+
+/* 四级缩进（可根据需要继续添加） */
+.toc-level-3 {
+  padding-left: 32px !important;
+}
+
+/* 五级缩进（可根据需要继续添加） */
+.toc-level-4 {
+  padding-left: 40px !important;
+}
+
+/* 六级缩进（可根据需要继续添加） */
+.toc-level-5 {
+  padding-left: 48px !important;
 }
 
 /* 列表项悬停效果 */
