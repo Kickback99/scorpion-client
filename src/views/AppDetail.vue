@@ -69,11 +69,12 @@
         </v-btn>
       </v-card-title>
       <v-divider color="primary" opacity=".7" gradient></v-divider>
-      <v-list density="compact">
+      <v-list density="compact" v-model:selected="selectedTocItem">
         <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
           <!-- 二级标题 -->
           <v-list-item
             v-if="anchor.level === 2"
+            :value="anchor"
             @click="scrollTo(anchor)"
           >
             <v-list-item-title>{{ anchor.title }}</v-list-item-title>
@@ -82,6 +83,7 @@
           <!-- 三级标题（嵌套在最近的二级标题下） -->
           <v-list-item
             v-if="anchor.level === 4"
+            :value="anchor"
             @click="scrollTo(anchor)"
             class="pl-8"
           >
@@ -115,6 +117,7 @@ const tags = ref([]);
 const tocAnchors = ref([]);
 const isFavorite = ref(false);
 const favoriteLoading = ref(false);
+const selectedTocItem = ref([])
 
 const hasToc = computed(() => {
   return tocAnchors.value.some(anchor => [2, 3].includes(anchor.level));
@@ -194,7 +197,7 @@ const handleFavoriteToggle = async () => {
 const generateTocAnchors = () => {
   if (!preview.value) return;
   
-  const anchors = preview.value.$el.querySelectorAll('h1,h2,h3,h4,h5,h6');
+  const anchors = preview.value.$el.querySelectorAll('h2,h4');
   const titles = Array.from(anchors).filter(title => !!title.innerText.trim());
   
   if (!titles.length) {
@@ -208,9 +211,54 @@ const generateTocAnchors = () => {
     title: el.innerText,
     lineIndex: el.getAttribute('data-v-md-line'),
     indent: hTags.indexOf(el.tagName),
-    level: parseInt(el.tagName.slice(1))
+    level: parseInt(el.tagName.slice(1)),
+    element: el
   }));
+
+  if (tocAnchors.value.length > 0) {
+     selectedTocItem.value = [tocAnchors.value[0]];
+  }
 };
+
+// 防抖函数
+const debounce = (fn, delay = 100) => {
+  let timer = null;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+};
+
+// 滚动时高亮对应的目录项
+const updateActiveToc = () => {
+  if (!preview.value || tocAnchors.value.length === 0) return;
+  
+  // 获取当前滚动位置（加上偏移量，让高亮更灵敏）
+  const scrollTop = window.scrollY + 50; // +100 让标题到达视口顶部前就高亮
+  
+  // 找到最后一个 offsetTop 小于等于当前滚动位置的标题
+  let activeAnchor = [...tocAnchors.value]
+    .reverse()
+    .find(anchor => {
+      const element = anchor.element;
+      return element && element.offsetTop <= scrollTop;
+    });
+
+  // 兜底：如果找不到，高亮第一个
+  if (!activeAnchor && tocAnchors.value.length > 0) {
+    activeAnchor = tocAnchors.value[0];
+  }
+  
+  // 更新高亮
+  if (activeAnchor && selectedTocItem.value[0] !== activeAnchor) {
+    selectedTocItem.value = [activeAnchor];
+  }
+};
+
+// 创建防抖版本的滚动处理函数
+const scrollHandler = debounce(updateActiveToc, 100);
 
 const scrollTo = (anchor) => {
   if (!preview.value) return;
@@ -259,13 +307,14 @@ const MarkdownPreview = computed(() => {
 onMounted(() => {
   renderArticleItem();
   window.addEventListener('resize', calculatePosition);
+   window.addEventListener('scroll', scrollHandler); // 添加滚动监听
   // 添加微任务等待布局完成
   setTimeout(calculatePosition, 100);
   document.addEventListener('click', (e) => {
     if (showToc.value && 
         !e.target.closest('.toc-card') && 
         !e.target.closest('.toc-toggle-btn')) {
-      showToc.value = true;
+      showToc.value = false;
     }
   });
   const preview = document.querySelector('.v-md-editor-preview')
@@ -277,7 +326,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  // window.removeEventListener('resize', handleResize);
+  window.removeEventListener('resize', calculatePosition);
+  window.removeEventListener('scroll', scrollHandler); // 清理滚动监听
 });
 
 watch(() => route.params.id, (newId) => {
