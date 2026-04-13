@@ -111,6 +111,8 @@ const favoriteLoading = ref(false);
 const selectedTocItem = ref([])
 // 配置需要显示的标题级别（例如：[2, 3] 表示显示 h2 和 h3）
 const tocLevels = ref([1, 2, 3, 4, 5, 6]); // 当前显示 h1 ~ h6
+// 缓存当前文章实际存在的标题级别
+const existingLevels = ref([]);
 
 // 根据 tocLevels 动态生成选择器字符串
 const getSelectorString = () => {
@@ -123,13 +125,33 @@ const hasToc = computed(() => {
   return tocAnchors.value.length >= 2;
 });
 
+
+// 更新现有标题级别缓存
+const updateExistingLevels = () => {
+  if (tocAnchors.value.length === 0) {
+    existingLevels.value = [];
+    return;
+  }
+  // 获取所有不重复的标题级别并排序
+  existingLevels.value = [...new Set(tocAnchors.value.map(anchor => anchor.level))].sort((a, b) => a - b);
+  console.log('现有标题级别:', existingLevels.value);
+};
+
 // 根据标题级别返回对应的 CSS 类（控制缩进）
 const getIndentClass = (level) => {
-  // 获取当前级别在配置中的索引位置
-  const index = tocLevels.value.indexOf(level);
-  // 根据索引设置缩进级别（索引0表示最外层，索引1缩进一级，索引2缩进两级...）
-  const indentLevel = index;
-  return `toc-level-${indentLevel}`;
+  if (existingLevels.value.length === 0) {
+    return 'toc-level-0';
+  }
+
+  // 找到当前级别在现有级别中的位置
+  const index = existingLevels.value.indexOf(level);
+  
+  // 如果找不到，返回最小缩进
+  if (index === -1) return 'toc-level-0';
+  
+  // 根据索引返回对应的缩进类
+  // 索引0 -> 8px, 索引1 -> 16px, 索引2 -> 24px...
+  return `toc-level-${index}`;
 };
 
 // 可手动调整的常量（单位：px）
@@ -225,6 +247,9 @@ const generateTocAnchors = () => {
     level: parseInt(el.tagName.slice(1)),
     element: el
   }));
+
+  // 更新现有标题级别缓存
+  updateExistingLevels();
 
   if (tocAnchors.value.length > 0) {
      selectedTocItem.value = [tocAnchors.value[0]];
@@ -375,6 +400,7 @@ const reinitializeToc = async () => {
     if (preview.value) {
       generateTocAnchors();
       calculatePosition();
+      updateExistingLevels();
       
       // 恢复之前的高亮项
       if (currentActiveAnchor) {
