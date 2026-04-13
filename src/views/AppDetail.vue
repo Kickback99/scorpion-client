@@ -294,7 +294,10 @@ const updateActiveToc = () => {
 };
 
 // 创建防抖版本的滚动处理函数
-const scrollHandler = debounce(updateActiveToc, 100);
+const scrollHandler = debounce(() => {
+  if (!hasToc.value) return;
+  updateActiveToc();
+}, 100);
 
 const scrollTo = (anchor) => {
   if (!preview.value) return;
@@ -347,6 +350,7 @@ onMounted(() => {
   // 添加微任务等待布局完成
   setTimeout(calculatePosition, 100);
   document.addEventListener('click', (e) => {
+    if (!hasToc.value) return;
     if (showToc.value && 
         !e.target.closest('.toc-card') && 
         !e.target.closest('.toc-toggle-btn')) {
@@ -366,21 +370,27 @@ onUnmounted(() => {
   window.removeEventListener('scroll', scrollHandler); // 清理滚动监听
 });
 
+
+// 统一滚动到当前高亮项的目录卡位置
+const scrollToActiveTocItem = (behavior = 'smooth') => {
+  if (!hasToc.value || !showToc.value) return;
+  
+  const activeElement = document.querySelector('.v-list-item--active');
+  if (!activeElement) return;
+  
+  activeElement.scrollIntoView({
+    behavior: behavior,
+    block: 'center',
+    inline: 'nearest'
+  });
+};
+
 // 目录卡滚动到当前高亮项
 const scrollTocToActive = () => {
   if (!showToc.value) return;
   
-  // 延迟一下，确保 DOM 更新完成
   setTimeout(() => {
-    const activeElement = document.querySelector('.v-list-item--active');
-    if (!activeElement) return;
-    
-    // 直接让元素滚动到可视区域
-    activeElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',  // 让元素居中显示，更容易看到
-      inline: 'nearest'
-    });
+    scrollToActiveTocItem('smooth');
   }, 50);
 };
 
@@ -442,10 +452,26 @@ const reinitializeToc = async () => {
   }, 100);
 };
 
+// 监听目录卡显示状态
+watch(() => showToc.value, (newVal) => {
+  if (!hasToc.value) return;
+  if (newVal && selectedTocItem.value[0]) {
+    // 目录卡刚打开时，等待 DOM 渲染完成后再滚动
+    nextTick(() => {
+      setTimeout(() => {
+        scrollToActiveTocItem('smooth');
+      }, 150);
+    });
+  }
+});
+
 // 监听高亮项变化
 watch(() => selectedTocItem.value[0], () => {
+  if (!hasToc.value) return;
   nextTick(() => {
-    debouncedScrollToc();
+    if (showToc.value) {
+      debouncedScrollToc();
+    }
   });
 });
 
@@ -455,6 +481,7 @@ watch(() => route.params.id, (newId) => {
 
 // 监听 tocLevels 变化，重新生成目录
 watch(() => tocLevels.value, () => {
+  if (!hasToc.value) return; 
   nextTick(() => {
     generateTocAnchors();
   });
@@ -462,6 +489,7 @@ watch(() => tocLevels.value, () => {
 
 // 监听主题切换
 watch(() => themeStore.isDark, () => {
+  if (!hasToc.value) return;
   reinitializeToc();
 });
 </script>
