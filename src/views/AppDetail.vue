@@ -78,7 +78,30 @@
               @click="scrollTo(anchor)"
               :class="getIndentClass(anchor.level)"
             >
-            <v-list-item-title>{{ anchor.title }}</v-list-item-title>
+            <v-list-item-title>
+              <v-tooltip 
+              v-model="tooltipVisible[index]"
+              :disabled="!isTitleOverflow(index)"
+              location="right"
+              :open-delay="300"
+              :close-delay="100"
+              open-on-hover
+              attach="body"
+              :text="anchor.title"
+              >
+                <template v-slot:activator="{ props: tooltipProps }">
+                  <span 
+                    v-bind="tooltipProps" 
+                    :ref="el => setTitleRef(el, index)"
+                    class="toc-title-text"
+                    @mouseenter="handleMouseEnter(index)"
+                    @mouseleave="handleMouseLeave(index)"
+                  >
+                    {{ anchor.title }}
+                  </span>
+                </template>
+              </v-tooltip>
+            </v-list-item-title>
           </v-list-item>
         </template>
       </v-list>
@@ -113,6 +136,47 @@ const selectedTocItem = ref([])
 const tocLevels = ref([1, 2, 3, 4, 5, 6]); // 当前显示 h1 ~ h6
 // 缓存当前文章实际存在的标题级别
 const existingLevels = ref([]);
+
+// ========== tooltip 溢出检测 ==========
+const titleElements = ref([]);
+
+const setTitleRef = (el, index) => {
+  if (el) {
+    titleElements.value[index] = el;
+  }
+};
+
+// 检测指定索引的标题是否溢出
+const isTitleOverflow = (index) => {
+  if (!hasToc.value) return false;
+  const el = titleElements.value[index];
+  if (!el) return false;
+  return el.scrollWidth > el.clientWidth;
+};
+
+// 监听窗口大小变化
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', () => {
+    if (!hasToc.value) return;
+    nextTick(() => {
+      titleElements.value = [...titleElements.value];
+    });
+  });
+}
+
+const tooltipVisible = ref({});
+
+const handleMouseEnter = (index) => {
+  if (!hasToc.value) return;
+  if (isTitleOverflow(index)) {
+    tooltipVisible.value[index] = true;
+  }
+};
+
+const handleMouseLeave = (index) => {
+  if (!hasToc.value) return;
+  tooltipVisible.value[index] = false;
+};
 
 // 根据 tocLevels 动态生成选择器字符串
 const getSelectorString = () => {
@@ -452,6 +516,15 @@ const reinitializeToc = async () => {
   }, 100);
 };
 
+// 监听目录变化，重新检测（触发 Vue 重新渲染）用于 tooltip
+watch(() => tocAnchors.value.length, () => {
+  if (!hasToc.value) return;
+  nextTick(() => {
+    // 强制触发重新渲染
+    titleElements.value = [...titleElements.value];
+  });
+});
+
 // 监听目录卡显示状态
 watch(() => showToc.value, (newVal) => {
   if (!hasToc.value) return;
@@ -619,6 +692,21 @@ watch(() => themeStore.isDark, () => {
   overflow-y: auto;
   max-height: calc(100vh - 260px); /* 根据头部高度调整 */
   min-height: 100px;
+}
+
+/* 添加文本溢出省略样式 */
+.toc-title-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+/* 确保 tooltip 正常显示 */
+:deep(.v-tooltip) {
+  z-index: 10000 !important;
 }
 </style>
 

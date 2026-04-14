@@ -21,6 +21,9 @@ export const themeConfig = {
           info: '#2196F3',
           success: '#4CAF50',
           warning: '#FB8C00',
+          // ========== 添加 tooltip 相关颜色 ==========
+        'on-surface': '#1A1A2E',           // 表面上的文字颜色（浅色模式用深色）
+        'on-surface-variant': '#2D2D44',    // 表面变体上的文字颜色
       }
     },
     'scorpion-dark': {
@@ -45,7 +48,9 @@ export const themeConfig = {
           // 文字色
           'on-primary': '#FFFFFF',
           'on-background': '#E0DDF5',
-          'on-surface': '#E0DDF5',
+          // ========== 添加 tooltip 相关颜色 ==========
+          'on-surface': '#E0DDF5',           // 表面上的文字颜色（深色模式用浅色）
+          'on-surface-variant': '#B8B4E8',    // 表面变体上的文字颜色
       }
     }
   },
