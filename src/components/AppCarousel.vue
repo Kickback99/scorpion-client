@@ -1,6 +1,7 @@
 <template>
-  <v-card>
-  <v-carousel>
+  <v-container>
+      <v-card>
+  <v-carousel height="250px" hide-delimiters>
     <v-carousel-item
       v-for="(item, i) in carouselItems"
       :key="i"
@@ -9,6 +10,7 @@
     </v-carousel-item>
   </v-carousel>
   </v-card>
+  </v-container>
 </template>
 
 <script setup>
