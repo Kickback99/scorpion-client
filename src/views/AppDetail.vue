@@ -137,6 +137,10 @@ const tocLevels = ref([1, 2, 3, 4, 5, 6]); // 当前显示 h1 ~ h6
 // 缓存当前文章实际存在的标题级别
 const existingLevels = ref([]);
 
+// ========== 新增：滚动控制标志 ==========
+let isScrollingToTarget = false;
+let scrollTimeout = null;
+
 // ========== tooltip 溢出检测 ==========
 const titleElements = ref([]);
 
@@ -225,6 +229,10 @@ const POSITION_CONFIG = {
   BUTTON_GAP: 18,      // 按钮与卡片的水平间距
   VERTICAL_GAP: 56,      //按钮与卡片之间的垂直间距（根据按钮高度40px+16px间距）
   CONTAINER_PS: 32, //container左右内边距
+
+  // ========== 滚动相关配置 ==========
+  SCROLL_TOP_OFFSET: 80,       // 点击目录时，标题距离视口顶部的间距（px）
+  ACTIVATION_OFFSET: 100,      // 滚动高亮时，标题距离视口顶部多少像素时触发高亮切换（px）
 }
 
 const translateXValue = ref('0px')
@@ -333,23 +341,21 @@ const debounce = (fn, delay = 100) => {
 
 // 滚动时高亮对应的目录项
 const updateActiveToc = () => {
+  // 如果正在执行滚动跳转，暂时不更新高亮
+  if (isScrollingToTarget) return;
+  
   if (!preview.value || tocAnchors.value.length === 0) return;
   
-  // 获取当前滚动位置（加上偏移量，让高亮更灵敏）
-  const scrollTop = window.scrollY + 20; // +100 让标题到达视口顶部前就高亮
+  // 使用配置中的偏移量：标题距离视口顶部多少像素时触发高亮切换
+  const ACTIVATION_OFFSET = POSITION_CONFIG.ACTIVATION_OFFSET;
   
-  // 找到最后一个 offsetTop 小于等于当前滚动位置的标题
-  let activeAnchor = [...tocAnchors.value]
+  // 从后往前找，找到第一个已经滚过视口顶部的标题
+  const activeAnchor = [...tocAnchors.value]
     .reverse()
     .find(anchor => {
-      const element = anchor.element;
-      return element && element.offsetTop <= scrollTop;
-    });
-
-  // 兜底：如果找不到，高亮第一个
-  if (!activeAnchor && tocAnchors.value.length > 0) {
-    activeAnchor = tocAnchors.value[0];
-  }
+      const rect = anchor.element?.getBoundingClientRect();
+      return rect && rect.top <= ACTIVATION_OFFSET;
+    }) || tocAnchors.value[0]; // 找不到则高亮第一个
   
   // 更新高亮
   if (activeAnchor && selectedTocItem.value[0] !== activeAnchor) {
@@ -359,27 +365,60 @@ const updateActiveToc = () => {
 
 // 创建防抖版本的滚动处理函数
 const scrollHandler = debounce(() => {
-  if (!hasToc.value) return;
+  if (!hasToc.value || isScrollingToTarget) return;
   updateActiveToc();
 }, 100);
 
 const scrollTo = (anchor) => {
-  if (!preview.value) return;
+  if (!preview.value || isScrollingToTarget) return;
   
   const heading = preview.value.$el.querySelector(
     `[data-v-md-line="${anchor.lineIndex}"]`
   );
 
   if (heading) {
-    preview.value.scrollToTarget({
-      target: heading,
-      scrollContainer: window,
-      top: 80
+    // 先设置标志，阻止任何高亮更新
+    isScrollingToTarget = true;
+
+    // 临时移除滚动监听，避免滚动时更新高亮干扰
+    window.removeEventListener('scroll', scrollHandler);
+    
+    // 立即高亮当前点击的标题
+    if (selectedTocItem.value[0] !== anchor) {
+      selectedTocItem.value = [anchor];
+    }
+    
+    // 使用 getBoundingClientRect 获取元素当前位置
+    const rect = heading.getBoundingClientRect();
+    const currentScrollY = window.scrollY;
+    
+    // 使用配置中的偏移量：标题距离视口顶部的间距（px）
+    const TOP_OFFSET = POSITION_CONFIG.SCROLL_TOP_OFFSET;
+    
+    // 计算目标位置：当前滚动位置 + 元素相对于视口的位置 - 偏移量
+    const targetPosition = currentScrollY + rect.top - TOP_OFFSET;
+    
+    // 平滑滚动到目标位置
+    window.scrollTo({
+      top: Math.max(0, targetPosition),
+      behavior: 'smooth'
     });
+    
+    // 延迟恢复高亮更新
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      // 滚动完成后，先更新一次高亮
+      updateActiveToc();
+      // 再释放标志
+      isScrollingToTarget = false;
+      window.addEventListener('scroll', scrollHandler);
+      scrollTimeout = null;
+    }, 500); // 给足够时间让滚动完成
   }
   
   showToc.value = true;
 };
+
 
 // ========== 代码块复制业务 ==========
 const handleCopySuccess = () => {
@@ -432,6 +471,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', calculatePosition);
   window.removeEventListener('scroll', scrollHandler); // 清理滚动监听
+  if (scrollTimeout) clearTimeout(scrollTimeout);
 });
 
 
@@ -489,7 +529,7 @@ const reinitializeToc = async () => {
           // 直接恢复滚动位置，避免跳动
           window.scrollTo({
             top: currentScrollY,
-            behavior: 'instant'
+            behavior: 'smooth'
           });
         } else {
           updateActiveToc();
@@ -517,7 +557,7 @@ watch(() => tocAnchors.value.length, () => {
 // 监听目录卡显示状态
 watch(() => showToc.value, (newVal) => {
   if (!hasToc.value) return;
-  if (newVal && selectedTocItem.value[0]) {
+  if (newVal && selectedTocItem.value[0]  && !isScrollingToTarget) {
     // 目录卡刚打开时，等待 DOM 渲染完成后再滚动
     nextTick(() => {
       setTimeout(() => {
@@ -531,7 +571,7 @@ watch(() => showToc.value, (newVal) => {
 watch(() => selectedTocItem.value[0], () => {
   if (!hasToc.value) return;
   nextTick(() => {
-    if (showToc.value) {
+    if (showToc.value && !isScrollingToTarget) {
       debouncedScrollToc();
     }
   });

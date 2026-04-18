@@ -9,7 +9,9 @@
                     <!-- 左侧内容：轮播图和文章列表 -->
                     <v-col :md="leftColMd" cols="12">
                         <!-- 轮播图 -->
-                        <!-- <AppCarousel></AppCarousel> -->
+                         <v-row>
+                            <AppCarousel></AppCarousel>
+                         </v-row>
 
                         <v-row>
                             <router-view></router-view>
