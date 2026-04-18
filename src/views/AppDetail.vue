@@ -21,15 +21,15 @@
     </v-card-title>
 
     <div class="markdown-content">
-      <v-md-preview :text="article.content" ref="preview"></v-md-preview>
+      <v-md-preview :text="article.content" @copy-code-success="handleCopySuccess" ref="preview" :class="themeStore.isDark?'user-dark':'user-light'"></v-md-preview>
 
-        <component 
+       <!--  <component 
         :is="MarkdownPreview" 
         :text="article.content"
         ref="preview"
         @copy-code-success="handleCopySuccess"
         :key="themeStore.isDark"
-        /> 
+        />  -->
     </div>
 
     <!-- 底部操作栏 -->
@@ -463,7 +463,8 @@ const debouncedScrollToc = debounce(scrollTocToActive, 50);
 
 // 重新初始化目录（主题切换时调用）
 const reinitializeToc = async () => {
-  // 保存当前高亮的目录项
+  // 保存当前滚动位置
+  const currentScrollY = window.scrollY;
   const currentActiveAnchor = selectedTocItem.value[0];
   const wasVisible = showToc.value;
   
@@ -484,23 +485,11 @@ const reinitializeToc = async () => {
         if (restoredAnchor) {
           selectedTocItem.value = [restoredAnchor];
           
-          // 关键：滚动到对应的标题位置
-          // 使用 requestAnimationFrame 确保 DOM 完全渲染后再滚动
-          requestAnimationFrame(() => {
-            const heading = preview.value.$el.querySelector(
-              `[data-v-md-line="${restoredAnchor.lineIndex}"]`
-            );
-            if (heading) {
-              heading.scrollIntoView({
-                behavior: 'instant',
-                block: 'start'
-              });
-              // 微调偏移量，避免被固定头部遮挡
-              window.scrollBy({
-                top: -80,
-                behavior: 'instant'
-              });
-            }
+          // 【关键修改】删除所有滚动代码，只恢复滚动位置
+          // 直接恢复滚动位置，避免跳动
+          window.scrollTo({
+            top: currentScrollY,
+            behavior: 'instant'
           });
         } else {
           updateActiveToc();
@@ -562,7 +551,7 @@ watch(() => tocLevels.value, () => {
 
 // 监听主题切换
 watch(() => themeStore.isDark, () => {
-  if (!hasToc.value) return;
+  if (!hasToc.value || !showToc.value) return;
   reinitializeToc();
 });
 </script>
@@ -629,8 +618,8 @@ watch(() => themeStore.isDark, () => {
   cursor: pointer;
 }
 
-/* 文章详情页深色背景下的颜色 */
-:deep(.v-md-editor-preview .vuepress-markdown-body){
+/* vuepress主题：文章详情页深色背景下的颜色 */
+:deep(.v-md-editor-preview.user-dark .vuepress-markdown-body){
   background: var(--v-theme-surface);
   color: #fff;
   code:not(pre code) {
@@ -639,7 +628,17 @@ watch(() => themeStore.isDark, () => {
   }
 }
 
-/* 文章详情页浅色背景下的颜色 */
+/* vuepress主题：文章详情页浅色背景下的颜色 */
+:deep(.v-md-editor-preview.user-light .vuepress-markdown-body){
+  background: var(--v-theme-surface);
+  color: #000;
+  code:not(pre code) {
+    background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+}
+
+/* github主题：文章详情页浅色背景下的颜色 */
 :deep(.v-md-editor-preview .github-markdown-body){
   code:not(pre code) {
     background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
