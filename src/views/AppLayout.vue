@@ -9,7 +9,7 @@
                     <!-- 左侧内容：轮播图和文章列表 -->
                     <v-col :md="leftColMd" cols="12">
                         <!-- 轮播图 -->
-                         <v-row>
+                         <v-row v-if="showCarousel">
                             <AppCarousel></AppCarousel>
                          </v-row>
 
@@ -67,6 +67,8 @@ renderCateList()
 const isAboutPage = computed(() => route.path === '/about' || route.path === '/profile')
 const leftColMd = computed(() => isAboutPage.value ? 12 : 9)
 const showSidebar = computed(() => !isAboutPage.value)
+// 轮播图显示条件：首页 + 大屏
+const showCarousel = computed(() => route.path === '/' && mdAndUp.value)
 
 
 
