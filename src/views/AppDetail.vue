@@ -21,15 +21,14 @@
     </v-card-title>
 
     <div class="markdown-content">
-      <v-md-preview :text="article.content" @copy-code-success="handleCopySuccess" ref="preview" :class="themeStore.isDark?'user-dark':'user-light'"></v-md-preview>
-
-       <!--  <component 
+       <component 
         :is="MarkdownPreview" 
         :text="article.content"
         ref="preview"
         @copy-code-success="handleCopySuccess"
-        :key="themeStore.isDark"
-        />  -->
+        :key="configStore.theme"
+        :class="themeStore.isDark?'user-dark':'user-light'"
+        /> 
     </div>
 
     <!-- 底部操作栏 -->
@@ -119,6 +118,7 @@ import emitter from '@/utils/event-bus.js'
 import { useUserStore } from '@/store/user';
 import { useThemeStore } from '@/store/theme';
 import { createMarkdownPreview } from '@/utils/markdown-config';
+import { useConfigStore } from '@/store/config';
 const userStore = useUserStore()
 
 const showToc = ref(false);
@@ -136,6 +136,8 @@ const selectedTocItem = ref([])
 const tocLevels = ref([1, 2, 3, 4, 5, 6]); // 当前显示 h1 ~ h6
 // 缓存当前文章实际存在的标题级别
 const existingLevels = ref([]);
+// 系统配置
+const configStore = useConfigStore()
 
 // ========== 新增：滚动控制标志 ==========
 let isScrollingToTarget = false;
@@ -190,7 +192,7 @@ const getSelectorString = () => {
 const hasToc = computed(() => {
   // return tocAnchors.value.some(anchor => tocLevels.value.includes(anchor.level));
   // 至少要有 2 个目录项才显示目录按钮
-  return tocAnchors.value.length >= 2;
+  return configStore.isAnchorEnabled && tocAnchors.value.length >= 2;
 });
 
 
@@ -442,7 +444,8 @@ const themeStore = useThemeStore()
 // 使用 computed 每次重新创建组件
 const MarkdownPreview = computed(() => {
   console.log('创建主题:', themeStore.isDark?"vuepress":"github")
-  return createMarkdownPreview(themeStore.isDark?"vuepress":"github")
+  const currentThem = configStore.getCurrentTheme()
+  return createMarkdownPreview(currentThem)
 })
 
 
@@ -594,6 +597,12 @@ watch(() => themeStore.isDark, () => {
   if (!hasToc.value || !showToc.value) return;
   reinitializeToc();
 });
+
+// 监听配置切换
+/* watch(() => configStore.theme,() => {
+  if (!hasToc.value || !showToc.value) return;
+  reinitializeToc();
+}) */
 </script>
 
 <style scoped>

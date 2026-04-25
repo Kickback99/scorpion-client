@@ -7,6 +7,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import { useUserStore } from '@/store/user'
 import AppProfileCenter from '@/components/AppProfileCenter.vue'
 import Test from '@/views/Test.vue'
+import { useConfigStore } from '@/store/config'
 
 
 // 路由规则
@@ -33,8 +34,57 @@ const router = createRouter({
     routes
 })
 
+// 配置管理
+let configLoaded = false
+let loadingPromise = null
+let lastLoadTime = 0
+const CONFIG_CACHE_DURATION = 5 * 60 * 1000 // 5分钟缓存，可根据需要调整
+
+/**
+ * 加载客户端配置（支持缓存过期）
+ * @param {boolean} forceRefresh - 是否强制刷新配置
+ */
+const loadClientConfig = async (forceRefresh = false) => {
+  const now = Date.now()
+  
+  // 检查缓存是否有效（非强制刷新 且 已加载 且 未过期）
+  if (!forceRefresh && configLoaded && (now - lastLoadTime) < CONFIG_CACHE_DURATION) {
+    return Promise.resolve()
+  }
+  
+  // 如果正在加载中，返回同一个 Promise
+  if (loadingPromise) {
+    return loadingPromise
+  }
+  
+  // 开始加载配置
+  loadingPromise = (async () => {
+    try {
+      const configStore = useConfigStore()
+      await configStore.loadConfig()
+      configLoaded = true
+      lastLoadTime = now
+      console.log('客户端配置加载成功, 主题:', configStore.currentThemeName)
+    } catch (error) {
+      console.error('加载客户端配置失败:', error)
+      // 配置加载失败时，使用默认配置
+      // configStore 中已经设置了默认值，所以不影响页面访问
+    } finally {
+      loadingPromise = null
+    }
+  })()
+  
+  return loadingPromise
+}
+
 // 添加路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
+
+  console.log('--------------全局路由前置守卫......-----------------')
+
+  // 加载配置（非强制刷新）
+  await loadClientConfig()
+
   const userStore = useUserStore()
   const isLoggedIn = !!userStore.token && Object.keys(userStore.user).length > 0
   
@@ -45,6 +95,19 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
+
+// 路由守卫完成后的回调 - 可以在页面加载后执行一些操作
+router.afterEach(() => {
+  // 滚动到顶部
+  window.scrollTo(0, 0)
+})
+
+// 提供一个方法，用于在配置更新后重新加载（可选，供其他组件调用）
+export const refreshClientConfig = () => {
+  configLoaded = false
+  lastLoadTime = 0
+  return loadClientConfig(true)
+}
 
 // 将路由对象暴露出去
 export default router
