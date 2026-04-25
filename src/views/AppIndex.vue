@@ -1,8 +1,17 @@
 <template>
     <v-container>
+          <!-- 顶部进度条 -->
+          <div v-if="isLoading" class="loading-wrapper">
+            <v-progress-linear
+                indeterminate
+                color="warning"
+                height="2"
+                class="loading-bar"
+            ></v-progress-linear>
+         </div>
 
               <!-- 正常文章列表 -->
-          <template v-if="articleList.length > 0">
+          <template v-else-if="articleList.length > 0">
             <ArticleItem v-for="(item,index) in articleList" :key="item.id" 
                 :class="{'mt-5':(index !== 0)}"
                 :id="item.id"
@@ -54,6 +63,7 @@ const {smAndUp} = useDisplay()
 
 
 const isInitialLoading = ref(true) // 标记是否首次加载中
+const isLoading = ref(false)
 
 // 全局总线
 import emitter from '@/utils/event-bus.js'
@@ -86,16 +96,21 @@ const params = ref({
 const renderArticleList = async() => {
     // console.log('renderArticleList函数执行...')
     // console.log('searchData.value',searchData.value)
-    const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
-    // console.log('renderArticleList...')
-    console.log('res.data.items',res.data.items)
-    articleList.value = res.data.items.map(item => ({
-      ...item,
-      displayDescription: handleAutoDescription(item)
-    }))
-    total.value = res.data.total
-    // 数据加载完成后，标记首次加载结束
-    isInitialLoading.value = false
+    isLoading.value = true
+    try {
+      const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
+      // console.log('renderArticleList...')
+      console.log('res.data.items',res.data.items)
+      articleList.value = res.data.items.map(item => ({
+        ...item,
+        displayDescription: handleAutoDescription(item)
+      }))
+      total.value = res.data.total
+    }finally {
+      isLoading.value = false
+      // 数据加载完成后，标记首次加载结束
+      isInitialLoading.value = false
+    }
 }
 
 renderArticleList()
@@ -226,6 +241,18 @@ const handleAutoDescription = (item) => {
   flex: 1;  /* 让所有项均匀分配剩余空间 */
   max-width: calc(100% / 8); /* 根据 total-visible 调整 */
   margin: 0 !important; /* 移除默认外边距 */
+}
+
+.loading-wrapper {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+.loading-bar {
+    position: relative;  /* 相对于 wrapper 定位 */
 }
 
 </style>
