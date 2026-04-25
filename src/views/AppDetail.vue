@@ -455,14 +455,14 @@ onMounted(() => {
    window.addEventListener('scroll', scrollHandler); // 添加滚动监听
   // 添加微任务等待布局完成
   setTimeout(calculatePosition, 100);
-  document.addEventListener('click', (e) => {
+  /* document.addEventListener('click', (e) => {
     if (!hasToc.value) return;
     if (showToc.value && 
         !e.target.closest('.toc-card') && 
         !e.target.closest('.toc-toggle-btn')) {
       showToc.value = false;
     }
-  });
+  }); */
   const preview = document.querySelector('.v-md-editor-preview')
   if (preview) {
     new MutationObserver(() => {
