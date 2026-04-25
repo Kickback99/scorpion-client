@@ -31,26 +31,6 @@
         /> 
     </div>
 
-    <!-- 底部操作栏 -->
-    <v-card-actions class="d-flex justify-center py-4">
-      <v-btn
-        :color="isFavorite ? 'red' : 'grey'"
-        @click="handleFavoriteToggle"
-        :loading="favoriteLoading"
-        stacked
-      >
-        <v-icon size="15" class="mb-1">
-          {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
-        </v-icon>
-        <div class="d-flex align-center">
-          <span>收藏</span>
-          <span v-if="article.favoriteCount > 0">
-            {{ article.favoriteCount }}
-          </span>
-        </div>
-      </v-btn>
-    </v-card-actions>
-
     <!-- 固定在右侧的目录卡 -->
     <v-card 
       v-show="showToc" 
@@ -106,6 +86,28 @@
       </v-list>
     </v-card>
   </v-card>
+
+  <v-card v-if=" configStore.loginEnabled|| isLoggedIn" class="mt-5" style="background-color: transparent !important;"> 
+        <!-- 底部操作栏 -->
+    <v-card-actions class="d-flex justify-center py-4">
+      <v-btn
+        :color="isFavorite ? 'red' : 'grey'"
+        @click="handleFavoriteToggle"
+        :loading="favoriteLoading"
+        stacked
+      >
+        <v-icon size="15" class="mb-1">
+          {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
+        </v-icon>
+        <div class="d-flex align-center">
+          <span>收藏</span>
+          <span v-if="article.favoriteCount > 0">
+            {{ article.favoriteCount }}
+          </span>
+        </div>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
   </v-container>
 </template>
 
@@ -120,6 +122,11 @@ import { useThemeStore } from '@/store/theme';
 import { createMarkdownPreview } from '@/utils/markdown-config';
 import { useConfigStore } from '@/store/config';
 const userStore = useUserStore()
+
+// 判断用户是否已登录
+const isLoggedIn = computed(() => {
+  return !!userStore.token && Object.keys(userStore.user).length > 0
+})
 
 const showToc = ref(false);
 const preview = ref(null);

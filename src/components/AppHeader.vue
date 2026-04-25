@@ -102,7 +102,7 @@
             </v-menu>
           </div>
           <v-btn
-            v-else
+            v-else-if="configStore.loginEnabled"
             color="white"
             variant="outlined"
             @click="handleLogin"
@@ -154,7 +154,7 @@
             </v-menu>
           </div>
           <v-btn
-            v-else
+            v-else-if="configStore.loginEnabled"
             color="white"
             variant="outlined"
             @click="handleLogin"
@@ -237,6 +237,7 @@ import { useSearch } from '@/utils/useSearch'
 import AppLogin from './AppLogin.vue'
 import { useUserStore } from '@/store/user'
 import { useThemeStore } from '@/store/theme'
+import { useConfigStore } from '@/store/config'
 
 
 const {triggerSearch} = useSearch()
@@ -297,6 +298,9 @@ const navItems = ref([
     action: () => console.log('导航到联系我们')
   }
 ])
+
+// 登录配置
+const configStore = useConfigStore()
 
 // 判断登录
 const userStore = useUserStore()
