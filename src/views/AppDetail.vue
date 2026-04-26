@@ -108,6 +108,11 @@
       </v-btn>
     </v-card-actions>
   </v-card>
+  
+  <!-- 新增：评论组件 -->
+  <div class="mt-5" v-if="configStore.isCommentEnabled">
+    <AppComment :articleId="props.id" />
+  </div>
   </v-container>
 </template>
 
@@ -121,6 +126,7 @@ import { useUserStore } from '@/store/user';
 import { useThemeStore } from '@/store/theme';
 import { createMarkdownPreview } from '@/utils/markdown-config';
 import { useConfigStore } from '@/store/config';
+import AppComment from '@/components/AppComment.vue'
 const userStore = useUserStore()
 
 // 判断用户是否已登录
