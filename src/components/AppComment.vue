@@ -61,8 +61,8 @@
         <template v-for="comment in commentList" :key="comment.id">
           <v-list-item class="comment-item">
             <template v-slot:prepend>
-              <v-avatar size="40">
-                <v-icon :color="getAvatarColor(comment.createBy)">
+              <v-avatar size="48">
+                <v-icon size="28" :color="getAvatarColor(comment.createBy)">
                   {{ getAvatarIcon(comment.createBy) }}
                 </v-icon>
               </v-avatar>
@@ -111,7 +111,7 @@
             <template v-for="child in comment.children" :key="child.id">
               <v-list-item class="child-comment-item">
                 <template v-slot:prepend>
-                  <v-avatar size="32">
+                  <v-avatar size="30">
                     <v-icon size="20" :color="getAvatarColor(child.createBy)">
                       {{ getAvatarIcon(child.createBy) }}
                     </v-icon>
@@ -120,7 +120,9 @@
 
                 <v-list-item-title class="text-body-2">
                   <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
-                  <span v-if="child.toCommentUserName" class="text-caption">
+                  <span 
+                  v-if="child.toCommentUserName  && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
+                  class="text-caption">
                     回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
                   </span>
                     <div class="text-caption text-grey my-1">
@@ -342,37 +344,44 @@ const showLoginDialog = () => {
 }
 
 // 🚀 时间格式化函数
-// 规则：1分钟内=刚刚，1小时内=X分钟前，24小时内=X小时前
-//       超过24小时=X天前（最多显示3天前）
-//       超过3天=直接使用后端返回的原始格式
+// 规则：
+// - 小于1分钟：刚刚
+// - 1-59分钟：X分钟前
+// - 1-23小时：X小时前（支持到23小时前）
+// - 24小时-3天：X天前（1天前、2天前、3天前）
+// - 超过3天：直接使用后端返回的原始格式
 const formatTime = (time) => {
   if (!time) return ''
   const date = new Date(time)
   const now = new Date()
   const diff = now - date
   
-  // 1分钟内
-  if (diff < 60 * 1000) {
+  // 计算时间差
+  const minutes = Math.floor(diff / (60 * 1000))
+  const hours = Math.floor(diff / (60 * 60 * 1000))
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000))
+
+  // 小于1分钟：刚刚
+  if (minutes < 1) {
     return '刚刚'
   }
-  // 1小时内
-  if (diff < 60 * 60 * 1000) {
-    return `${Math.floor(diff / (60 * 1000))}分钟前`
-  }
-  // 24小时内
-  if (diff < 24 * 60 * 60 * 1000) {
-    return `${Math.floor(diff / (60 * 60 * 1000))}小时前`
+  
+  // 1-59分钟前
+  if (minutes >= 1 && minutes < 60) {
+    return `${minutes}分钟前`
   }
   
-  // 计算天数（超过24小时）
-  const days = Math.floor(diff / (24 * 60 * 60 * 1000))
+  // 1-23小时前
+  if (hours >= 1 && hours < 24) {
+    return `${hours}小时前`
+  }
   
-  // 1-3天内显示 X天前
-  if (days <= 3) {
+  // 1-3天前
+  if (days >= 1 && days <= 3) {
     return `${days}天前`
   }
   
-  // 超过3天，直接使用后端返回的原始格式
+  // 超过3天，使用原始格式
   return time
 }
 
@@ -465,5 +474,11 @@ onMounted(() => {
   .child-comment-item {
     padding-left: 40px !important;
   }
+}
+
+:deep(.v-list-item__prepend) {
+  /* 确保 prepend 容器自身在交叉轴对齐到其所在行的起始位置 */
+  align-self: start !important;
+  
 }
 </style>
