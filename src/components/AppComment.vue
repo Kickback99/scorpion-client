@@ -92,6 +92,17 @@
             </template>
           </v-list-item>
 
+          <!-- 根评论回复输入框（使用 AppReplyInput 组件) -->
+          <AppReplyInput
+            v-if="replyTarget && replyTarget.id === comment.id"
+            :targetUsername="comment.username"
+            :isChildReply="false"
+            :loading="replyLoading"
+            v-model:content="replyContent"
+            @submit="submitReply"
+            @cancel="cancelReply"
+          />
+
           <!-- 子评论 -->
           <v-list
             v-if="comment.children && comment.children.length > 0"
@@ -133,6 +144,17 @@
                   </v-btn>
                 </template>
               </v-list-item>
+
+              <!-- 子评论回复输入框（使用 AppReplyInput 组件) -->
+              <AppReplyInput
+                v-if="replyTarget && replyTarget.id === child.id"
+                :targetUsername="child.username"
+                :isChildReply="true"
+                :loading="replyLoading"
+                v-model:content="replyContent"
+                @submit="submitReply"
+                @cancel="cancelReply"
+              />
             </template>
           </v-list>
 
@@ -151,46 +173,6 @@
         ></v-pagination>
       </div>
     </v-card-text>
-
-    <!-- 回复输入框浮窗 -->
-    <v-dialog v-model="replyDialog" max-width="500px" persistent>
-      <v-card>
-        <v-card-title class="d-flex justify-space-between align-center">
-          <span>回复 {{ replyTarget?.username || '匿名用户' }}</span>
-          <v-btn icon variant="text" @click="replyDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text class="py-4">
-          <div class="mb-2 text-caption text-grey">
-            原评论：{{ replyTarget?.content }}
-          </div>
-          <v-textarea
-            v-model="replyContent"
-            label="写下你的回复..."
-            rows="3"
-            variant="outlined"
-            counter
-            maxlength="500"
-            hide-details
-            autofocus
-          ></v-textarea>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn variant="text" @click="replyDialog = false">取消</v-btn>
-          <v-btn
-            color="primary"
-            :loading="replyLoading"
-            :disabled="!replyContent.trim()"
-            @click="submitReply"
-          >
-            发表回复
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-card>
 </template>
 
@@ -202,6 +184,7 @@ import emitter from '@/utils/event-bus.js'
 
 // 引入评论API（需要创建）
 import { getCommentsApi, addCommentApi } from '@/api/comment'
+import AppReplyInput from './AppReplyInput.vue'
 
 const props = defineProps({
   articleId: {
@@ -228,7 +211,6 @@ const commentContent = ref('')
 const submitLoading = ref(false)
 
 // 回复相关
-const replyDialog = ref(false)
 const replyTarget = ref(null)
 const replyContent = ref('')
 const replyLoading = ref(false)
@@ -300,9 +282,26 @@ const startReply = (comment) => {
     emitter.emit('loginDialogVisible', true);
     return;
   }
-  replyTarget.value = comment
+  
+  if (replyTarget.value && replyTarget.value.id === comment.id) {
+    cancelReply()
+    return
+  }
+  
+  replyTarget.value = {
+    id: comment.id,
+    rootId: comment.rootId,
+    createBy: comment.createBy,
+    username: comment.username,
+    content: comment.content
+  }
   replyContent.value = ''
-  replyDialog.value = true
+}
+
+// 取消回复
+const cancelReply = () => {
+  replyTarget.value = null
+  replyContent.value = ''
 }
 
 // 提交回复
@@ -314,17 +313,14 @@ const submitReply = async () => {
     const res = await addCommentApi({
       articleId: props.articleId,
       content: replyContent.value,
-      type: '0',  // 0表示文章评论
+      type: '0',
       rootId: replyTarget.value.rootId === -1 ? replyTarget.value.id : replyTarget.value.rootId,
       toCommentId: replyTarget.value.id,
       toCommentUserId: replyTarget.value.createBy
     })
     if (res.code === 200) {
       window.$snackbar?.success('回复成功')
-      replyDialog.value = false
-      replyTarget.value = null
-      replyContent.value = ''
-      // 刷新列表
+      cancelReply()
       await loadComments()
     }
   } catch (error) {
