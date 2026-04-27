@@ -160,6 +160,20 @@
             </template>
           </v-list>
 
+            <!-- 加载更多子评论按钮 -->
+            <div v-if="comment.hasMoreChild" class="load-more-child-wrapper">
+              <v-btn
+                variant="text"
+                size="small"
+                color="primary"
+                :loading="comment.childLoading"
+                @click="loadMoreChildren(comment)"
+              >
+                <v-icon left size="16">mdi-chevron-down</v-icon>
+                查看剩余 {{ comment.childTotal - comment.children.length }} 条回复
+              </v-btn>
+            </div>
+
           <v-divider v-if="comment !== commentList[commentList.length-1]"></v-divider>
         </template>
       </v-list>
@@ -185,7 +199,7 @@ import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
 
 // 引入评论API（需要创建）
-import { getCommentsApi, addCommentApi } from '@/api/comment'
+import { getCommentsApi, addCommentApi, getChildCommentsApi } from '@/api/comment'
 import AppReplyInput from './AppReplyInput.vue'
 
 const props = defineProps({
@@ -197,6 +211,9 @@ const props = defineProps({
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
+
+// 获取子评论显示限制数量（默认3条）
+const childCommentLimit = ref(3)
 
 // 是否登录
 const isLoggedIn = ref(false)
@@ -227,6 +244,13 @@ watch(() => userStore.token, () => {
   checkLogin()
 })
 
+// 初始化配置
+const initConfig = () => {
+  // 从配置中获取子评论显示数量
+  // 假设后端会在 configStore 中注入 childCommentLimit
+  childCommentLimit.value = configStore.childCommentLimit || 3
+}
+
 // 加载评论列表
 const loadComments = async () => {
   if (!configStore.isCommentEnabled) return
@@ -237,12 +261,45 @@ const loadComments = async () => {
     if (res.code === 200 && res.data) {
       commentList.value = res.data.items || []
       total.value = res.data.total || 0
+
+      // 为每个评论初始化子评论加载状态
+      commentList.value.forEach(comment => {
+        // 添加子评论加载状态
+        comment.childLoading = false
+      })
     }
   } catch (error) {
     console.error('加载评论失败:', error)
     window.$snackbar?.error('加载评论失败')
   } finally {
     loading.value = false
+  }
+}
+
+// 加载更多子评论
+const loadMoreChildren = async (comment) => {
+  if (comment.childLoading) return
+  
+  // 计算当前已加载的页数
+  const currentPageNum = Math.ceil(comment.children.length / childCommentLimit.value) + 1
+  
+  comment.childLoading = true
+  try {
+    const res = await getChildCommentsApi(comment.id, currentPageNum, childCommentLimit.value)
+    if (res.code === 200 && res.data) {
+      const { children, total, hasMore } = res.data
+      
+      // 追加新的子评论
+      comment.children.push(...children)
+      // 更新总数和是否有更多
+      comment.childTotal = total
+      comment.hasMoreChild = hasMore
+    }
+  } catch (error) {
+    console.error('加载子评论失败:', error)
+    window.$snackbar?.error('加载更多回复失败')
+  } finally {
+    comment.childLoading = false
   }
 }
 
@@ -421,8 +478,16 @@ watch(() => configStore.commentEnabled, (newVal) => {
   }
 })
 
+// 监听配置加载完成，获取子评论限制数量
+watch(() => configStore.childCommentLimit, (newVal) => {
+  if (newVal) {
+    childCommentLimit.value = newVal
+  }
+})
+
 onMounted(() => {
   checkLogin()
+  initConfig() // 初始化配置
   if (configStore.isCommentEnabled && props.articleId) {
     loadComments()
   }
@@ -464,6 +529,26 @@ onMounted(() => {
   line-height: 1.5;
 }
 
+/* 加载更多按钮样式 */
+.load-more-child-wrapper {
+  padding: 8px 16px 12px 56px;
+  text-align: center;
+  border-top: 1px dashed rgba(var(--v-theme-primary), 0.2);
+  margin-top: 4px;
+}
+
+.comment-username {
+  color: rgb(var(--v-theme-primary));
+  font-weight: 500;
+}
+
+.comment-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+
 /* 移动端适配 */
 @media (max-width: 600px) {
   .children-list {
@@ -473,6 +558,12 @@ onMounted(() => {
   
   .child-comment-item {
     padding-left: 40px !important;
+  }
+
+  /* 移动端加载更多按钮样式 */
+  .load-more-child-wrapper {
+    padding-left: 40px;
+    padding-right: 8px;
   }
 }
 

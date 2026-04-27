@@ -26,3 +26,6 @@ export const getCommentsApi = (pageNum, pageSize, articleId) =>
  */
 export const addCommentApi = (data) => 
   http.post('/user/msg/comment', data)
+
+export const getChildCommentsApi = (commentId,pageNum,pageSize) =>
+  http.get(`/user/msg/comment/child/${commentId}/${pageNum}/${pageSize}`)
