@@ -3,21 +3,6 @@
   <v-card>
     <v-card-title class="d-flex justify-space-between align-center">
       <span>{{ article.title }}</span>
-      <!-- 固定在右上角的目录按钮 -->
-      <v-btn 
-        v-if="hasToc" 
-        icon
-        size="small" 
-        variant="text" 
-        @click.stop="showToc = !showToc"
-        class="toc-toggle-btn"
-        :style="{
-          transform: `translateX(${translateXValue})`,
-          top: `${POSITION_CONFIG.TOP}px`
-        }"
-      >
-        <v-icon>mdi-text</v-icon>
-      </v-btn>
     </v-card-title>
 
     <div class="markdown-content">
@@ -30,6 +15,51 @@
         :class="themeStore.isDark?'user-dark':'user-light'"
         /> 
     </div>
+  </v-card>
+
+  <v-card v-if=" configStore.loginEnabled|| isLoggedIn" class="mt-5" style="background-color: transparent !important;"> 
+        <!-- 底部操作栏 -->
+    <v-card-actions class="d-flex justify-center py-4">
+      <v-btn
+        :color="isFavorite ? 'red' : 'grey'"
+        @click="handleFavoriteToggle"
+        :loading="favoriteLoading"
+        stacked
+      >
+        <v-icon size="15" class="mb-1">
+          {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
+        </v-icon>
+        <div class="d-flex align-center">
+          <span>收藏</span>
+          <span v-if="article.favoriteCount > 0">
+            {{ article.favoriteCount }}
+          </span>
+        </div>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+  
+  <!-- 新增：评论组件 -->
+  <div class="mt-5" v-if="configStore.isCommentEnabled">
+    <AppComment :articleId="props.id" />
+  </div>
+
+  <v-sheet>
+    <!-- 固定在右上角的目录按钮 -->
+    <v-btn 
+      v-if="hasToc" 
+      icon
+      size="small" 
+      variant="text" 
+      @click.stop="showToc = !showToc"
+      class="toc-toggle-btn"
+      :style="{
+        transform: `translateX(${translateXValue})`,
+        top: `${POSITION_CONFIG.TOP}px`
+      }"
+    >
+      <v-icon>mdi-text</v-icon>
+    </v-btn>
 
     <!-- 固定在右侧的目录卡 -->
     <v-card 
@@ -85,34 +115,7 @@
         </template>
       </v-list>
     </v-card>
-  </v-card>
-
-  <v-card v-if=" configStore.loginEnabled|| isLoggedIn" class="mt-5" style="background-color: transparent !important;"> 
-        <!-- 底部操作栏 -->
-    <v-card-actions class="d-flex justify-center py-4">
-      <v-btn
-        :color="isFavorite ? 'red' : 'grey'"
-        @click="handleFavoriteToggle"
-        :loading="favoriteLoading"
-        stacked
-      >
-        <v-icon size="15" class="mb-1">
-          {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
-        </v-icon>
-        <div class="d-flex align-center">
-          <span>收藏</span>
-          <span v-if="article.favoriteCount > 0">
-            {{ article.favoriteCount }}
-          </span>
-        </div>
-      </v-btn>
-    </v-card-actions>
-  </v-card>
-  
-  <!-- 新增：评论组件 -->
-  <div class="mt-5" v-if="configStore.isCommentEnabled">
-    <AppComment :articleId="props.id" />
-  </div>
+  </v-sheet>
   </v-container>
 </template>
 
