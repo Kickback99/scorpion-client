@@ -47,7 +47,7 @@
     <v-divider></v-divider>
 
     <!-- 评论列表 -->
-    <v-card-text v-if="loading" class="text-center py-8">
+    <v-card-text v-if="loading && commentList.length === 0" class="text-center py-8">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </v-card-text>
 
@@ -57,110 +57,63 @@
     </v-card-text>
 
     <v-card-text v-else class="pa-0">
-      <v-list lines="two" class="bg-transparent">
-        <template v-for="comment in commentList" :key="comment.id">
-          <v-list-item class="comment-item">
-            <template v-slot:prepend>
-              <v-avatar size="48">
-                <v-icon size="28" :color="getAvatarColor(comment.createBy)">
-                  {{ getAvatarIcon(comment.createBy) }}
-                </v-icon>
-              </v-avatar>
-            </template>
-
-            <v-list-item-title class="d-flex align-center">
-              <strong class="comment-username">{{ comment.username || '匿名用户' }}</strong>
-              <span class="text-caption text-grey ml-3">
-                {{ formatTime(comment.createTime) }}
-              </span>
-            </v-list-item-title>
-
-            <v-list-item-subtitle class="comment-content mt-1">
-              {{ comment.content }}
-            </v-list-item-subtitle>
-
-            <template v-slot:append>
-              <v-btn
-                icon
-                size="x-small"
-                variant="text"
-                @click="startReply(comment)"
-                :title="`回复${comment.username || '匿名用户'}`"
-              >
-                <v-icon size="18">mdi-reply</v-icon>
-              </v-btn>
-            </template>
-          </v-list-item>
-
-          <!-- 根评论回复输入框（使用 AppReplyInput 组件) -->
-          <AppReplyInput
-            v-if="replyTarget && replyTarget.id === comment.id"
-            :targetUsername="comment.username"
-            :isChildReply="false"
-            :loading="replyLoading"
-            v-model:content="replyContent"
-            @submit="submitReply"
-            @cancel="cancelReply"
-          />
-
-          <!-- 子评论区域 -->
-          <div v-if="comment.children?.length > 0 || comment.hasMoreChild">
-            <!-- 子评论列表容器 -->
-            <div class="children-list">
-              <!-- 基础子评论（前3条，始终显示） -->
-              <template v-for="child in comment.baseChildren" :key="child.id">
-                <v-list-item class="child-comment-item">
-                  <template v-slot:prepend>
-                    <v-avatar size="30">
-                      <v-icon size="20" :color="getAvatarColor(child.createBy)">
-                        {{ getAvatarIcon(child.createBy) }}
-                      </v-icon>
-                    </v-avatar>
-                  </template>
-
-                  <v-list-item-title class="text-body-2">
-                    <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
-                    <span 
-                    v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
-                    class="text-caption">
-                      回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
-                    </span>
-                      <div class="text-caption text-grey my-1">
-                        {{ formatTime(child.createTime) }}
-                      </div>
-                  </v-list-item-title>
-
-                  <v-list-item-subtitle class="comment-content mt-1 text-body-2">
-                    {{ child.content }}
-                  </v-list-item-subtitle>
-
-                  <template v-slot:append>
-                    <v-btn
-                      icon
-                      size="x-small"
-                      variant="text"
-                      @click="startReply(child)"
-                      title="回复"
-                    >
-                      <v-icon size="16">mdi-reply</v-icon>
-                    </v-btn>
-                  </template>
-                </v-list-item>
-
-                <AppReplyInput
-                  v-if="replyTarget && replyTarget.id === child.id"
-                  :targetUsername="child.username"
-                  :isChildReply="true"
-                  :loading="replyLoading"
-                  v-model:content="replyContent"
-                  @submit="submitReply"
-                  @cancel="cancelReply"
-                />
+      <v-infinite-scroll
+        :height="'auto'"
+        :loading="scrollLoading"
+        @load="loadMoreComments"
+      >
+        <v-list lines="two" class="bg-transparent">
+          <template v-for="comment in commentList" :key="comment.id">
+            <v-list-item class="comment-item">
+              <template v-slot:prepend>
+                <v-avatar size="48">
+                  <v-icon size="28" :color="getAvatarColor(comment.createBy)">
+                    {{ getAvatarIcon(comment.createBy) }}
+                  </v-icon>
+                </v-avatar>
               </template>
 
-              <!-- 额外子评论（可收起/展开） -->
-              <template v-if="comment.isChildExpanded">
-                <template v-for="child in comment.extraChildren" :key="child.id">
+              <v-list-item-title class="d-flex align-center">
+                <strong class="comment-username">{{ comment.username || '匿名用户' }}</strong>
+                <span class="text-caption text-grey ml-3">
+                  {{ formatTime(comment.createTime) }}
+                </span>
+              </v-list-item-title>
+
+              <v-list-item-subtitle class="comment-content mt-1">
+                {{ comment.content }}
+              </v-list-item-subtitle>
+
+              <template v-slot:append>
+                <v-btn
+                  icon
+                  size="x-small"
+                  variant="text"
+                  @click="startReply(comment)"
+                  :title="`回复${comment.username || '匿名用户'}`"
+                >
+                  <v-icon size="18">mdi-reply</v-icon>
+                </v-btn>
+              </template>
+            </v-list-item>
+
+            <!-- 根评论回复输入框（使用 AppReplyInput 组件) -->
+            <AppReplyInput
+              v-if="replyTarget && replyTarget.id === comment.id"
+              :targetUsername="comment.username"
+              :isChildReply="false"
+              :loading="replyLoading"
+              v-model:content="replyContent"
+              @submit="submitReply"
+              @cancel="cancelReply"
+            />
+
+            <!-- 子评论区域 -->
+            <div v-if="comment.children?.length > 0 || comment.hasMoreChild">
+              <!-- 子评论列表容器 -->
+              <div class="children-list">
+                <!-- 基础子评论（前3条，始终显示） -->
+                <template v-for="child in comment.baseChildren" :key="child.id">
                   <v-list-item class="child-comment-item">
                     <template v-slot:prepend>
                       <v-avatar size="30">
@@ -209,69 +162,126 @@
                     @cancel="cancelReply"
                   />
                 </template>
-              </template>
-            </div>
 
-            <!-- 底部操作按钮（水平居中） -->
-            <div class="child-actions-wrapper">
-              <!-- 有额外评论时显示操作按钮 -->
-              <template v-if="comment.extraChildren.length > 0 || comment.hasMoreChild">
-                <!-- 展开状态：显示"查看更多"和"收起" -->
+                <!-- 额外子评论（可收起/展开） -->
                 <template v-if="comment.isChildExpanded">
+                  <template v-for="child in comment.extraChildren" :key="child.id">
+                    <v-list-item class="child-comment-item">
+                      <template v-slot:prepend>
+                        <v-avatar size="30">
+                          <v-icon size="20" :color="getAvatarColor(child.createBy)">
+                            {{ getAvatarIcon(child.createBy) }}
+                          </v-icon>
+                        </v-avatar>
+                      </template>
+
+                      <v-list-item-title class="text-body-2">
+                        <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
+                        <span 
+                        v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
+                        class="text-caption">
+                          回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
+                        </span>
+                          <div class="text-caption text-grey my-1">
+                            {{ formatTime(child.createTime) }}
+                          </div>
+                      </v-list-item-title>
+
+                      <v-list-item-subtitle class="comment-content mt-1 text-body-2">
+                        {{ child.content }}
+                      </v-list-item-subtitle>
+
+                      <template v-slot:append>
+                        <v-btn
+                          icon
+                          size="x-small"
+                          variant="text"
+                          @click="startReply(child)"
+                          title="回复"
+                        >
+                          <v-icon size="16">mdi-reply</v-icon>
+                        </v-btn>
+                      </template>
+                    </v-list-item>
+
+                    <AppReplyInput
+                      v-if="replyTarget && replyTarget.id === child.id"
+                      :targetUsername="child.username"
+                      :isChildReply="true"
+                      :loading="replyLoading"
+                      v-model:content="replyContent"
+                      @submit="submitReply"
+                      @cancel="cancelReply"
+                    />
+                  </template>
+                </template>
+              </div>
+
+              <!-- 底部操作按钮（水平居中） -->
+              <div class="child-actions-wrapper">
+                <!-- 有额外评论时显示操作按钮 -->
+                <template v-if="comment.extraChildren.length > 0 || comment.hasMoreChild">
+                  <!-- 展开状态：显示"查看更多"和"收起" -->
+                  <template v-if="comment.isChildExpanded">
+                    <v-btn
+                      v-if="comment.hasMoreChild"
+                      variant="text"
+                      size="small"
+                      color="primary"
+                      :loading="comment.childLoading"
+                      @click="loadMoreChildren(comment)"
+                      class="mx-1"
+                    >
+                      <v-icon left size="16">mdi-chevron-down</v-icon>
+                      查看更多
+                    </v-btn>
+                    
+                    <v-btn
+                      variant="text"
+                      size="small"
+                      color="primary"
+                      @click="collapseChildren(comment)"
+                      class="mx-1"
+                    >
+                      <v-icon left size="16">mdi-chevron-up</v-icon>
+                      收起
+                    </v-btn>
+                  </template>
+                  
+                  <!-- 收起状态：显示"查看剩余x条回复" -->
                   <v-btn
-                    v-if="comment.hasMoreChild"
+                    v-else
                     variant="text"
                     size="small"
                     color="primary"
-                    :loading="comment.childLoading"
-                    @click="loadMoreChildren(comment)"
-                    class="mx-1"
+                    @click="expandChildren(comment)"
                   >
                     <v-icon left size="16">mdi-chevron-down</v-icon>
-                    查看更多
-                  </v-btn>
-                  
-                  <v-btn
-                    variant="text"
-                    size="small"
-                    color="primary"
-                    @click="collapseChildren(comment)"
-                    class="mx-1"
-                  >
-                    <v-icon left size="16">mdi-chevron-up</v-icon>
-                    收起
+                    查看剩余 {{ comment.childTotal - comment.baseChildren.length }} 条回复
                   </v-btn>
                 </template>
-                
-                <!-- 收起状态：显示"查看剩余x条回复" -->
-                <v-btn
-                  v-else
-                  variant="text"
-                  size="small"
-                  color="primary"
-                  @click="expandChildren(comment)"
-                >
-                  <v-icon left size="16">mdi-chevron-down</v-icon>
-                  查看剩余 {{ comment.childTotal - comment.baseChildren.length }} 条回复
-                </v-btn>
-              </template>
+              </div>
             </div>
+
+            <v-divider v-if="comment !== commentList[commentList.length-1]"></v-divider>
+          </template>
+        </v-list>
+
+        <!-- 加载更多时的提示 -->
+        <template v-slot:loading>
+          <div class="text-center py-4">
+            <v-progress-circular indeterminate size="32" color="primary"></v-progress-circular>
+            <div class="text-caption text-grey mt-2">加载更多评论中...</div>
           </div>
-
-          <v-divider v-if="comment !== commentList[commentList.length-1]"></v-divider>
         </template>
-      </v-list>
 
-      <!-- 分页 -->
-      <div v-if="total > pageSize" class="d-flex justify-center py-4">
-        <v-pagination
-          v-model="currentPage"
-          :length="Math.ceil(total / pageSize)"
-          :total-visible="5"
-          @update:model-value="loadComments"
-          size="small"
-        ></v-pagination>
-      </div>
+        <!-- 没有更多评论时的提示 -->
+        <template v-slot:empty>
+          <div class="text-center py-4 text-grey">
+            <div class="text-caption">已经到底了~</div>
+          </div>
+        </template>
+      </v-infinite-scroll>
     </v-card-text>
   </v-card>
 </template>
@@ -304,10 +314,12 @@ const isLoggedIn = ref(false)
 
 // 数据
 const loading = ref(false)
+const scrollLoading = ref(false)  // 无限滚动加载状态
 const commentList = ref([])
 const total = ref(0)
 const pageSize = ref(10)
 const currentPage = ref(1)
+const hasMore = ref(true)  // 是否还有更多数据
 
 // 发表评论
 const commentContent = ref('')
@@ -335,30 +347,37 @@ const initConfig = () => {
   childCommentLimit.value = configStore.childCommentLimit || 3
 }
 
-// 加载评论列表
-const loadComments = async () => {
+// 重置滚动状态（当文章切换时）
+const resetScrollState = () => {
+  commentList.value = []
+  currentPage.value = 1
+  total.value = 0
+  hasMore.value = true
+}
+
+// 初始化加载第一页
+const initLoadComments = async () => {
   if (!configStore.isCommentEnabled) return
   
   loading.value = true
+  resetScrollState()
+  
   try {
     const res = await getCommentsApi(currentPage.value, pageSize.value, props.articleId)
     if (res.code === 200 && res.data) {
-      commentList.value = res.data.items || []
+      const newComments = res.data.items || []
+      commentList.value = newComments
       total.value = res.data.total || 0
-
-      // 为每个评论初始化子评论加载状态
+      
+      // 判断是否还有更多
+      hasMore.value = newComments.length >= pageSize.value && commentList.value.length < total.value
+      
+      // 为每个评论初始化子评论状态
       commentList.value.forEach(comment => {
-        // 添加子评论加载状态
         comment.childLoading = false
-
-        // 分离：前3条作为打底基础评论（始终显示）
-        comment.baseChildren = comment.children.slice(0, childCommentLimit.value)
-        // 多余的作为额外评论（可收起/展开）
-        comment.extraChildren = comment.children.slice(childCommentLimit.value)
-        
-        // 初始状态：如果有额外评论，默认展开显示
+        comment.baseChildren = comment.children?.slice(0, childCommentLimit.value) || []
+        comment.extraChildren = comment.children?.slice(childCommentLimit.value) || []
         comment.isChildExpanded = comment.extraChildren.length > 0
-
       })
     }
   } catch (error) {
@@ -367,6 +386,64 @@ const loadComments = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 加载更多（无限滚动触发）
+const loadMoreComments = async ({ done }) => {
+  if (!configStore.isCommentEnabled || !hasMore.value) {
+    done('empty')
+    return
+  }
+  
+  scrollLoading.value = true
+  const nextPage = currentPage.value + 1
+  
+  try {
+    const res = await getCommentsApi(nextPage, pageSize.value, props.articleId)
+    if (res.code === 200 && res.data) {
+      const newComments = res.data.items || []
+      
+      if (newComments.length === 0) {
+        hasMore.value = false
+        done('empty')
+        return
+      }
+      
+      // 为新评论初始化子评论状态
+      newComments.forEach(comment => {
+        comment.childLoading = false
+        comment.baseChildren = comment.children?.slice(0, childCommentLimit.value) || []
+        comment.extraChildren = comment.children?.slice(childCommentLimit.value) || []
+        comment.isChildExpanded = comment.extraChildren.length > 0
+      })
+      
+      // 追加到列表
+      commentList.value.push(...newComments)
+      currentPage.value = nextPage
+      
+      // 判断是否还有更多
+      hasMore.value = commentList.value.length < total.value
+      
+      done(hasMore.value ? 'ok' : 'empty')
+    } else {
+      hasMore.value = false
+      done('empty')
+    }
+  } catch (error) {
+    console.error('加载更多评论失败:', error)
+    window.$snackbar?.error('加载更多评论失败')
+    done('error')
+  } finally {
+    scrollLoading.value = false
+  }
+}
+
+// 加载评论列表（保留用于评论后刷新）
+const loadComments = async () => {
+  if (!configStore.isCommentEnabled) return
+  
+  // 刷新时重置并重新加载
+  await initLoadComments()
 }
 
 // 展开额外子评论
