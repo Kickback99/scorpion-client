@@ -12,7 +12,9 @@ export const useConfigStore = defineStore('config', {
     // 前端登录（true开启，false禁用）
     loginEnabled: true,
     // 加载状态
-    loading: false
+    loading: false,
+    // 子评论默认显示数量
+    childCommentLimit: 3,
   }),
 
   actions: {
