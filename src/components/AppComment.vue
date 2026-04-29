@@ -97,7 +97,7 @@
               </template>
             </v-list-item>
 
-            <!-- 根评论回复输入框（使用 AppReplyInput 组件) -->
+            <!-- 根评论回复输入框 -->
             <AppReplyInput
               v-if="replyTarget && replyTarget.id === comment.id"
               :targetUsername="comment.username"
@@ -108,12 +108,11 @@
               @cancel="cancelReply"
             />
 
-            <!-- 子评论区域 -->
-            <div v-if="comment.children?.length > 0 || comment.hasMoreChild">
+            <!-- 子评论区域（整合v1逻辑） -->
+            <div v-if="comment.children?.length > 0 || comment.childTotal > 0">
               <!-- 子评论列表容器 -->
               <div class="children-list">
-                <!-- 基础子评论（前3条，始终显示） -->
-                <template v-for="child in comment.baseChildren" :key="child.id">
+                <template v-for="child in comment.displayChildren" :key="child.id">
                   <v-list-item class="child-comment-item">
                     <template v-slot:prepend>
                       <v-avatar size="30">
@@ -162,104 +161,48 @@
                     @cancel="cancelReply"
                   />
                 </template>
-
-                <!-- 额外子评论（可收起/展开） -->
-                <template v-if="comment.isChildExpanded">
-                  <template v-for="child in comment.extraChildren" :key="child.id">
-                    <v-list-item class="child-comment-item">
-                      <template v-slot:prepend>
-                        <v-avatar size="30">
-                          <v-icon size="20" :color="getAvatarColor(child.createBy)">
-                            {{ getAvatarIcon(child.createBy) }}
-                          </v-icon>
-                        </v-avatar>
-                      </template>
-
-                      <v-list-item-title class="text-body-2">
-                        <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
-                        <span 
-                        v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
-                        class="text-caption">
-                          回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
-                        </span>
-                          <div class="text-caption text-grey my-1">
-                            {{ formatTime(child.createTime) }}
-                          </div>
-                      </v-list-item-title>
-
-                      <v-list-item-subtitle class="comment-content mt-1 text-body-2">
-                        {{ child.content }}
-                      </v-list-item-subtitle>
-
-                      <template v-slot:append>
-                        <v-btn
-                          icon
-                          size="x-small"
-                          variant="text"
-                          @click="startReply(child)"
-                          title="回复"
-                        >
-                          <v-icon size="16">mdi-reply</v-icon>
-                        </v-btn>
-                      </template>
-                    </v-list-item>
-
-                    <AppReplyInput
-                      v-if="replyTarget && replyTarget.id === child.id"
-                      :targetUsername="child.username"
-                      :isChildReply="true"
-                      :loading="replyLoading"
-                      v-model:content="replyContent"
-                      @submit="submitReply"
-                      @cancel="cancelReply"
-                    />
-                  </template>
-                </template>
               </div>
 
-              <!-- 底部操作按钮（水平居中） -->
-              <div class="child-actions-wrapper">
-                <!-- 有额外评论时显示操作按钮 -->
-                <template v-if="comment.extraChildren.length > 0 || comment.hasMoreChild">
-                  <!-- 展开状态：显示"查看更多"和"收起" -->
-                  <template v-if="comment.isChildExpanded">
-                    <v-btn
-                      v-if="comment.hasMoreChild"
-                      variant="text"
-                      size="small"
-                      color="primary"
-                      :loading="comment.childLoading"
-                      @click="loadMoreChildren(comment)"
-                      class="mx-1"
-                    >
-                      <v-icon left size="16">mdi-chevron-down</v-icon>
-                      查看更多
-                    </v-btn>
-                    
-                    <v-btn
-                      variant="text"
-                      size="small"
-                      color="primary"
-                      @click="collapseChildren(comment)"
-                      class="mx-1"
-                    >
-                      <v-icon left size="16">mdi-chevron-up</v-icon>
-                      收起
-                    </v-btn>
-                  </template>
-                  
-                  <!-- 收起状态：显示"查看剩余x条回复" -->
+              <!-- 底部操作按钮 -->
+              <div class="child-actions-wrapper" v-if="shouldShowChildActions(comment)">
+                <!-- 展开状态 -->
+                <template v-if="comment.isChildExpanded">
                   <v-btn
-                    v-else
+                    v-if="comment.hasMoreChild"
                     variant="text"
                     size="small"
                     color="primary"
-                    @click="expandChildren(comment)"
+                    :loading="comment.childLoading"
+                    @click="loadMoreChildren(comment)"
+                    class="mx-1"
                   >
                     <v-icon left size="16">mdi-chevron-down</v-icon>
-                    查看剩余 {{ comment.childTotal - comment.baseChildren.length }} 条回复
+                    查看更多
+                  </v-btn>
+                  
+                  <v-btn
+                    variant="text"
+                    size="small"
+                    color="primary"
+                    @click="collapseChildren(comment)"
+                    class="mx-1"
+                  >
+                    <v-icon left size="16">mdi-chevron-up</v-icon>
+                    收起
                   </v-btn>
                 </template>
+                
+                <!-- 收起状态 -->
+                <v-btn
+                  v-else
+                  variant="text"
+                  size="small"
+                  color="primary"
+                  @click="expandChildren(comment)"
+                >
+                  <v-icon left size="16">mdi-chevron-down</v-icon>
+                  查看剩余 {{ getRemainingCount(comment) }} 条回复
+                </v-btn>
               </div>
             </div>
 
@@ -267,7 +210,6 @@
           </template>
         </v-list>
 
-        <!-- 加载更多时的提示 -->
         <template v-slot:loading>
           <div class="text-center py-4">
             <v-progress-circular indeterminate size="32" color="primary"></v-progress-circular>
@@ -275,7 +217,6 @@
           </div>
         </template>
 
-        <!-- 没有更多评论时的提示 -->
         <template v-slot:empty>
           <div class="text-center py-4 text-grey">
             <div class="text-caption">已经到底了~</div>
@@ -287,12 +228,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
 
-// 引入评论API（需要创建）
 import { getCommentsApi, addCommentApi, getChildCommentsApi } from '@/api/comment'
 import AppReplyInput from './AppReplyInput.vue'
 
@@ -306,48 +246,86 @@ const props = defineProps({
 const userStore = useUserStore()
 const configStore = useConfigStore()
 
-// 获取子评论显示限制数量（默认3条）
-const childCommentLimit = ref(3)
+// 使用 computed 直接获取配置，避免 || 3 导致 0 变成 3
+const childCommentLimit = computed(() => configStore.childCommentLimit)
 
-// 是否登录
+// 分页加载每页数量
+const CHILD_PAGE_SIZE = 10
+
 const isLoggedIn = ref(false)
-
-// 数据
 const loading = ref(false)
-const scrollLoading = ref(false)  // 无限滚动加载状态
+const scrollLoading = ref(false)
 const commentList = ref([])
 const total = ref(0)
 const pageSize = ref(10)
 const currentPage = ref(1)
-const hasMore = ref(true)  // 是否还有更多数据
+const hasMore = ref(true)
 
-// 发表评论
 const commentContent = ref('')
 const submitLoading = ref(false)
 
-// 回复相关
 const replyTarget = ref(null)
 const replyContent = ref('')
 const replyLoading = ref(false)
 
-// 检查登录状态
 const checkLogin = () => {
   isLoggedIn.value = !!userStore.token && Object.keys(userStore.user).length > 0
 }
 
-// 监听用户登录状态变化
 watch(() => userStore.token, () => {
   checkLogin()
 })
 
-// 初始化配置
-const initConfig = () => {
-  // 从配置中获取子评论显示数量
-  // 假设后端会在 configStore 中注入 childCommentLimit
-  childCommentLimit.value = configStore.childCommentLimit || 3
+// 判断是否显示操作按钮
+const shouldShowChildActions = (comment) => {
+  if (comment.childTotal === 0) return false
+  
+  if (childCommentLimit.value === 0) {
+    return comment.childTotal > 0
+  }
+  
+  return comment.childTotal > childCommentLimit.value
 }
 
-// 重置滚动状态（当文章切换时）
+// 获取剩余回复数量
+const getRemainingCount = (comment) => {
+  if (!comment.childTotal) return 0
+  const displayedCount = comment.displayChildren?.length || 0
+  const remaining = comment.childTotal - displayedCount
+  return remaining > 0 ? remaining : 0
+}
+
+// 初始化评论的子评论状态（整合v1逻辑）
+const initCommentChildren = (comment) => {
+  comment.childLoading = false
+  comment.originalChildren = [...(comment.children || [])]
+  comment.childTotal = comment.childTotal || 0
+
+    // 初始化缓存字段
+  comment.cachedChildren = null
+  comment.cachedHasMore = false
+  
+  if (childCommentLimit.value === 0) {
+    // 打底为0：不显示任何子评论
+    comment.displayChildren = []
+    comment.isChildExpanded = false
+    comment.hasMoreChild = comment.hasMoreChild || false
+  } else {
+    // 打底 > 0
+    if (comment.childTotal <= childCommentLimit.value) {
+      // 总数不超过打底数量，直接显示全部
+      comment.displayChildren = comment.children || []
+      comment.isChildExpanded = true
+      comment.hasMoreChild = false
+    } else {
+      // 总数超过打底数量，只显示打底数量
+      comment.displayChildren = (comment.children || []).slice(0, childCommentLimit.value)
+      comment.isChildExpanded = false
+    }
+  }
+}
+
+// 重置滚动状态
 const resetScrollState = () => {
   commentList.value = []
   currentPage.value = 1
@@ -369,15 +347,11 @@ const initLoadComments = async () => {
       commentList.value = newComments
       total.value = res.data.total || 0
       
-      // 判断是否还有更多
       hasMore.value = newComments.length >= pageSize.value && commentList.value.length < total.value
       
-      // 为每个评论初始化子评论状态
+      // 初始化每个评论的子评论状态
       commentList.value.forEach(comment => {
-        comment.childLoading = false
-        comment.baseChildren = comment.children?.slice(0, childCommentLimit.value) || []
-        comment.extraChildren = comment.children?.slice(childCommentLimit.value) || []
-        comment.isChildExpanded = comment.extraChildren.length > 0
+        initCommentChildren(comment)
       })
     }
   } catch (error) {
@@ -388,7 +362,7 @@ const initLoadComments = async () => {
   }
 }
 
-// 加载更多（无限滚动触发）
+// 加载更多（无限滚动）
 const loadMoreComments = async ({ done }) => {
   if (!configStore.isCommentEnabled || !hasMore.value) {
     done('empty')
@@ -409,19 +383,13 @@ const loadMoreComments = async ({ done }) => {
         return
       }
       
-      // 为新评论初始化子评论状态
+      // 初始化新评论的子评论状态
       newComments.forEach(comment => {
-        comment.childLoading = false
-        comment.baseChildren = comment.children?.slice(0, childCommentLimit.value) || []
-        comment.extraChildren = comment.children?.slice(childCommentLimit.value) || []
-        comment.isChildExpanded = comment.extraChildren.length > 0
+        initCommentChildren(comment)
       })
       
-      // 追加到列表
       commentList.value.push(...newComments)
       currentPage.value = nextPage
-      
-      // 判断是否还有更多
       hasMore.value = commentList.value.length < total.value
       
       done(hasMore.value ? 'ok' : 'empty')
@@ -438,45 +406,73 @@ const loadMoreComments = async ({ done }) => {
   }
 }
 
-// 加载评论列表（保留用于评论后刷新）
+// 加载评论（用于刷新）
 const loadComments = async () => {
-  if (!configStore.isCommentEnabled) return
-  
-  // 刷新时重置并重新加载
   await initLoadComments()
 }
 
-// 展开额外子评论
+// 展开子评论
 const expandChildren = async (comment) => {
-  // 如果还没有加载过更多数据，先加载第一页更多数据
-  if (comment.extraChildren.length === 0 && comment.hasMoreChild) {
-    comment.childLoading = true
-    try {
-      
-      // 从第2页开始加载，跳过前3条打底数据
-      // 第1页返回的是前7条，但前3条已经是 baseChildren 了
-      // 所以需要从第2页开始，每页加载 childCommentLimit 条
-      const res = await getChildCommentsApi(comment.id, 2, childCommentLimit.value)
-      if (res.code === 200 && res.data) {
-        const { children, total, hasMore } = res.data
-        comment.extraChildren = children //直接设置为 extraChildren
-        comment.childTotal = total
-        comment.hasMoreChild = hasMore
-      }
-    } catch (error) {
-      console.error('加载子评论失败:', error)
-      window.$snackbar?.error('加载回复失败')
-      return
-    } finally {
-      comment.childLoading = false
-    }
+  // 如果已经显示了全部子评论，不需要再加载
+  if (comment.displayChildren.length >= comment.childTotal) {
+    comment.isChildExpanded = true
+    return
   }
-  
+
   comment.isChildExpanded = true
+
+  // 优先使用缓存数据
+  if (comment.cachedChildren && comment.cachedChildren.length > 0) {
+    console.log(`🎯 使用缓存数据恢复评论 ${comment.id}，共 ${comment.cachedChildren.length} 条`)
+    comment.displayChildren = [...comment.cachedChildren]
+    comment.hasMoreChild = comment.cachedHasMore || false
+    return
+  }
+
+  // 没有缓存，从接口加载
+  const needLoadCount = CHILD_PAGE_SIZE
+  
+  comment.childLoading = true
+  try {
+    const res = await getChildCommentsApi(comment.id, 1, needLoadCount)
+    if (res.code === 200 && res.data) {
+      const { children, total, hasMore } = res.data
+      comment.displayChildren = children || []
+      comment.childTotal = total
+      comment.hasMoreChild = hasMore
+
+      // 保存第一页数据到缓存
+      comment.cachedChildren = [...comment.displayChildren]
+      comment.cachedHasMore = hasMore
+
+    }
+  } catch (error) {
+    console.error('加载子评论失败:', error)
+    window.$snackbar?.error('加载回复失败')
+    comment.isChildExpanded = false
+  } finally {
+    comment.childLoading = false
+  }
 }
 
-// 收起额外子评论
+// 收起子评论
 const collapseChildren = (comment) => {
+
+  // 保存当前显示的数据到缓存（用于后续恢复）
+  if (comment.displayChildren && comment.displayChildren.length > 0) {
+    comment.cachedChildren = [...comment.displayChildren]
+    comment.cachedHasMore = comment.hasMoreChild
+  }
+
+  if (childCommentLimit.value === 0) {
+    comment.displayChildren = []
+  } else {
+    if (comment.childTotal <= childCommentLimit.value) {
+      comment.displayChildren = comment.originalChildren || comment.children || []
+    } else {
+      comment.displayChildren = (comment.originalChildren || comment.children || []).slice(0, childCommentLimit.value)
+    }
+  }
   comment.isChildExpanded = false
 }
 
@@ -484,31 +480,22 @@ const collapseChildren = (comment) => {
 const loadMoreChildren = async (comment) => {
   if (comment.childLoading) return
   
-  // 计算当前已加载的页数
-  // 计算当前页数：当前 extraChildren 数量 / 每页数量 + 1
-  // 注意：因为第一页是从第2页开始的，所以基础页码需要调整
-  // extraChildren 的第1页对应后端的第2页
-
-  // 数据分布说明：
-  // - comment.children: 后端返回的全部子评论（初始前7条）
-  // - comment.baseChildren: 前3条打底数据（从 children 中分离）
-  // - comment.extraChildren: 剩余数据（初始时是 children.slice(3)）
-  //
-  // 页码计算逻辑：
-  // - 第1页（后端第2页）：extraChildren 初始有3条（第4-6条）
-  // - 第2页（后端第3页）：extraChildren 追加3条（第7-9条）
-  // - 第3页（后端第4页）：extraChildren 追加剩余
-  const currentPageNum = Math.ceil(comment.extraChildren.length / childCommentLimit.value) + 2
+  const currentDisplayCount = comment.displayChildren.length
+  const nextPageNum = Math.ceil(currentDisplayCount / CHILD_PAGE_SIZE) + 1
   
   comment.childLoading = true
   try {
-    const res = await getChildCommentsApi(comment.id, currentPageNum, childCommentLimit.value)
+    const res = await getChildCommentsApi(comment.id, nextPageNum, CHILD_PAGE_SIZE)
     if (res.code === 200 && res.data) {
       const { children, total, hasMore } = res.data
-      
-      // 追加新的子评论
-      comment.extraChildren.push(...children)
-      // 更新是否有更多
+      if (children && children.length > 0) {
+        comment.displayChildren.push(...children)
+
+        // 更新缓存（追加新数据）
+        comment.cachedChildren = [...comment.displayChildren]
+        comment.cachedHasMore = hasMore
+      }
+      comment.childTotal = total
       comment.hasMoreChild = hasMore
     }
   } catch (error) {
@@ -528,13 +515,11 @@ const submitComment = async () => {
     const res = await addCommentApi({
       articleId: props.articleId,
       content: commentContent.value,
-      type: '0'  // 0表示文章评论
+      type: '0'
     })
     if (res.code === 200) {
       window.$snackbar?.success('评论发表成功')
       commentContent.value = ''
-      // 刷新列表到第一页
-      currentPage.value = 1
       await loadComments()
     }
   } catch (error) {
@@ -565,7 +550,7 @@ const startReply = (comment) => {
   
   replyTarget.value = {
     id: comment.id,
-    rootId: comment.rootId,
+    rootId: comment.rootId || comment.id,
     createBy: comment.createBy,
     username: comment.username,
     content: comment.content
@@ -573,13 +558,11 @@ const startReply = (comment) => {
   replyContent.value = ''
 }
 
-// 取消回复
 const cancelReply = () => {
   replyTarget.value = null
   replyContent.value = ''
 }
 
-// 提交回复
 const submitReply = async () => {
   if (!replyContent.value.trim() || !replyTarget.value) return
   
@@ -589,7 +572,7 @@ const submitReply = async () => {
       articleId: props.articleId,
       content: replyContent.value,
       type: '0',
-      rootId: replyTarget.value.rootId === -1 ? replyTarget.value.id : replyTarget.value.rootId,
+      rootId: replyTarget.value.rootId,
       toCommentId: replyTarget.value.id,
       toCommentUserId: replyTarget.value.createBy
     })
@@ -611,61 +594,33 @@ const submitReply = async () => {
   }
 }
 
-// 显示登录弹窗
 const showLoginDialog = () => {
   emitter.emit('loginDialogVisible', true)
 }
 
-// 🚀 时间格式化函数
-// 规则：
-// - 小于1分钟：刚刚
-// - 1-59分钟：X分钟前
-// - 1-23小时：X小时前（支持到23小时前）
-// - 24小时-3天：X天前（1天前、2天前、3天前）
-// - 超过3天：直接使用后端返回的原始格式
 const formatTime = (time) => {
   if (!time) return ''
   const date = new Date(time)
   const now = new Date()
   const diff = now - date
   
-  // 计算时间差
   const minutes = Math.floor(diff / (60 * 1000))
   const hours = Math.floor(diff / (60 * 60 * 1000))
   const days = Math.floor(diff / (24 * 60 * 60 * 1000))
 
-  // 小于1分钟：刚刚
-  if (minutes < 1) {
-    return '刚刚'
-  }
-  
-  // 1-59分钟前
-  if (minutes >= 1 && minutes < 60) {
-    return `${minutes}分钟前`
-  }
-  
-  // 1-23小时前
-  if (hours >= 1 && hours < 24) {
-    return `${hours}小时前`
-  }
-  
-  // 1-3天前
-  if (days >= 1 && days <= 3) {
-    return `${days}天前`
-  }
-  
-  // 超过3天，使用原始格式
+  if (minutes < 1) return '刚刚'
+  if (minutes >= 1 && minutes < 60) return `${minutes}分钟前`
+  if (hours >= 1 && hours < 24) return `${hours}小时前`
+  if (days >= 1 && days <= 3) return `${days}天前`
   return time
 }
 
-// 获取头像颜色
 const getAvatarColor = (userId) => {
   const colors = ['primary', 'secondary', 'success', 'info', 'warning', 'error', 'purple', 'orange']
   const index = (userId || 1) % colors.length
   return colors[index]
 }
 
-// 获取头像图标
 const getAvatarIcon = (userId) => {
   const icons = [
     'mdi-account-circle',
@@ -679,31 +634,27 @@ const getAvatarIcon = (userId) => {
   return icons[index]
 }
 
-// 监听articleId变化重新加载
 watch(() => props.articleId, () => {
-  currentPage.value = 1
   if (configStore.isCommentEnabled) {
     loadComments()
   }
 })
 
-// 监听配置变化
 watch(() => configStore.commentEnabled, (newVal) => {
   if (newVal && props.articleId) {
     loadComments()
   }
 })
 
-// 监听配置加载完成，获取子评论限制数量
-watch(() => configStore.childCommentLimit, (newVal) => {
-  if (newVal) {
-    childCommentLimit.value = newVal
+// 监听配置变化，重新加载
+watch(() => configStore.childCommentLimit, (newVal, oldVal) => {
+  if (newVal !== undefined && newVal !== null && props.articleId) {
+    loadComments()
   }
 })
 
 onMounted(() => {
   checkLogin()
-  initConfig() // 初始化配置
   if (configStore.isCommentEnabled && props.articleId) {
     loadComments()
   }
@@ -745,26 +696,6 @@ onMounted(() => {
   line-height: 1.5;
 }
 
-/* 加载更多按钮样式 */
-.load-more-child-wrapper {
-  padding: 8px 16px 12px 56px;
-  text-align: center;
-  border-top: 1px dashed rgba(var(--v-theme-primary), 0.2);
-  margin-top: 4px;
-}
-
-.comment-username {
-  color: rgb(var(--v-theme-primary));
-  font-weight: 500;
-}
-
-.comment-content {
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.5;
-}
-
-/* 子评论操作按钮容器 - 水平居中 */
 .child-actions-wrapper {
   padding: 8px 16px 12px 56px;
   text-align: center;
@@ -776,8 +707,6 @@ onMounted(() => {
   margin-top: 4px;
 }
 
-
-/* 移动端适配 */
 @media (max-width: 600px) {
   .children-list {
     margin-left: 8px;
@@ -788,16 +717,13 @@ onMounted(() => {
     padding-left: 40px !important;
   }
 
-  /* 移动端加载更多按钮样式 */
-  .load-more-child-wrapper {
+  .child-actions-wrapper {
     padding-left: 40px;
     padding-right: 8px;
   }
 }
 
 :deep(.v-list-item__prepend) {
-  /* 确保 prepend 容器自身在交叉轴对齐到其所在行的起始位置 */
   align-self: start !important;
-  
 }
 </style>
