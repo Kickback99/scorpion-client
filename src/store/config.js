@@ -3,8 +3,6 @@ import { getConfigApi } from "@/api/config"
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
-    // 评论显示（true开启，false禁用）
-    commentEnabled: true,
     // 锚点显示（true开启，false禁用）
     anchorEnabled: true,
     // 前端主题（0：github主题，1：vuepress主题）
@@ -13,8 +11,17 @@ export const useConfigStore = defineStore('config', {
     loginEnabled: true,
     // 加载状态
     loading: false,
-    // 子评论默认显示数量
-    childCommentLimit: 3,
+
+    // 评论相关
+    comment: {
+      // 评论显示（true开启，false禁用）
+      commentEnabled: true,
+      // 子评论默认显示数量
+      childCommentLimit: 3,
+      // 子评论分页大小
+      childPageSize: 5
+    },
+
   }),
 
   actions: {
@@ -43,24 +50,49 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     * 获取当前主题名称
+     */
+    getCurrentTheme() {
+      return this.theme === 0 ? 'github' : 'vuepress'
+    },
+
+    /**
+     * 获取登录是否启用
+     */
+    getLoginEnabled(){
+      return this.loginEnabled === true
+    },
+    
+    /**
      * 获取评论是否启用
      */
     getCommentEnabled() {
       return this.commentEnabled === true
     },
 
+
     /**
-     * 获取当前主题名称
+     * 🎯 获取子评论默认显示数量
      */
-    getCurrentTheme() {
-      return this.theme === 0 ? 'github' : 'vuepress'
+    getChildCommentLimit() {
+      return this.comment?.childCommentLimit ?? 3
+    },
+
+    /**
+     * 🎯 获取子评论分页大小
+     */
+    getChildPageSize() {
+      return this.comment?.childPageSize ?? 10
     }
+
   },
 
   getters: {
     isAnchorEnabled: (state) => state.anchorEnabled === true,
-    isCommentEnabled: (state) => state.commentEnabled === true,
     isLoginEnabled: (state) => state.loginEnabled === true,
-    currentThemeName: (state) => state.theme === 0 ? 'github' : 'vuepress'
+    currentThemeName: (state) => state.theme === 0 ? 'github' : 'vuepress',
+    isCommentEnabled: (state) => state.comment?.commentEnabled === true,
+    childCommentLimit: (state) => state.comment?.childCommentLimit ?? 3,
+    childPageSize: (state) => state.comment?.childPageSize ?? 10
   }
 })

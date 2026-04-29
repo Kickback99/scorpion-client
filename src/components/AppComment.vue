@@ -228,7 +228,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
@@ -246,11 +246,11 @@ const props = defineProps({
 const userStore = useUserStore()
 const configStore = useConfigStore()
 
-// 使用 computed 直接获取配置，避免 || 3 导致 0 变成 3
-const childCommentLimit = computed(() => configStore.childCommentLimit)
+// 子评论显示限制数量（默认3条）
+const childCommentLimit = ref(3)
 
-// 分页加载每页数量
-const CHILD_PAGE_SIZE = 10
+// 子评论分页大小（默认10条）
+const childPageSize = ref(10)
 
 const isLoggedIn = ref(false)
 const loading = ref(false)
@@ -272,10 +272,6 @@ const checkLogin = () => {
   isLoggedIn.value = !!userStore.token && Object.keys(userStore.user).length > 0
 }
 
-watch(() => userStore.token, () => {
-  checkLogin()
-})
-
 // 判断是否显示操作按钮
 const shouldShowChildActions = (comment) => {
   if (comment.childTotal === 0) return false
@@ -285,6 +281,14 @@ const shouldShowChildActions = (comment) => {
   }
   
   return comment.childTotal > childCommentLimit.value
+}
+
+// 初始化配置
+const initConfig = () => {
+  // 从配置中获取子评论显示数量
+  childCommentLimit.value = configStore.comment.childCommentLimit ?? 3
+  // 从配置中获取子评论分页大小
+  childPageSize.value = configStore.comment?.childPageSize ?? 10
 }
 
 // 获取剩余回复数量
@@ -429,8 +433,8 @@ const expandChildren = async (comment) => {
     return
   }
 
-  // 没有缓存，从接口加载
-  const needLoadCount = CHILD_PAGE_SIZE
+  // 计算需要加载的数量：使用 childPageSize
+  const needLoadCount = childPageSize.value
   
   comment.childLoading = true
   try {
@@ -481,11 +485,11 @@ const loadMoreChildren = async (comment) => {
   if (comment.childLoading) return
   
   const currentDisplayCount = comment.displayChildren.length
-  const nextPageNum = Math.ceil(currentDisplayCount / CHILD_PAGE_SIZE) + 1
+  const nextPageNum = Math.ceil(currentDisplayCount / childPageSize.value) + 1
   
   comment.childLoading = true
   try {
-    const res = await getChildCommentsApi(comment.id, nextPageNum, CHILD_PAGE_SIZE)
+    const res = await getChildCommentsApi(comment.id, nextPageNum, childPageSize.value)
     if (res.code === 200 && res.data) {
       const { children, total, hasMore } = res.data
       if (children && children.length > 0) {
@@ -634,6 +638,11 @@ const getAvatarIcon = (userId) => {
   return icons[index]
 }
 
+// 监听用户登录状态变化
+watch(() => userStore.token, () => {
+  checkLogin()
+})
+
 watch(() => props.articleId, () => {
   if (configStore.isCommentEnabled) {
     loadComments()
@@ -653,8 +662,16 @@ watch(() => configStore.childCommentLimit, (newVal, oldVal) => {
   }
 })
 
+// 监听子评论分页大小变化
+watch(() => configStore.comment.childPageSize, (newVal) => {
+  if (newVal !== undefined && newVal !== null) {
+    childPageSize.value = newVal
+  }
+})
+
 onMounted(() => {
   checkLogin()
+  initConfig()
   if (configStore.isCommentEnabled && props.articleId) {
     loadComments()
   }
