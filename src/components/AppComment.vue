@@ -81,7 +81,12 @@
               </v-list-item-title>
 
               <v-list-item-subtitle class="comment-content mt-1">
-                {{ comment.content }}
+                <template v-if="comment.status === 1">
+                  <span class="text-grey">评论因违反社区规范已被屏蔽</span>
+                </template>
+                <template v-else>
+                  {{ comment.content }}
+                </template>
               </v-list-item-subtitle>
 
               <template v-slot:append>
@@ -135,7 +140,12 @@
                     </v-list-item-title>
 
                     <v-list-item-subtitle class="comment-content mt-1 text-body-2">
-                      {{ child.content }}
+                      <template v-if="child.status === 1">
+                        <span class="text-grey">评论因违反社区规范已被屏蔽</span>
+                      </template>
+                      <template v-else>
+                        {{ child.content }}
+                      </template>
                     </v-list-item-subtitle>
 
                     <template v-slot:append>
