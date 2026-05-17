@@ -80,18 +80,30 @@
                     {{ formatTime(comment.createTime) }}
                   </span>
                 </div>
-                <!-- 删除按钮 - 只有登录且是自己的评论才显示 -->
-                <v-btn
-                  v-if="canDelete(comment)"
-                  icon
-                  size="x-small"
-                  variant="text"
-                  @click="deleteComment(comment)"
-                  :loading="deletingCommentId === comment.id"
-                  :title="'删除评论'"
-                >
-                  <v-icon size="18">mdi-delete-outline</v-icon>
-                </v-btn>
+                <div class="d-flex align-center">
+                  <!-- 回复按钮 -->
+                  <v-btn
+                    icon
+                    size="x-small"
+                    variant="text"
+                    @click="startReply(comment)"
+                    :title="`回复${comment.username || '匿名用户'}`"
+                  >
+                    <v-icon size="18">mdi-reply</v-icon>
+                  </v-btn>
+                  <!-- 删除按钮 - 只有登录且是自己的评论才显示 -->
+                  <v-btn
+                    v-if="canDelete(comment)"
+                    icon
+                    size="x-small"
+                    variant="text"
+                    @click="deleteComment(comment)"
+                    :loading="deletingCommentId === comment.id"
+                    :title="'删除评论'"
+                  >
+                    <v-icon size="18">mdi-delete-outline</v-icon>
+                  </v-btn>
+                </div>
               </v-list-item-title>
 
               <v-list-item-subtitle class="comment-content mt-1">
@@ -103,17 +115,6 @@
                 </template>
               </v-list-item-subtitle>
 
-              <template v-slot:append>
-                <v-btn
-                  icon
-                  size="x-small"
-                  variant="text"
-                  @click="startReply(comment)"
-                  :title="`回复${comment.username || '匿名用户'}`"
-                >
-                  <v-icon size="18">mdi-reply</v-icon>
-                </v-btn>
-              </template>
             </v-list-item>
 
             <!-- 根评论回复输入框 -->
@@ -151,6 +152,18 @@
                         </span>
                         <div class="d-flex align-center mt-1">
                           <span class="text-caption text-grey">{{ formatTime(child.createTime) }}</span>
+
+                          <!-- 回复按钮 -->
+                          <v-btn
+                            icon
+                            size="x-small"
+                            variant="text"
+                            @click="startReply(child)"
+                            title="回复"
+                          >
+                            <v-icon size="16">mdi-reply</v-icon>
+                          </v-btn>
+
                           <!-- 子评论删除按钮 -->
                           <v-btn
                             v-if="canDelete(child)"
@@ -160,7 +173,6 @@
                             @click="deleteComment(child)"
                             :loading="deletingCommentId === child.id"
                             :title="'删除评论'"
-                            class="ml-2"
                           >
                             <v-icon size="16">mdi-delete-outline</v-icon>
                           </v-btn>
@@ -177,17 +189,6 @@
                       </template>
                     </v-list-item-subtitle>
 
-                    <template v-slot:append>
-                      <v-btn
-                        icon
-                        size="x-small"
-                        variant="text"
-                        @click="startReply(child)"
-                        title="回复"
-                      >
-                        <v-icon size="16">mdi-reply</v-icon>
-                      </v-btn>
-                    </template>
                   </v-list-item>
 
                   <AppReplyInput
