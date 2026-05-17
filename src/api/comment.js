@@ -29,3 +29,6 @@ export const addCommentApi = (data) =>
 
 export const getChildCommentsApi = (commentId,pageNum,pageSize) =>
   http.get(`/user/msg/comment/child/${commentId}/${pageNum}/${pageSize}`)
+
+export const deleteCommentApi = (id) => 
+  http.delete(`/user/msg/comment/byId/${id}`)
