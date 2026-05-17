@@ -74,10 +74,24 @@
               </template>
 
               <v-list-item-title class="d-flex align-center">
-                <strong class="comment-username">{{ comment.username || '匿名用户' }}</strong>
-                <span class="text-caption text-grey ml-3">
-                  {{ formatTime(comment.createTime) }}
-                </span>
+                <div class="d-flex align-center">
+                  <strong class="comment-username">{{ comment.username || '匿名用户' }}</strong>
+                  <span class="text-caption text-grey ml-3">
+                    {{ formatTime(comment.createTime) }}
+                  </span>
+                </div>
+                <!-- 删除按钮 - 只有登录且是自己的评论才显示 -->
+                <v-btn
+                  v-if="canDelete(comment)"
+                  icon
+                  size="x-small"
+                  variant="text"
+                  @click="deleteComment(comment)"
+                  :loading="deletingCommentId === comment.id"
+                  :title="'删除评论'"
+                >
+                  <v-icon size="18">mdi-delete-outline</v-icon>
+                </v-btn>
               </v-list-item-title>
 
               <v-list-item-subtitle class="comment-content mt-1">
@@ -128,15 +142,30 @@
                     </template>
 
                     <v-list-item-title class="text-body-2">
-                      <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
-                      <span 
-                      v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
-                      class="text-caption">
-                        回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
-                      </span>
-                        <div class="text-caption text-grey my-1">
-                          {{ formatTime(child.createTime) }}
+                      <div>
+                        <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
+                        <span 
+                          v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
+                          class="text-caption">
+                          回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
+                        </span>
+                        <div class="d-flex align-center mt-1">
+                          <span class="text-caption text-grey">{{ formatTime(child.createTime) }}</span>
+                          <!-- 子评论删除按钮 -->
+                          <v-btn
+                            v-if="canDelete(child)"
+                            icon
+                            size="x-small"
+                            variant="text"
+                            @click="deleteComment(child)"
+                            :loading="deletingCommentId === child.id"
+                            :title="'删除评论'"
+                            class="ml-2"
+                          >
+                            <v-icon size="16">mdi-delete-outline</v-icon>
+                          </v-btn>
                         </div>
+                      </div>
                     </v-list-item-title>
 
                     <v-list-item-subtitle class="comment-content mt-1 text-body-2">
@@ -234,6 +263,44 @@
         </template>
       </v-infinite-scroll>
     </v-card-text>
+
+    <!-- 删除确认对话框 -->
+    <v-dialog v-model="deleteDialogVisible" max-width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h6">
+          <v-icon color="error" start>mdi-delete-outline</v-icon>
+          确认删除
+        </v-card-title>
+        
+        <v-card-text class="pt-4">
+          <div class="text-body-1 mb-2">确定要删除这条评论吗？</div>
+          <div class="text-caption text-grey">
+            <v-icon size="16" color="warning">mdi-alert</v-icon>
+            删除评论后，评论下所有回复都会被删除
+          </div>
+        </v-card-text>
+        
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="text"
+            @click="cancelDelete"
+            :disabled="isDeleting"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="flat"
+            :loading="isDeleting"
+            @click="confirmDelete"
+          >
+            确认删除
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-card>
 </template>
 
@@ -243,7 +310,7 @@ import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
 
-import { getCommentsApi, addCommentApi, getChildCommentsApi } from '@/api/comment'
+import { getCommentsApi, addCommentApi, getChildCommentsApi, deleteCommentApi } from '@/api/comment'
 import AppReplyInput from './AppReplyInput.vue'
 
 const props = defineProps({
@@ -646,6 +713,56 @@ const getAvatarIcon = (userId) => {
   ]
   const index = (userId || 1) % icons.length
   return icons[index]
+}
+
+// 删除相关状态
+const deleteDialogVisible = ref(false)
+const deletingCommentId = ref(null)
+const isDeleting = ref(false) // 新增：控制删除过程中的 loading 状态
+
+// 判断是否可以删除
+const canDelete = (comment) => {
+  if (!isLoggedIn.value) return false
+  const currentUserId = userStore.user?.id
+  return comment.createBy === currentUserId
+}
+
+// 打开删除确认对话框
+const deleteComment = (comment) => {
+  deletingCommentId.value = comment.id
+  deleteDialogVisible.value = true
+}
+
+// 取消删除
+const cancelDelete = () => {
+  deleteDialogVisible.value = false
+  deletingCommentId.value = null
+  isDeleting.value = false
+}
+
+// 确认删除
+const confirmDelete = async () => {
+  if (!deletingCommentId.value) return
+
+   isDeleting.value = true
+  
+  try {
+    const res = await deleteCommentApi(deletingCommentId.value)
+    window.$snackbar?.success(res.message || '删除成功')
+    await loadComments() // 刷新评论列表
+  } catch (error) {
+    console.error('删除评论失败:', error)
+    if (error.response?.status === 401) {
+      window.$snackbar?.error('请先登录')
+      emitter.emit('loginDialogVisible', true)
+    } else {
+      window.$snackbar?.error(error.response?.data?.message || '删除失败')
+    }
+  } finally {
+    isDeleting.value = false
+    deletingCommentId.value = null
+    deleteDialogVisible.value = false
+  }
 }
 
 // 监听用户登录状态变化
