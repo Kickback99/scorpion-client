@@ -364,9 +364,9 @@ const shouldShowChildActions = (comment) => {
 // 初始化配置
 const initConfig = () => {
   // 从配置中获取子评论显示数量
-  childCommentLimit.value = configStore.comment.childCommentLimit ?? 3
+  childCommentLimit.value = configStore.comment.child_comment_limit ?? 3
   // 从配置中获取子评论分页大小
-  childPageSize.value = configStore.comment?.childPageSize ?? 10
+  childPageSize.value = configStore.comment?.child_page_size ?? 7
 }
 
 // 获取剩余回复数量
@@ -777,21 +777,21 @@ watch(() => props.articleId, () => {
   }
 })
 
-watch(() => configStore.commentEnabled, (newVal) => {
+watch(() => configStore.comment_enabled, (newVal) => {
   if (newVal && props.articleId) {
     loadComments()
   }
 })
 
 // 监听配置变化，重新加载
-watch(() => configStore.childCommentLimit, (newVal, oldVal) => {
+watch(() => configStore.child_comment_limit, (newVal, oldVal) => {
   if (newVal !== undefined && newVal !== null && props.articleId) {
     loadComments()
   }
 })
 
 // 监听子评论分页大小变化
-watch(() => configStore.comment.childPageSize, (newVal) => {
+watch(() => configStore.comment.child_page_size, (newVal) => {
   if (newVal !== undefined && newVal !== null) {
     childPageSize.value = newVal
   }
