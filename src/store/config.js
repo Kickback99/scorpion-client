@@ -4,22 +4,22 @@ import { getConfigApi } from "@/api/config"
 export const useConfigStore = defineStore('config', {
   state: () => ({
     // 锚点显示（true开启，false禁用）
-    anchorEnabled: true,
+    anchor_enabled: true,
     // 前端主题（0：github主题，1：vuepress主题）
     theme: 0,
     // 前端登录（true开启，false禁用）
-    loginEnabled: true,
+    login_enabled: true,
     // 加载状态
     loading: false,
 
     // 评论相关
     comment: {
       // 评论显示（true开启，false禁用）
-      commentEnabled: true,
+      comment_enabled: true,
       // 子评论默认显示数量
-      childCommentLimit: 3,
+      child_comment_limit: 3,
       // 子评论分页大小
-      childPageSize: 5
+      child_page_size: 7
     },
 
   }),
@@ -46,7 +46,7 @@ export const useConfigStore = defineStore('config', {
      * 获取锚点是否启用
      */
     getAnchorEnabled() {
-      return this.anchorEnabled === true
+      return this.anchor_enabled === true
     },
 
     /**
@@ -60,14 +60,14 @@ export const useConfigStore = defineStore('config', {
      * 获取登录是否启用
      */
     getLoginEnabled(){
-      return this.loginEnabled === true
+      return this.login_enabled === true
     },
     
     /**
      * 获取评论是否启用
      */
     getCommentEnabled() {
-      return this.commentEnabled === true
+      return this.comment_enabled === true
     },
 
 
@@ -75,24 +75,24 @@ export const useConfigStore = defineStore('config', {
      * 🎯 获取子评论默认显示数量
      */
     getChildCommentLimit() {
-      return this.comment?.childCommentLimit ?? 3
+      return this.comment?.child_comment_limit ?? 3
     },
 
     /**
      * 🎯 获取子评论分页大小
      */
     getChildPageSize() {
-      return this.comment?.childPageSize ?? 10
+      return this.comment?.child_page_size ?? 7
     }
 
   },
 
   getters: {
-    isAnchorEnabled: (state) => state.anchorEnabled === true,
-    isLoginEnabled: (state) => state.loginEnabled === true,
+    isAnchorEnabled: (state) => state.anchor_enabled === true,
+    isLoginEnabled: (state) => state.login_enabled === true,
     currentThemeName: (state) => state.theme === 0 ? 'github' : 'vuepress',
-    isCommentEnabled: (state) => state.comment?.commentEnabled === true,
-    childCommentLimit: (state) => state.comment?.childCommentLimit ?? 3,
-    childPageSize: (state) => state.comment?.childPageSize ?? 10
+    isCommentEnabled: (state) => state.comment?.comment_enabled === true,
+    childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,
+    childPageSize: (state) => state.comment?.child_page_size ?? 7
   }
 })

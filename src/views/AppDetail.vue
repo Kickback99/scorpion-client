@@ -17,7 +17,7 @@
     </div>
   </v-card>
 
-  <v-card v-if=" configStore.loginEnabled|| isLoggedIn" class="mt-5" style="background-color: transparent !important;"> 
+  <v-card v-if=" configStore.login_enabled|| isLoggedIn" class="mt-5" style="background-color: transparent !important;"> 
         <!-- 底部操作栏 -->
     <v-card-actions class="d-flex justify-center py-4">
       <v-btn
