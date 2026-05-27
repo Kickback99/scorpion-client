@@ -67,7 +67,13 @@
             <v-list-item class="comment-item">
               <template v-slot:prepend>
                 <v-avatar size="48">
-                  <v-icon size="28" :color="getAvatarColor(comment.createBy)">
+                  <!-- 优先显示真实头像，没有则显示图标 -->
+                  <v-img 
+                    v-if="comment.userAvatar" 
+                    :src="comment.userAvatar"
+                    :alt="comment.username"
+                  ></v-img>
+                  <v-icon v-else size="28" :color="getAvatarColor(comment.createBy)">
                     {{ getAvatarIcon(comment.createBy) }}
                   </v-icon>
                 </v-avatar>
@@ -136,7 +142,13 @@
                   <v-list-item class="child-comment-item">
                     <template v-slot:prepend>
                       <v-avatar size="30">
-                        <v-icon size="20" :color="getAvatarColor(child.createBy)">
+                        <!-- 优先显示真实头像，没有则显示图标 -->
+                        <v-img 
+                          v-if="child.userAvatar" 
+                          :src="child.userAvatar"
+                          :alt="child.username"
+                        ></v-img>
+                        <v-icon v-else size="20" :color="getAvatarColor(child.createBy)">
                           {{ getAvatarIcon(child.createBy) }}
                         </v-icon>
                       </v-avatar>
@@ -632,7 +644,7 @@ const startReply = (comment) => {
   
   replyTarget.value = {
     id: comment.id,
-    rootId: comment.rootId || comment.id,
+    rootId: comment.rootId === -1 ? comment.id : comment.rootId,
     createBy: comment.createBy,
     username: comment.username,
     content: comment.content
