@@ -59,9 +59,13 @@
                       <v-icon icon="mdi-eye" size="small" class="mr-1"></v-icon>
                     {{ viewCount }}
                   </span>
+                    <span class="d-inline-flex mr-3">
+                    <v-icon icon="mdi-heart-outline" size="small" class="mr-1"></v-icon>
+                    {{ favoriteCount || 0 }}
+                  </span>
                   <span class="d-inline-flex mr-3">
                     <v-icon icon="mdi-comment" size="small" class="mr-1"></v-icon>
-                    {{ viewCount }}
+                    {{ commentCount || 0 }}
                   </span>
                 </v-list-item-subtitle>
               <!-- </v-list-item-content> -->
@@ -89,7 +93,7 @@ const display = useDisplay()
 ]) */
 
 
-const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount','isTop'])
+const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount', 'favoriteCount', 'commentCount', 'isTop'])
 
 /* const descriptionText = computed(()=>{
    return mdToPlainText(props.description)

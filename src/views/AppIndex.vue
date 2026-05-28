@@ -21,6 +21,8 @@
                 :description="item.displayDescription" 
                 :createTime="item.createTime"
                 :viewCount="item.viewCount"
+                :favoriteCount="item.favoriteCount"
+                :commentCount="item.commentCount"
                 :isTop="item.isTop">
             </ArticleItem>
 
