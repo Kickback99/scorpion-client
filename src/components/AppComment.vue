@@ -4,7 +4,7 @@
     <v-card-title class="text-h6">
       <v-icon start>mdi-chat-outline</v-icon>
       评论区
-      <span class="text-caption text-grey ml-2">({{ total }}条评论)</span>
+      <span class="text-caption text-grey ml-2">({{ totalCount }}条评论)</span>
     </v-card-title>
 
     <v-divider></v-divider>
@@ -333,8 +333,14 @@ const props = defineProps({
   articleId: {
     type: [Number, String],
     required: true
+  },
+  totalCount: {
+    type: Number,
+    default: 0
   }
 })
+
+const emit = defineEmits(['comment-deleted'])
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
@@ -617,7 +623,7 @@ const submitComment = async () => {
     if (res.code === 200) {
       window.$snackbar?.success('评论发表成功')
       commentContent.value = ''
-      await loadComments()
+      // await loadComments()
     }
   } catch (error) {
     console.error('发表评论失败:', error)
@@ -766,6 +772,7 @@ const confirmDelete = async () => {
     const res = await deleteCommentApi(deletingCommentId.value)
     window.$snackbar?.success(res.message || '删除成功')
     await loadComments() // 刷新评论列表
+    emit('comment-deleted')
   } catch (error) {
     console.error('删除评论失败:', error)
     if (error.response?.status === 401) {
