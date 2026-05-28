@@ -66,7 +66,7 @@
           <template v-for="comment in commentList" :key="comment.id">
             <v-list-item class="comment-item">
               <template v-slot:prepend>
-                <v-avatar size="48">
+                <v-avatar size="35">
                   <!-- 优先显示真实头像，没有则显示图标 -->
                   <v-img 
                     v-if="comment.userAvatar" 
@@ -112,14 +112,14 @@
                 </div>
               </v-list-item-title>
 
-              <v-list-item-subtitle class="comment-content mt-1">
+              <v-list-item-title class="mt-1 comment-content">
                 <template v-if="comment.status === 1">
                   <span class="text-grey">评论因违反社区规范已被屏蔽</span>
                 </template>
                 <template v-else>
                   {{ comment.content }}
                 </template>
-              </v-list-item-subtitle>
+              </v-list-item-title>
 
             </v-list-item>
 
@@ -141,7 +141,7 @@
                 <template v-for="child in comment.displayChildren" :key="child.id">
                   <v-list-item class="child-comment-item">
                     <template v-slot:prepend>
-                      <v-avatar size="30">
+                      <v-avatar size="27">
                         <!-- 优先显示真实头像，没有则显示图标 -->
                         <v-img 
                           v-if="child.userAvatar" 
@@ -155,14 +155,27 @@
                     </template>
 
                     <v-list-item-title class="text-body-2">
-                      <div>
+                      <div class="d-flex align-center mb-1">
                         <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
                         <span 
                           v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
-                          class="text-caption">
-                          回复 <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
+                          class="text-caption ms-1">
+                          <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
                         </span>
-                        <div class="d-flex align-center mt-1">
+                      </div>
+                      <div class="comment-content">
+                        <template v-if="child.status === 1">
+                          <span class="text-grey">评论因违反社区规范已被屏蔽</span>
+                        </template>
+                        <template v-else>
+                          {{ child.content }}
+                        </template>
+                      </div>
+                    </v-list-item-title>
+
+                    <v-list-item-title class="text-body-2">
+                        <div class="d-flex align-center">
+                          <!-- 日期 -->
                           <span class="text-caption text-grey">{{ formatTime(child.createTime) }}</span>
 
                           <!-- 回复按钮 -->
@@ -189,17 +202,7 @@
                             <v-icon size="16">mdi-delete-outline</v-icon>
                           </v-btn>
                         </div>
-                      </div>
                     </v-list-item-title>
-
-                    <v-list-item-subtitle class="comment-content mt-1 text-body-2">
-                      <template v-if="child.status === 1">
-                        <span class="text-grey">评论因违反社区规范已被屏蔽</span>
-                      </template>
-                      <template v-else>
-                        {{ child.content }}
-                      </template>
-                    </v-list-item-subtitle>
 
                   </v-list-item>
 
@@ -851,6 +854,7 @@ onMounted(() => {
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.5;
+  color: rgba(var(--v-theme-on-surface), 0.87);
 }
 
 .child-actions-wrapper {

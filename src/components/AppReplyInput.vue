@@ -107,7 +107,7 @@ const handleCancel = () => {
 .reply-input-container {
   display: flex;
   gap: 12px;
-  padding: 12px;
+  padding: 0 12px;
   background-color: rgba(var(--v-theme-surface-variant), 0.3);
   border-radius: 12px;
   /* border-left: 3px solid rgb(var(--v-theme-primary)); */
