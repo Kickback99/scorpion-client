@@ -41,7 +41,11 @@
   
   <!-- 新增：评论组件 -->
   <div class="mt-5" v-if="configStore.isCommentEnabled">
-    <AppComment :articleId="props.id" />
+    <AppComment 
+    :articleId="props.id" 
+    :totalCount="article.commentCount"
+    @comment-deleted="handleCommentCountChange"
+    />
   </div>
 
   <v-sheet>
@@ -282,6 +286,12 @@ const renderArticleItem = async() => {
     calculatePosition(); // 初始化时计算一次
   });
 };
+
+// 添加处理刷新评论数方法
+const handleCommentCountChange = async () => {
+  const res = await articleDetailApi(props.id);
+  article.value.commentCount = res.data.articleItem.commentCount
+}
 
 // 处理收藏切换
 const handleFavoriteToggle = async () => {
