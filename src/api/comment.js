@@ -2,7 +2,7 @@
 import http from '@/utils/http'
 
 /**
- * 获取评论列表
+ * 获取文章评论列表
  * @param {Number} pageNum 页码
  * @param {Number} pageSize 每页数量
  * @param {Number} articleId 文章ID
@@ -14,7 +14,7 @@ export const getCommentsApi = (pageNum, pageSize, articleId) =>
   })
 
 /**
- * 添加评论
+ * 添加文章评论
  * @param {Object} data 评论数据
  * @param {Number} data.articleId 文章ID
  * @param {String} data.content 评论内容
@@ -32,3 +32,12 @@ export const getChildCommentsApi = (commentId,pageNum,pageSize) =>
 
 export const deleteCommentApi = (id) => 
   http.delete(`/user/msg/comment/byId/${id}`)
+
+/**
+ * 获取友链评论列表
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize 每页数量
+ * @returns 
+ */
+export const getFriendLinkCommentApi = (pageNum, pageSize) => 
+  http.get(`/user/msg/comment/friendLink/${pageNum}/${pageSize}`)

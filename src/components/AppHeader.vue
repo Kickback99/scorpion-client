@@ -46,7 +46,7 @@
           </template>
           <v-btn color="success"
             variant="text"
-            @click="handleNavClick('link')"
+            @click="handleNavClick('friendLink')"
             class="text-none"
             >友链</v-btn>
           <v-btn color="success"
@@ -231,7 +231,7 @@
         <!-- ========== 移动端添加友链和关于按钮 ========== -->
         
         <v-list-item
-          @click="handleNavClick('link')"
+          @click="handleNavClick('friendLink')"
         >
           <v-list-item-title>友链</v-list-item-title>
         </v-list-item>
@@ -419,8 +419,8 @@ const handleNavClick = (type,param) => {
     drawer.value = false
   }
 
-  if(type === 'link'){
-    router.push('/link')
+  if(type === 'friendLink'){
+    router.push('/friendLink')
     return
   }
 
