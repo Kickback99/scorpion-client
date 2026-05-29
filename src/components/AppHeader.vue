@@ -46,6 +46,11 @@
           </template>
           <v-btn color="success"
             variant="text"
+            @click="handleNavClick('link')"
+            class="text-none"
+            >友链</v-btn>
+          <v-btn color="success"
+            variant="text"
             @click="handleNavClick('about')"
             class="text-none"
             >关于</v-btn>
@@ -222,6 +227,20 @@
             @click="handleNavClick('cate',item.id)"
           ></v-list-item>
         </template>
+        
+        <!-- ========== 移动端添加友链和关于按钮 ========== -->
+        
+        <v-list-item
+          @click="handleNavClick('link')"
+        >
+          <v-list-item-title>友链</v-list-item-title>
+        </v-list-item>
+        
+        <v-list-item
+          @click="handleNavClick('about')"
+        >
+          <v-list-item-title>关于</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <AppLogin></AppLogin>
@@ -398,6 +417,11 @@ const handleNavClick = (type,param) => {
   // 移动端点击后关闭抽屉
   if (smAndDown.value) {
     drawer.value = false
+  }
+
+  if(type === 'link'){
+    router.push('/link')
+    return
   }
 
   if(type === 'about'){
