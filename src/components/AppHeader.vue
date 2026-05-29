@@ -44,7 +44,9 @@
               </v-menu>
             </v-btn>
           </template>
-          <v-btn color="success"
+          <v-btn 
+            v-if="configStore.getFriendLinkEnabled()"
+            color="success"
             variant="text"
             @click="handleNavClick('friendLink')"
             class="text-none"
@@ -231,6 +233,7 @@
         <!-- ========== 移动端添加友链和关于按钮 ========== -->
         
         <v-list-item
+          v-if="configStore.getFriendLinkEnabled()" 
           @click="handleNavClick('friendLink')"
         >
           <v-list-item-title>友链</v-list-item-title>

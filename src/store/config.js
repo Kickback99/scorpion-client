@@ -9,6 +9,8 @@ export const useConfigStore = defineStore('config', {
     theme: 0,
     // 前端登录（true开启，false禁用）
     login_enabled: true,
+    // 友链显示
+    friend_link_enabled: false,
     // 加载状态
     loading: false,
 
@@ -61,6 +63,13 @@ export const useConfigStore = defineStore('config', {
      */
     getLoginEnabled(){
       return this.login_enabled === true
+    },
+
+    /**
+     * 获取友链是否启用
+     */
+    getFriendLinkEnabled(){
+      return this.friend_link_enabled === true
     },
     
     /**
