@@ -8,6 +8,7 @@ import { useUserStore } from '@/store/user'
 import AppProfileCenter from '@/components/AppProfileCenter.vue'
 import Test from '@/views/Test.vue'
 import { useConfigStore } from '@/store/config'
+import AppLink from '@/views/AppLink.vue'
 
 
 // 路由规则
@@ -15,6 +16,7 @@ const routes = [
     {path:"/",component :AppLayout,children:[
         {path:"",component:AppIndex},
         {path:"/blog",component:AppBlog},
+        {path:"/link",component:AppLink},
         {path:"/about",component:AppAbout},
         {
             path: '/profile',
