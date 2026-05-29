@@ -326,7 +326,7 @@ import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
 
-import { getCommentsApi, addCommentApi, getChildCommentsApi, deleteCommentApi } from '@/api/comment'
+import { getCommentsApi, addCommentApi, getChildCommentsApi, deleteCommentApi, getFriendLinkCommentApi } from '@/api/comment'
 import AppReplyInput from './AppReplyInput.vue'
 
 const props = defineProps({
@@ -337,6 +337,11 @@ const props = defineProps({
   totalCount: {
     type: Number,
     default: 0
+  },
+  // 评论类型，'article' 为文章评论，'link' 为友链评论
+  commentType: {
+    type: String,
+    default: 'article'
   }
 })
 
@@ -444,7 +449,13 @@ const initLoadComments = async () => {
   resetScrollState()
   
   try {
-    const res = await getCommentsApi(currentPage.value, pageSize.value, props.articleId)
+    let res
+    // 根据评论类型调用不同API
+    if (props.commentType === 'friendLink') {
+      res = await getFriendLinkCommentApi(currentPage.value, pageSize.value)
+    } else {
+      res = await getCommentsApi(currentPage.value, pageSize.value, props.articleId)
+    }
     if (res.code === 200 && res.data) {
       const newComments = res.data.items || []
       commentList.value = newComments
@@ -476,7 +487,12 @@ const loadMoreComments = async ({ done }) => {
   const nextPage = currentPage.value + 1
   
   try {
-    const res = await getCommentsApi(nextPage, pageSize.value, props.articleId)
+    let res
+    if (props.commentType === 'friendLink') {
+      res = await getFriendLinkCommentApi(nextPage, pageSize.value)
+    } else {
+      res = await getCommentsApi(nextPage, pageSize.value, props.articleId)
+    }
     if (res.code === 200 && res.data) {
       const newComments = res.data.items || []
       
@@ -615,10 +631,13 @@ const submitComment = async () => {
   
   submitLoading.value = true
   try {
+    // 根据评论类型设置不同的 type 值（0为文章评论，1为友链评论）
+    const commentTypeValue = props.commentType === 'friendLink' ? '1' : '0'
+
     const res = await addCommentApi({
       articleId: props.articleId,
       content: commentContent.value,
-      type: '0'
+      type: commentTypeValue
     })
     if (res.code === 200) {
       window.$snackbar?.success('评论发表成功')
@@ -671,10 +690,12 @@ const submitReply = async () => {
   
   replyLoading.value = true
   try {
+    // 根据评论类型设置不同的 type 值（0为文章评论，1为友链评论）
+    const commentTypeValue = props.commentType === 'friendLink' ? '1' : '0'
     const res = await addCommentApi({
       articleId: props.articleId,
       content: replyContent.value,
-      type: '0',
+      type: commentTypeValue,
       rootId: replyTarget.value.rootId,
       toCommentId: replyTarget.value.id,
       toCommentUserId: replyTarget.value.createBy
@@ -822,7 +843,7 @@ watch(() => configStore.comment.child_page_size, (newVal) => {
 onMounted(() => {
   checkLogin()
   initConfig()
-  if (configStore.isCommentEnabled && props.articleId) {
+  if (configStore.isCommentEnabled && (props.commentType === 'friendLink' || props.articleId)) {
     loadComments()
   }
 })
