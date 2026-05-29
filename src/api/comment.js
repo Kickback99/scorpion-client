@@ -41,3 +41,10 @@ export const deleteCommentApi = (id) =>
  */
 export const getFriendLinkCommentApi = (pageNum, pageSize) => 
   http.get(`/user/msg/comment/friendLink/${pageNum}/${pageSize}`)
+
+/**
+ * 获取友链评论总数
+ * @returns 
+ */
+export const getFriendLinkCommentCountApi = () => 
+  http.get(`/user/msg/comment/friendLink/count`)

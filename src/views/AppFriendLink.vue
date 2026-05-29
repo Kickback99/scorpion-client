@@ -13,7 +13,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AppComment from '@/components/AppComment.vue'
-import { getFriendLinkCommentApi } from '@/api/comment'
+import { getFriendLinkCommentCountApi } from '@/api/comment'
 
 // 友链评论总数
 const totalCount = ref(0)
@@ -21,7 +21,7 @@ const totalCount = ref(0)
 // 获取友链评论总数
 const fetchLinkCommentCount = async () => {
   try {
-    const res = await getFriendLinkCommentApi(1, 1)
+    const res = await getFriendLinkCommentCountApi()
     if (res.code === 200 && res.data) {
       totalCount.value = res.data.total || 0
     }
