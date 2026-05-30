@@ -820,14 +820,14 @@ watch(() => props.articleId, () => {
   }
 })
 
-watch(() => configStore.comment_enabled, (newVal) => {
+watch(() => configStore.comment?.comment_enabled, (newVal) => {
   if (newVal && props.articleId) {
     loadComments()
   }
 })
 
 // 监听配置变化，重新加载
-watch(() => configStore.child_comment_limit, (newVal, oldVal) => {
+watch(() => configStore.comment?.child_comment_limit, (newVal, oldVal) => {
   if (newVal !== undefined && newVal !== null && props.articleId) {
     loadComments()
   }

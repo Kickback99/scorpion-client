@@ -7,10 +7,6 @@ export const useConfigStore = defineStore('config', {
     anchor_enabled: true,
     // 前端主题（0：github主题，1：vuepress主题）
     theme: 0,
-    // 前端登录（true开启，false禁用）
-    login_enabled: true,
-    // 友链显示
-    friend_link_enabled: false,
     // 加载状态
     loading: false,
 
@@ -23,6 +19,14 @@ export const useConfigStore = defineStore('config', {
       // 子评论分页大小
       child_page_size: 7
     },
+
+    // 导航相关
+    nav:{
+      // 前端登录（true开启，false禁用）
+      login_enabled: true,
+      // 友链显示
+      friend_link_enabled: false,
+    }
 
   }),
 
@@ -62,14 +66,14 @@ export const useConfigStore = defineStore('config', {
      * 获取登录是否启用
      */
     getLoginEnabled(){
-      return this.login_enabled === true
+      return this.nav?.login_enabled === true
     },
 
     /**
      * 获取友链是否启用
      */
     getFriendLinkEnabled(){
-      return this.friend_link_enabled === true
+      return this.nav?.friend_link_enabled === true
     },
     
     /**
