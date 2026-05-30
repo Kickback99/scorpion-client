@@ -12,8 +12,10 @@ export const useConfigStore = defineStore('config', {
 
     // 评论相关
     comment: {
-      // 评论显示（true开启，false禁用）
-      comment_enabled: true,
+      // 文章评论显示（true开启，false禁用）
+      article_comment_enabled: true,
+      // 友链评论显示（true开启，false禁用）
+      friend_link_comment_enabled: false,
       // 子评论默认显示数量
       child_comment_limit: 3,
       // 子评论分页大小
@@ -75,12 +77,32 @@ export const useConfigStore = defineStore('config', {
     getFriendLinkEnabled(){
       return this.nav?.friend_link_enabled === true
     },
-    
+
     /**
-     * 获取评论是否启用
+     * 获取文章评论是否启用
      */
-    getCommentEnabled() {
-      return this.comment_enabled === true
+    getArticleCommentEnabled() {
+      return this.comment?.article_comment_enabled === true
+    },
+
+    /**
+     * 获取友链评论是否启用
+     */
+    getFriendLinkCommentEnabled(){
+      return this.comment?.friend_link_comment_enabled === true
+    },
+
+    /**
+     * 根据评论类型获取评论是否启用
+     * @param {String} commentType 评论类型（'article' 或 'friendLink'）
+     * @returns {Boolean}
+     */
+    isCommentTypeEnabled(commentType) {
+      if (commentType === 'friendLink') {
+        return this.getFriendLinkCommentEnabled()
+      }
+      // 默认为文章评论
+      return this.getArticleCommentEnabled()
     },
 
 
@@ -104,7 +126,8 @@ export const useConfigStore = defineStore('config', {
     isAnchorEnabled: (state) => state.anchor_enabled === true,
     isLoginEnabled: (state) => state.login_enabled === true,
     currentThemeName: (state) => state.theme === 0 ? 'github' : 'vuepress',
-    isCommentEnabled: (state) => state.comment?.comment_enabled === true,
+    isArticleCommentEnabled: (state) => state.comment?.article_comment_enabled === true,
+    isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
     childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,
     childPageSize: (state) => state.comment?.child_page_size ?? 7
   }

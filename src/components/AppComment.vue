@@ -372,6 +372,11 @@ const replyTarget = ref(null)
 const replyContent = ref('')
 const replyLoading = ref(false)
 
+// 根据评论类型动态获取评论是否启用（使用 configStore 的方法）
+const isCommentTypeEnabled = () => {
+  return configStore.isCommentTypeEnabled(props.commentType)
+}
+
 const checkLogin = () => {
   isLoggedIn.value = !!userStore.token && Object.keys(userStore.user).length > 0
 }
@@ -389,10 +394,10 @@ const shouldShowChildActions = (comment) => {
 
 // 初始化配置
 const initConfig = () => {
-  // 从配置中获取子评论显示数量
-  childCommentLimit.value = configStore.comment.child_comment_limit ?? 3
-  // 从配置中获取子评论分页大小
-  childPageSize.value = configStore.comment?.child_page_size ?? 7
+  // 从配置中获取子评论显示数量(使用 getter)
+  childCommentLimit.value = configStore.childCommentLimit
+  // 从配置中获取子评论分页大小(使用 getter)
+  childPageSize.value = configStore.childPageSize
 }
 
 // 获取剩余回复数量
@@ -443,7 +448,7 @@ const resetScrollState = () => {
 
 // 初始化加载第一页
 const initLoadComments = async () => {
-  if (!configStore.isCommentEnabled) return
+  if (!isCommentTypeEnabled()) return
   
   loading.value = true
   resetScrollState()
@@ -478,7 +483,7 @@ const initLoadComments = async () => {
 
 // 加载更多（无限滚动）
 const loadMoreComments = async ({ done }) => {
-  if (!configStore.isCommentEnabled || !hasMore.value) {
+  if (!isCommentTypeEnabled() || !hasMore.value) {
     done('empty')
     return
   }
@@ -815,35 +820,43 @@ watch(() => userStore.token, () => {
 })
 
 watch(() => props.articleId, () => {
-  if (configStore.isCommentEnabled) {
+  if (isCommentTypeEnabled()) {
     loadComments()
   }
 })
 
-watch(() => configStore.comment?.comment_enabled, (newVal) => {
-  if (newVal && props.articleId) {
+// 监听文章评论变化
+/* watch(() => configStore.comment?.article.comment_enabled, (newVal) => {
+  if (props.commentType === 'article' && newVal && props.articleId) {
     loadComments()
   }
-})
+}) */
+
+// 监听友链评论变化
+/* watch(() => configStore.comment?.friend_link_comment_enabled, (newVal) => {
+  if (props.commentType === 'friendLink' && newVal) {
+    loadComments()
+  }
+}) */
 
 // 监听配置变化，重新加载
-watch(() => configStore.comment?.child_comment_limit, (newVal, oldVal) => {
-  if (newVal !== undefined && newVal !== null && props.articleId) {
+/* watch(() => configStore.comment?.child_comment_limit, (newVal, oldVal) => {
+  if (newVal !== undefined && newVal !== null && props.articleId && isCommentTypeEnabled()) {
     loadComments()
   }
-})
+}) */
 
 // 监听子评论分页大小变化
-watch(() => configStore.comment.child_page_size, (newVal) => {
+/* watch(() => configStore.comment.child_page_size, (newVal) => {
   if (newVal !== undefined && newVal !== null) {
     childPageSize.value = newVal
   }
-})
+}) */
 
 onMounted(() => {
   checkLogin()
   initConfig()
-  if (configStore.isCommentEnabled && (props.commentType === 'friendLink' || props.articleId)) {
+  if (isCommentTypeEnabled() && (props.commentType === 'friendLink' || props.articleId)) {
     loadComments()
   }
 })

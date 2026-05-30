@@ -1,12 +1,14 @@
 <template>
   <v-container>
-    <!-- 复用 AppComment 组件，传入友链ID和API类型 -->
-    <AppComment 
-      :articleId="null" 
-      :totalCount="totalCount"
-      commentType="friendLink"
-      @comment-deleted="handleCommentCountChange"
-    />
+    <div class="mt-5" v-if="configStore.getFriendLinkCommentEnabled()">
+      <!-- 复用 AppComment 组件，传入友链ID和API类型 -->
+      <AppComment 
+        :articleId="null" 
+        :totalCount="totalCount"
+        commentType="friendLink"
+        @comment-deleted="handleCommentCountChange"
+      />
+    </div>
   </v-container>
 </template>
 
@@ -14,6 +16,8 @@
 import { ref, onMounted } from 'vue'
 import AppComment from '@/components/AppComment.vue'
 import { getFriendLinkCommentCountApi } from '@/api/comment'
+import { useConfigStore } from '@/store/config'
+const configStore = useConfigStore()
 
 // 友链评论总数
 const totalCount = ref(0)
