@@ -40,7 +40,7 @@
   </v-card>
   
   <!-- 新增：评论组件 -->
-  <div class="mt-5" v-if="configStore.isCommentEnabled">
+  <div class="mt-5" v-if="configStore.getArticleCommentEnabled()">
     <AppComment 
     :articleId="props.id" 
     :totalCount="article.commentCount"
