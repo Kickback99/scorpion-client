@@ -11,81 +11,83 @@
       />
     </div>
 
-    <!-- 友链网格 - 响应式布局：屏幕有多宽就显示多少列 -->
-    <template v-else-if="friendLinkList.length > 0">
-      <v-row dense>
-        <v-col
-          v-for="item in friendLinkList"
-          :key="item.id"
-          :cols="cols"
-          :sm="sm"
-          :md="md"
-          :lg="lg"
-          :xl="xl"
-          class="d-flex"
-        >
-          <v-card
-            :href="item.address"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="friend-link-card w-100"
-            variant="outlined"
-            rounded="lg"
+    <v-sheet class="mx-auto" :width="sheetWidth">
+      <!-- 友链网格 - 响应式布局：屏幕有多宽就显示多少列 -->
+      <template v-if="friendLinkList.length > 0">
+        <v-row dense>
+          <v-col
+            v-for="item in friendLinkList"
+            :key="item.id"
+            :cols="cols"
+            :sm="sm"
+            :md="md"
+            :lg="lg"
+            :xl="xl"
+            class="d-flex"
           >
-            <div class="d-flex align-center pa-4">
-              <!-- 头像/Logo -->
-              <v-avatar size="50" class="mr-3">
-                <v-img :src="item.logo" :alt="item.name" cover />
-              </v-avatar>
+            <v-card
+              :href="item.address"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="friend-link-card w-100"
+              variant="outlined"
+              rounded="lg"
+            >
+              <div class="d-flex align-center pa-4">
+                <!-- 头像/Logo -->
+                <v-avatar size="50" class="mr-3">
+                  <v-img :src="item.logo" :alt="item.name" cover />
+                </v-avatar>
 
-              <!-- 名称和描述 -->
-              <div class="flex-grow-1 overflow-hidden">
-                <div class="font-weight-medium text-truncate">{{ item.name }}</div>
-                <div class="text-caption text-grey text-truncate">{{ item.description }}</div>
+                <!-- 名称和描述 -->
+                <div class="flex-grow-1 overflow-hidden">
+                  <div class="font-weight-medium text-truncate">{{ item.name }}</div>
+                  <div class="text-caption text-grey text-truncate">{{ item.description }}</div>
+                </div>
               </div>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <!-- 无限滚动加载 -->
+        <v-infinite-scroll
+          :status="scrollStatus"
+          @load="loadMore"
+        >
+          <template v-slot:loading>
+            <div class="text-center py-4">
+              <v-progress-circular indeterminate size="32" color="primary" />
+              <div class="text-caption text-grey mt-2">加载更多友链中...</div>
             </div>
-          </v-card>
-        </v-col>
-      </v-row>
+          </template>
 
-      <!-- 无限滚动加载 -->
-      <v-infinite-scroll
-        :status="scrollStatus"
-        @load="loadMore"
-      >
-        <template v-slot:loading>
-          <div class="text-center py-4">
-            <v-progress-circular indeterminate size="32" color="primary" />
-            <div class="text-caption text-grey mt-2">加载更多友链中...</div>
-          </div>
-        </template>
+          <template v-slot:empty>
+            <div class="text-center py-4 text-grey">
+              <div class="text-caption">已经到底了~</div>
+            </div>
+          </template>
+        </v-infinite-scroll>
+      </template>
 
-        <template v-slot:empty>
-          <div class="text-center py-4 text-grey">
-            <div class="text-caption">已经到底了~</div>
-          </div>
-        </template>
-      </v-infinite-scroll>
-    </template>
+      <!-- 空状态 -->
+      <v-card v-else-if="!loading && friendLinkList.length === 0">
+        <v-empty-state
+          icon="mdi-link-variant-off"
+          title="暂无友链"
+          text="当前没有任何友情链接"
+        />
+      </v-card>
 
-    <!-- 空状态 -->
-    <v-card v-else-if="!loading && friendLinkList.length === 0">
-      <v-empty-state
-        icon="mdi-link-variant-off"
-        title="暂无友链"
-        text="当前没有任何友情链接"
-      />
-    </v-card>
-
-    <div class="mt-5" v-if="configStore.getFriendLinkCommentEnabled()">
-      <!-- 复用 AppComment 组件，传入友链ID和API类型 -->
-      <AppComment 
-        :articleId="null" 
-        :totalCount="totalCount"
-        commentType="friendLink"
-        @comment-deleted="handleCommentCountChange"
-      />
-    </div>
+      <div class="mt-5" v-if="configStore.getFriendLinkCommentEnabled()">
+        <!-- 复用 AppComment 组件，传入友链ID和API类型 -->
+        <AppComment 
+          :articleId="null" 
+          :totalCount="totalCount"
+          commentType="friendLink"
+          @comment-deleted="handleCommentCountChange"
+        />
+      </div>
+    </v-sheet>
   </v-container>
 </template>
 
@@ -100,6 +102,18 @@ import { getClientFriendLinkListApi } from '@/api/friendLink'
 
 // 响应式断点
 const { name: breakpointName } = useDisplay()
+
+// 计算 sheet 的宽度（基于栅格系统的9格）
+const sheetWidth = computed(() => {
+  const bp = breakpointName.value
+  // 9/12 = 75%，这里用百分比
+  if (bp === 'xs') return '100%'   //  手机屏幕占100%
+  if (bp === 'sm') return '90%'    //  小屏幕占90%
+  if (bp === 'md') return '85%'    //  中等屏幕占85%
+  if (bp === 'lg') return '75%'    //  大屏幕占75%（9/12）
+  if (bp === 'xl') return '70%'    //  超大屏幕占70%
+  return '75%'                     //  xxl 占75%
+})
 
 // 根据屏幕宽度动态计算每行列数
 // xs: 1列, sm: 2列, md: 3列, lg: 4列, xl: 5列, xxl: 6列

@@ -64,9 +64,9 @@ renderCateList()
   sidebarVisible.value = to.path != '/about'
 },{immediate:true}) */
 
-const isAboutPage = computed(() => route.path === '/about' || route.path === '/profile')
-const leftColMd = computed(() => isAboutPage.value ? 12 : 9)
-const showSidebar = computed(() => !isAboutPage.value)
+const isBigScreen = computed(() => route.path === '/about' || route.path === '/profile' || route.path === '/friendLink')
+const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
+const showSidebar = computed(() => !isBigScreen.value)
 // 轮播图显示条件：首页 + 大屏
 const showCarousel = computed(() => route.path === '/' && mdAndUp.value)
 
