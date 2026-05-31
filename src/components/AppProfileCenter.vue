@@ -205,124 +205,56 @@
 
           <!-- 我的评论 Tab -->
           <v-tabs-window-item value="comments">
-            <v-sheet class="pa-6">
-              <v-list v-if="commentList.length > 0">
-                <v-list-item
-                  v-for="comment in commentList"
-                  :key="comment.id"
-                  :title="comment.content"
-                  :subtitle="`发布于 ${formatDate(comment.createdAt)} · ${comment.articleTitle}`"
-                  lines="two"
-                  class="comment-item"
-                >
-                  <template v-slot:prepend>
-                    <v-avatar size="40" color="grey-lighten-2">
-                      <v-icon>mdi-comment</v-icon>
-                    </v-avatar>
-                  </template>
-                  <template v-slot:append>
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      @click="deleteComment(comment.id)"
-                    >
-                      <v-icon size="18" color="red">mdi-delete</v-icon>
-                    </v-btn>
-                  </template>
-                </v-list-item>
-              </v-list>
-              <v-empty-state
-                v-else
-                headline="暂无评论"
-                text="你还没有发表过任何评论"
-                icon="mdi-comment-outline"
-              ></v-empty-state>
-            </v-sheet>
+            <AppContentList
+              ref="commentListRef"
+              content-type="card"
+              :load-data-api="getUserCommentsApi"
+              :delete-api="deleteCommentApi"
+              :table-headers="commentHeaders"
+              :enable-search="true"
+              search-label="搜索发布的评论"
+              search-placeholder="输入文章标题关键词"
+              :search-fields="['content']"
+              empty-icon="mdi-comment-outline"
+              empty-headline="暂无评论"
+              empty-text="你还没有发表过任何评论"
+              item-icon="mdi-comment"
+              :get-item-id="(item) => item.commentId || item.id"
+              :get-item-title="(item) => item.content"
+              :get-item-subtitle="(item) => `发布于 ${formatDate(item.createTime)} · ${item.type || '文章'}`"
+              :get-detail-link="(item) => ({ name: 'detail', params: { id: item.articleId } })"
+            >
+                <!-- 可选：自定义空状态插槽 -->
+              <template #empty="{ searchKeyword }">
+                <v-empty-state
+                  headline="暂无评论"
+                  :text="`没有找到包含 “${searchKeyword}” 的评论`"
+                  icon="mdi-comment-outline"
+                  class="custom-empty-state"
+                />
+              </template>
+            </AppContentList>
           </v-tabs-window-item>
 
           <!-- 我的收藏 Tab -->
           <v-tabs-window-item value="favorites">
-            <v-sheet class="pa-6">
-                  <!-- 搜索框区域 -->
-                  <div class="d-flex justify-center mb-4">
-                    <v-text-field
-                      v-model="searchKeyword"
-                      label="搜索收藏的文章"
-                      placeholder="输入文章标题关键词"
-                      prepend-inner-icon="mdi-magnify"
-                      variant="outlined"
-                      hide-details
-                      clearable
-                      density="compact"
-                      :style="{
-                      maxWidth: display.mobile.value ? '80%' : '400px',
-                      width: display.mobile.value ?  '80%' : '60%'
-                      }"
-                      @click:clear="handleClearSearch"
-                      @input="handleSearch"
-                    ></v-text-field>
-                </div>
-
-              <v-data-table-virtual
-                :headers="favoriteHeaders"
-                :items="filteredFavoriteList"
-                :loading="favoriteLoading"
-                :height="hasData ? (display.mobile.value ? 'calc(100vh - 380px)' : 'calc(100vh - 360px)') : auto"
-                hover
-                hide-default-header
-                hide-default-footer
-              >
-                <template v-slot:item.title="{ item }">
-                  <router-link :to="{
-                    name:'detail',
-                    params:{id:item.articleId}
-                  }" class="text-decoration-none text-primary">
-                    {{ item.title }}
-                  </router-link>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <v-btn
-                    icon
-                    variant="text"
-                    size="small"
-                    color="red"
-                    @click="removeFavorite(item.articleId,item.title)"
-                  >
-                    <v-icon>mdi-heart-broken</v-icon>
-                  </v-btn>
-                </template>
-                <template v-slot:no-data>
-                  <v-empty-state
-                    :headline="searchKeyword ? '未找到相关收藏' : '暂无收藏'"
-                    :text="searchKeyword ? `没有找到包含${searchKeyword}的收藏文章` : '你还没有收藏任何内容'"                    
-                    :icon="searchKeyword ? 'mdi-magnify-remove-outline' : 'mdi-heart-outline'"
-                    class="custom-empty-state"
-                  ></v-empty-state>
-
-                    <!-- <div class="empty-state-wrapper">
-                      <div class="empty-state-content">
-                        <v-icon 
-                          :size="display.mobile.value ? '48' : '64'" 
-                          color="grey-lighten-1"
-                          class="mb-3"
-                        >
-                          {{ searchKeyword ? 'mdi-magnify-remove-outline' : 'mdi-heart-outline' }}
-                        </v-icon>
-                        <div 
-                          :class="display.mobile.value ? 'text-h6' : 'text-h5'"
-                          class="font-weight-medium text-grey-darken-2 mb-2"
-                        >
-                          {{ searchKeyword ? '未找到相关收藏' : '暂无收藏' }}
-                        </div>
-                        <div class="text-body-2 text-grey">
-                          {{ searchKeyword ? `没有找到包含“${searchKeyword}”的收藏文章` : '你还没有收藏任何内容' }}
-                        </div>
-                      </div>
-                    </div> -->
-                </template>
-              </v-data-table-virtual>
-            </v-sheet>
+            <AppContentList
+              ref="favoriteListRef"
+              content-type="grid"
+              :load-data-api="userFavoritesApi"
+              :delete-api="deleteFavoriteApi"
+              :table-headers="favoriteHeaders"
+              :enable-search="true"
+              search-label="搜索收藏的文章"
+              search-placeholder="输入文章标题关键词"
+              :search-fields="['title']"
+              empty-icon="mdi-heart-outline"
+              empty-headline="暂无收藏"
+              empty-text="你还没有收藏任何内容"
+              :get-item-id="(item) => item.articleId"
+              :get-item-title="(item) => item.title"
+              :get-detail-link="(item) => ({ name: 'detail', params: { id: item.articleId } })"
+            />
           </v-tabs-window-item>
         </v-tabs-window>
         </v-sheet>
@@ -391,11 +323,30 @@ import { useDisplay } from 'vuetify'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue'
-import { deleteFavoriteApi, userFavoritesApi } from '@/api/user'
+import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteUserCommentApi } from '@/api/user'
+import AppContentList from './AppContentList.vue'
+
+
 
 const display = useDisplay()
 const userStore = useUserStore()
-const router = useRouter()
+
+// ✅ 定义评论相关的配置和删除方法
+const commentHeaders = [
+  { title: '评论内容', key: 'content', align: 'start' },
+  { title: '评论时间', key: 'createTime' },
+  { title: '操作', key: 'actions', sortable: false, align: 'end' }
+]
+
+// ✅ 删除评论的方法（使用占位符）
+const deleteCommentApi = async (commentId) => {
+  console.log('🚧 [待实现] 删除评论 - 评论ID:', commentId)
+  // TODO: 后端实现后取消注释
+  // return await deleteUserCommentApi(commentId)
+  
+  // 模拟成功
+  return Promise.resolve({ code: 200 })
+}
 
 // Tab 值
 const tab = ref('profile')
@@ -442,9 +393,6 @@ const postHeaders = [
 const postList = ref([])
 const postLoading = ref(false)
 
-// 评论数据
-const commentList = ref([])
-
 // 收藏数据
 const favoriteHeaders = [
   { title: '标题', key: 'title', align: 'start' },
@@ -452,8 +400,6 @@ const favoriteHeaders = [
   // { title: '收藏时间', key: 'createdAt' },
   { title: '操作', key: 'actions', sortable: false,align: 'end'  }
 ]
-const favoriteList = ref([])
-const favoriteLoading = ref(false)
 
 // 方法
 const changeAvatar = () => {
@@ -500,32 +446,6 @@ const changePassword = async () => {
   }
 }
 
-const deleteComment = (id) => {
-  // TODO: 实现删除评论
-  console.log('删除评论:', id)
-}
-
-// --------------- 记录正在删除的收藏ID，用于显示加载状态 ---------------
-const deletingIds = ref([])
-
-const removeFavorite = async(articleId,title) => {
-
-    console.log(typeof articleId)
-
-    // 添加到删除中的列表，显示按钮加载状态
-    deletingIds.value.push(articleId)
-
-    // 调用取消收藏接口
-    await deleteFavoriteApi(articleId)
-    
-    // 从列表中移除该项
-    favoriteList.value = favoriteList.value.filter(item => item.articleId !== articleId)
-
-    window.$snackbar?.success(`取消收藏: ${title}`)
-
-    // console.log('取消收藏:', id)
-}
-
 const getStatusColor = (status) => {
   const colors = {
     '待处理': 'warning',
@@ -565,66 +485,10 @@ const loadPosts = async () => {
   }
 }
 
-const loadComments = async () => {
-  commentList.value = [
-    { id: 1, content: '这篇文章写得太好了！', articleTitle: 'Vue3入门教程', createdAt: '2024-01-12' }
-  ]
-}
+// 组件引用
+const commentListRef = ref(null)
+const favoriteListRef = ref(null)
 
-const params = reactive({
-    pageNum:1,
-    pageSize:9999
-})
-
-
-const total = ref(null)
-
-// 搜索关键词
-const searchKeyword = ref('')
-
-// 过滤后的收藏列表（用于显示）
-const filteredFavoriteList = computed(() => {
-  if (!searchKeyword.value.trim()) {
-    return favoriteList.value
-  }
-  const keyword = searchKeyword.value.trim().toLowerCase()
-  return favoriteList.value.filter(item => 
-    item.title && item.title.toLowerCase().includes(keyword)
-  )
-})
-
-// 搜索处理
-const handleSearch = () => {
-  // 搜索逻辑由 computed 自动处理，这里可以添加额外逻辑
-  console.log('搜索关键词:', searchKeyword.value)
-}
-
-// 清空搜索
-const handleClearSearch = () => {
-  searchKeyword.value = ''
-  console.log('已清空搜索')
-}
-
-// 判断是否有数据
-const hasData = computed(() => {
-  return display.mobile.value ? filteredFavoriteList.value.length > 5 : filteredFavoriteList.value.length > 6
-})
-
-
-const loadFavorites = async () => {
-  favoriteLoading.value = true
-  try {
-    /* favoriteList.value = [
-      { id: 1, title: 'JavaScript高级编程', author: '李四', createdAt: '2024-01-08' }
-    ] */
-     const res = await userFavoritesApi(params)
-
-     favoriteList.value = res.data.items
-     total.value = res.data.total
-  } finally {
-    favoriteLoading.value = false
-  }
-}
 
 // 监听 tab 切换，加载数据
 watch(tab, (newTab) => {
@@ -636,11 +500,10 @@ watch(tab, (newTab) => {
       if (postList.value.length === 0) loadPosts()
       break
     case 'comments':
-      if (commentList.value.length === 0) loadComments()
+        commentListRef.value?.loadData()
       break
     case 'favorites':
-      // if (favoriteList.value.length === 0) 
-      loadFavorites()
+      favoriteListRef.value?.loadData()
       break
   }
 })

@@ -6,7 +6,8 @@ export const AUTH_REQUIRED_PATHS = [
   '/user/content/article',
   '/user/favorite/toggle',
   '/user/msg/comment/byId',
-  '/user/msg/comment/reply'
+  '/user/msg/comment/reply',
+  '/user/comments/'
 
   // 订单相关
   /* '/order/',
