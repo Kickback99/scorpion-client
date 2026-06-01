@@ -23,15 +23,10 @@ export const getUserCommentsApi = (params) => {
   return http.get(`/user/comments/${pageNum}/${pageSize}`)
 }
 
-// 删除用户评论（待后端实现 - 占位符）
-export const deleteUserCommentApi = (commentId) => {
-  // TODO: 后端接口实现后替换为真实调用
-  console.log('🚧 [待实现] 删除评论接口 - commentId:', commentId)
-  return Promise.resolve({ code: 200, message: '删除成功（模拟）' })
-  
-  // 真实接口示例（后端实现后启用）：
-  // return request({
-  //   url: `/user/comments/${commentId}`,
-  //   method: 'delete'
-  // })
+// 删除用户评论
+export const deleteCommentApi = (commentId) => {
+  return http({
+    url: `/user/userComment/${commentId}`,
+    method: 'delete'
+  })
 }

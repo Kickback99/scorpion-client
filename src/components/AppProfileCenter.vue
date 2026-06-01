@@ -249,7 +249,7 @@
                   variant="text"
                   size="small"
                   color="red"
-                  @click="commentListRef?.handleDeleteItem?.(item)"
+                  @click="commentListRef?.deleteItem?.(item)"
                 >
                   <v-icon size="18">mdi-delete</v-icon>
                 </v-btn>
@@ -311,7 +311,7 @@
                   variant="text"
                   size="small"
                   color="red"
-                  @click="favoriteListRef?.handleDeleteItem?.(item)"
+                  @click="favoriteListRef?.deleteItem?.(item)"
                 >
                   <v-icon>mdi-heart-broken</v-icon>
                 </v-btn>
@@ -385,7 +385,7 @@ import { useDisplay } from 'vuetify'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue'
-import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteUserCommentApi } from '@/api/user'
+import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
 import AppContentList from './AppContentList.vue'
 
 
@@ -399,16 +399,6 @@ const commentHeaders = [
   { title: '评论时间', key: 'createTime' },
   { title: '操作', key: 'actions', sortable: false, align: 'end' }
 ]
-
-// 删除评论的方法（使用占位符）
-const deleteCommentApi = async (commentId) => {
-  console.log('🚧 [待实现] 删除评论 - 评论ID:', commentId)
-  // TODO: 后端实现后取消注释
-  // return await deleteUserCommentApi(commentId)
-  
-  // 模拟成功
-  return Promise.resolve({ code: 200 })
-}
 
 // Tab 值
 const tab = ref('profile')

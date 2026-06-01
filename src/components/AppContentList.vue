@@ -291,20 +291,6 @@ const loadData = async () => {
 
 const handleDelete = async (item) => {
   const itemId = props.getItemId(item)
-  
-  // 占位符：如果删除API未提供，则触发 console.log
-  if (!props.deleteApi) {
-    console.log('[待实现] 删除功能占位符 - 即将删除:', {
-      id: itemId,
-      type: props.contentType === 'comment' ? '评论' : '收藏',
-      data: item
-    })
-    return
-  }
-
-  // 防止重复删除
-  if (deletingIds.value.includes(itemId)) return
-  
   deletingIds.value.push(itemId)
   try {
     await props.deleteApi(itemId)
@@ -355,7 +341,8 @@ if (props.autoLoad) {
 // 暴露方法供父组件调用
 defineExpose({
   loadData,
-  refresh: loadData
+  refresh: loadData,
+  deleteItem: handleDelete
 })
 </script>
 
