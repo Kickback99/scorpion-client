@@ -1,7 +1,7 @@
 <template>
   <v-sheet class="pa-6">
-    <!-- 搜索框区域（仅当启用搜索时显示） -->
-    <div v-if="enableSearch" class="d-flex justify-center mb-4">
+    <!-- 搜索框区域：只在非加载状态且启用搜索时显示 -->
+    <div v-if="!loading && enableSearch" class="d-flex justify-center mb-4">
       <v-text-field
         v-model="searchKeyword"
         :label="searchLabel"
@@ -21,45 +21,72 @@
     </div>
 
     <!-- 列表展示区域(表格布局) -->
-    <v-data-table-virtual
-      v-if="contentType === 'grid'"
-      :headers="tableHeaders"
-      :items="filteredItems"
-      :loading="loading"
-      :height="hasData ? (display.mobile.value ? 'calc(100vh - 380px)' : 'calc(100vh - 360px)') : 'auto'"
-      hover
-      hide-default-header
-      hide-default-footer
-    >
-      <!-- 动态遍历所有列，使用具名插槽 -->
-      <template 
-        v-for="header in tableHeaders" 
-        :key="header.key"
-        #[`item.${header.key}`]="{ item }"
-      >
-        <!-- 使用插槽：命名规则为 `column-{key}` -->
-        <slot :name="`column-${header.key}`" :item="item">
-          <!-- 默认显示（如果没有提供插槽） -->
-          <span>{{ item[header.key] }}</span>
-        </slot>
-      </template>
+    <div v-if="contentType === 'grid'" class="grid-container">
+      
+      <!-- 数据加载之前，使用 loading -->
+      <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
+        <v-progress-circular indeterminate color="primary" size="40" />
+        <span class="mt-3 text-grey text-caption">加载中...</span>
+      </div>
 
-      <!-- 空状态：使用默认插槽 -->
-      <template #no-data>
-        <slot name="empty" :searchKeyword="searchKeyword">
-          <v-empty-state
-            :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
-            :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
-            :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
-            class="custom-empty-state"
-          />
-        </slot>
-      </template>
-    </v-data-table-virtual>
+      <!-- 有数据时显示列表 -->
+      <v-data-table-virtual
+        v-else-if="filteredItems.length > 0"
+        :headers="tableHeaders"
+        :items="filteredItems"
+        :height="hasData ? (display.mobile.value ? 'calc(100vh - 380px)' : 'calc(100vh - 360px)') : 'auto'"
+        hover
+        hide-default-header
+        hide-default-footer
+      >
+        <!-- 动态遍历所有列，使用具名插槽 -->
+        <template 
+          v-for="header in tableHeaders" 
+          :key="header.key"
+          #[`item.${header.key}`]="{ item }"
+        >
+          <!-- 使用插槽：命名规则为 `column-{key}` -->
+          <slot :name="`column-${header.key}`" :item="item">
+            <!-- 默认显示（如果没有提供插槽） -->
+            <span>{{ item[header.key] }}</span>
+          </slot>
+        </template>
+
+        <!-- 空状态：使用默认插槽 -->
+        <!-- <template #no-data>
+          <slot name="empty" :searchKeyword="searchKeyword">
+            <v-empty-state
+              :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
+              :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
+              :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
+              class="custom-empty-state"
+            />
+          </slot>
+        </template> -->
+      </v-data-table-virtual>
+        
+      <!-- 无数据且不在加载中时显示空状态 -->
+      <slot v-else name="empty" :searchKeyword="searchKeyword">
+      <v-empty-state
+        :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
+        :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
+        :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
+        class="custom-empty-state"
+      />
+    </slot>
+    </div>
 
     <!-- Card模式：卡片列表布局 -->
     <div v-else-if="contentType === 'card'" class="content-card-list">
-      <v-list v-if="filteredItems.length > 0">
+
+      <!-- 数据加载之前，使用 loading -->
+      <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
+        <v-progress-circular indeterminate color="primary" size="40" />
+        <span class="mt-3 text-grey text-caption">加载中...</span>
+      </div>
+
+      <!-- 有数据时显示列表 -->
+      <v-list v-else-if="filteredItems.length > 0">
         <v-list-item
           v-for="item in filteredItems"
           :key="getItemId(item)"
@@ -107,7 +134,7 @@
         </v-list-item>
       </v-list>
 
-        <!-- 空状态：使用默认插槽 -->
+      <!-- 无数据且不在加载中时显示空状态 -->
       <slot v-else name="empty" :searchKeyword="searchKeyword">
         <v-empty-state
           :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
