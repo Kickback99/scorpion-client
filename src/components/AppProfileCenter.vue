@@ -218,12 +218,43 @@
               empty-icon="mdi-comment-outline"
               empty-headline="暂无评论"
               empty-text="你还没有发表过任何评论"
-              item-icon="mdi-comment"
               :get-item-id="(item) => item.commentId || item.id"
-              :get-item-title="(item) => item.content"
-              :get-item-subtitle="(item) => `发布于 ${formatDate(item.createTime)} · ${item.type || '文章'}`"
-              :get-detail-link="(item) => ({ name: 'detail', params: { id: item.articleId } })"
             >
+                <!-- 自定义前置图标 -->
+              <template #card-prepend="{ item }">
+                <v-avatar size="40" color="grey-lighten-2">
+                  <v-icon>mdi-comment</v-icon>
+                </v-avatar>
+              </template>
+
+              <!-- 自定义标题（评论内容） -->
+              <template #card-title="{ item }">
+                <router-link 
+                  :to="item.type === '0' ? `/detail/${item.articleId}` : '/friendLink'"
+                  class="text-decoration-none text-primary font-weight-medium"
+                >
+                  {{ item.content }}
+                </router-link>
+              </template>
+
+              <!-- 自定义副标题（时间 + 文章信息） -->
+              <template #card-subtitle="{ item }">
+                发布于 {{ formatDate(item.createTime) }} · {{ item.type === '0' ? '文章' : '友链' }}
+              </template>
+
+              <!-- 自定义操作按钮 -->
+              <template #card-append="{ item }">
+                <v-btn
+                  icon
+                  variant="text"
+                  size="small"
+                  color="red"
+                  @click="commentListRef?.handleDeleteItem?.(item)"
+                >
+                  <v-icon size="18">mdi-delete</v-icon>
+                </v-btn>
+              </template>
+
                 <!-- 可选：自定义空状态插槽 -->
               <template #empty="{ searchKeyword }">
                 <v-empty-state
@@ -252,9 +283,40 @@
               empty-headline="暂无收藏"
               empty-text="你还没有收藏任何内容"
               :get-item-id="(item) => item.articleId"
-              :get-item-title="(item) => item.title"
-              :get-detail-link="(item) => ({ name: 'detail', params: { id: item.articleId } })"
-            />
+            >
+              <!-- 自定义标题列 -->
+              <template #column-title="{ item }">
+                <router-link 
+                  :to="`/detail/${item.articleId}`"
+                  class="text-decoration-none text-primary"
+                >
+                  {{ item.title }}
+                </router-link>
+              </template>
+
+              <!-- 自定义作者列 -->
+              <!-- <template #column-author="{ item }">
+                {{ item.create_by || '蝎子' }}
+              </template> -->
+
+              <!-- 自定义时间列 -->
+              <!-- <template #column-createdAt="{ item }">
+                {{ formatDate(item.createTime) }}
+              </template> -->
+
+              <!-- 自定义操作列 -->
+              <template #column-actions="{ item }">
+                <v-btn
+                  icon
+                  variant="text"
+                  size="small"
+                  color="red"
+                  @click="favoriteListRef?.handleDeleteItem?.(item)"
+                >
+                  <v-icon>mdi-heart-broken</v-icon>
+                </v-btn>
+              </template>
+            </AppContentList>
           </v-tabs-window-item>
         </v-tabs-window>
         </v-sheet>
@@ -331,14 +393,14 @@ import AppContentList from './AppContentList.vue'
 const display = useDisplay()
 const userStore = useUserStore()
 
-// ✅ 定义评论相关的配置和删除方法
+// 定义评论相关的配置和删除方法
 const commentHeaders = [
   { title: '评论内容', key: 'content', align: 'start' },
   { title: '评论时间', key: 'createTime' },
   { title: '操作', key: 'actions', sortable: false, align: 'end' }
 ]
 
-// ✅ 删除评论的方法（使用占位符）
+// 删除评论的方法（使用占位符）
 const deleteCommentApi = async (commentId) => {
   console.log('🚧 [待实现] 删除评论 - 评论ID:', commentId)
   // TODO: 后端实现后取消注释
@@ -396,8 +458,8 @@ const postLoading = ref(false)
 // 收藏数据
 const favoriteHeaders = [
   { title: '标题', key: 'title', align: 'start' },
-  // { title: '作者', key: 'author' },
-  // { title: '收藏时间', key: 'createdAt' },
+  { title: '作者', key: 'author' },
+  { title: '收藏时间', key: 'createdAt' },
   { title: '操作', key: 'actions', sortable: false,align: 'end'  }
 ]
 

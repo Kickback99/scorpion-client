@@ -20,7 +20,7 @@
       />
     </div>
 
-    <!-- 列表展示区域 -->
+    <!-- 列表展示区域(表格布局) -->
     <v-data-table-virtual
       v-if="contentType === 'grid'"
       :headers="tableHeaders"
@@ -31,47 +31,21 @@
       hide-default-header
       hide-default-footer
     >
-      <!-- 自定义标题列 -->
-      <template v-slot:item.title="{ item }">
-        <slot name="title" :item="item">
-          <router-link
-            :to="getDetailLink(item)"
-            class="text-decoration-none text-primary"
-          >
-            {{ item.title || item.content }}
-          </router-link>
+      <!-- 动态遍历所有列，使用具名插槽 -->
+      <template 
+        v-for="header in tableHeaders" 
+        :key="header.key"
+        #[`item.${header.key}`]="{ item }"
+      >
+        <!-- 使用插槽：命名规则为 `column-{key}` -->
+        <slot :name="`column-${header.key}`" :item="item">
+          <!-- 默认显示（如果没有提供插槽） -->
+          <span>{{ item[header.key] }}</span>
         </slot>
       </template>
 
-      <!-- 自定义内容列（评论专用） -->
-      <template v-if="contentType === 'comment'" v-slot:item.content="{ item }">
-        <div class="text-body-2 text-grey-darken-1">
-          {{ truncateText(item.content, 100) }}
-        </div>
-      </template>
-
-      <!-- 自定义时间列 -->
-      <template v-slot:item.createTime="{ item }">
-        <!-- {{ formatDate(item.createTime) }} -->
-        {{ item.createTime }}
-      </template>
-
-      <!-- 操作列 -->
-      <template v-slot:item.actions="{ item }">
-        <v-btn
-          icon
-          variant="text"
-          size="small"
-          :color="deleteButtonColor"
-          :loading="isDeleting(item)"
-          @click="handleDelete(item)"
-        >
-          <v-icon>{{ deleteIcon }}</v-icon>
-        </v-btn>
-      </template>
-
-      <!-- 空状态 -->
-      <template v-slot:no-data>
+      <!-- 空状态：使用默认插槽 -->
+      <template #no-data>
         <slot name="empty" :searchKeyword="searchKeyword">
           <v-empty-state
             :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
@@ -83,43 +57,65 @@
       </template>
     </v-data-table-virtual>
 
-    <!-- 移动端卡片列表模式 -->
+    <!-- Card模式：卡片列表布局 -->
     <div v-else-if="contentType === 'card'" class="content-card-list">
       <v-list v-if="filteredItems.length > 0">
         <v-list-item
           v-for="item in filteredItems"
           :key="getItemId(item)"
-          :title="getItemTitle(item)"
-          :subtitle="getItemSubtitle(item)"
           lines="two"
           class="content-item"
         >
-          <template v-slot:prepend>
-            <v-avatar size="25" color="grey-lighten-2">
-              <v-icon>{{ itemIcon }}</v-icon>
-            </v-avatar>
+          <!-- 前置图标插槽 -->
+          <template #prepend>
+            <slot name="card-prepend" :item="item">
+              <v-avatar size="40" color="grey-lighten-2">
+                <v-icon>mdi-file-document</v-icon>
+              </v-avatar>
+            </slot>
           </template>
-          <template v-slot:append>
-            <v-btn
-              icon
-              variant="text"
-              size="small"
-              :color="deleteButtonColor"
-              :loading="isDeleting(item)"
-              @click="handleDelete(item)"
-            >
-              <v-icon size="18">{{ deleteIcon }}</v-icon>
-            </v-btn>
+
+          <!-- 标题插槽 -->
+          <template #title>
+            <slot name="card-title" :item="item">
+              {{ item.title || item.content }}
+            </slot>
+          </template>
+
+          <!-- 副标题插槽 -->
+          <template #subtitle>
+            <slot name="card-subtitle" :item="item">
+              发布于 {{ item.createTime }}
+            </slot>
+          </template>
+
+          <!-- 后置操作插槽 -->
+          <template #append>
+            <slot name="card-append" :item="item">
+              <v-btn
+                icon
+                variant="text"
+                size="small"
+                :color="deleteButtonColor"
+                :loading="isDeleting(item)"
+                @click="handleDelete(item)"
+              >
+                <v-icon size="18">{{ deleteIcon }}</v-icon>
+              </v-btn>
+            </slot>
           </template>
         </v-list-item>
       </v-list>
-      <v-empty-state
-        v-else
-        :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
-        :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
-        :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
-        class="custom-empty-state"
-      />
+
+        <!-- 空状态：使用默认插槽 -->
+      <slot v-else name="empty" :searchKeyword="searchKeyword">
+        <v-empty-state
+          :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
+          :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
+          :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
+          class="custom-empty-state"
+        />
+      </slot>
     </div>
 
     <!-- 分页组件 -->
@@ -228,21 +224,6 @@ const props = defineProps({
   getItemId: {
     type: Function,
     default: (item) => item.id || item.commentId || item.articleId
-  },
-  // 获取条目标题的函数
-  getItemTitle: {
-    type: Function,
-    default: (item) => item.title || item.content
-  },
-  // 获取条目副标题的函数
-  getItemSubtitle: {
-    type: Function,
-    default: (item) => `发布于 ${item.createTime}`
-  },
-  // 获取详情链接的函数
-  getDetailLink: {
-    type: Function,
-    default: (item) => ({ name: 'detail', params: { id: item.articleId } })
   },
   // 是否自动加载
   autoLoad: {
@@ -357,11 +338,6 @@ const handleClearSearch = () => {
   if (!date) return ''
   return new Date(date).toLocaleString('zh-CN')
 } */
-
-const truncateText = (text, maxLength) => {
-  if (!text) return ''
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
-}
 
 // 监听
 watch(() => props.enableSearch, () => {
