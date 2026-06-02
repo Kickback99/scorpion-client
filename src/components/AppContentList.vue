@@ -80,6 +80,7 @@
         <!-- 自定义分页组件 -->
         <div class="d-flex justify-center mt-4">
           <v-pagination
+            v-show="paginationVisible"
             v-model="currentPage"
             :length="totalPages"
             :total-visible="display.mobile.value ? 5 : 7"
@@ -225,12 +226,13 @@
     </div>
 
     <!-- 分页组件 -->
-    <div v-if="pagination && total > pageSize" class="d-flex justify-center mt-4">
+    <div v-if="pagination" class="d-flex justify-center mt-4">
       <v-pagination
+        v-show="paginationVisible"
         v-model="currentPage"
         :length="totalPages"
         :total-visible="display.mobile.value ? 5 : 7"
-        @update:model-value="loadData"
+        @update:model-value="handlePageChange"
       />
     </div>
   </v-sheet>
@@ -291,7 +293,8 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  // 每页显示数量（当 hideDefaultFooter=true 时，默认为 5；否则为 9999）
+  // table 模式 每页显示数量（如果传递 pageSize 就用传递的，否则当 hideDefaultFooter=true 时，为 10；否则为 9999）
+  // card  模式 每页显示数量（如果传递 pageSize 就用传递的，否则当 pagination=true 时，为 10；否则为 9999）
   pageSize: {
     type: Number,
     default: null
@@ -331,11 +334,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  // 每页大小
-  pageSize: {
-    type: Number,
-    default: 10
-  },
   // 获取条目ID的函数
   getItemId: {
     type: Function,
@@ -360,12 +358,23 @@ const deletingIds = ref([]) // 正在删除的ID列表
 // 计算每页显示数量
 const itemsPerPage  = computed(() => {
   if (props.pageSize !== null) return props.pageSize
-  return props.hideDefaultFooter ? 5 : 9999
+  if (props.contentType === 'table') {
+      // table 模式每页大小处理
+      return props.hideDefaultFooter ? 10 : 9999
+  }else if (props.contentType === 'card') {
+    // card 模式每页大小处理
+    return props.pagination ? 10 : 9999
+  }
 })
 
 // 计算总页数
 const totalPages = computed(() => {
   return Math.ceil(total.value / itemsPerPage.value)
+})
+
+// pagination 可见性
+const paginationVisible = computed(()=>{
+  return  Math.ceil(total.value / itemsPerPage.value) > 1
 })
 
 // 计算属性
@@ -393,6 +402,7 @@ const loadData = async (page = currentPage.value) => {
     let params = {}
     
     if (props.contentType === 'table') {
+      // table 模式下的分页参数处理
       if (props.hideDefaultFooter) {
         // 自定义分页：按需加载
         params = { pageNum: page, pageSize: itemsPerPage.value }
@@ -400,6 +410,9 @@ const loadData = async (page = currentPage.value) => {
         // 默认分页：一次性加载所有数据
         params = { pageNum: 1, pageSize: 9999 }
       }
+    }else {
+      // card 模式下的分页参数处理
+      params = { pageNum: page, pageSize: itemsPerPage.value}
     }
     
     const result = await props.loadDataApi(params)
