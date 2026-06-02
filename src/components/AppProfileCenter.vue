@@ -177,30 +177,48 @@
 
           <!-- 我的发布 Tab -->
           <v-tabs-window-item value="posts">
-            <v-sheet class="pa-6">
-              <v-data-table
-                :headers="postHeaders"
-                :items="postList"
-                :loading="postLoading"
-                hover
-              >
-                <template v-slot:item.title="{ item }">
-                  <router-link :to="`/article/${item.id}`" class="text-decoration-none text-primary">
-                    {{ item.title }}
-                  </router-link>
-                </template>
-                <template v-slot:item.createdAt="{ item }">
-                  {{ formatDate(item.createdAt) }}
-                </template>
-                <template v-slot:no-data>
-                  <v-empty-state
-                    headline="暂无发布"
-                    text="你还没有发布过任何内容"
-                    icon="mdi-file-document-outline"
-                  ></v-empty-state>
-                </template>
-              </v-data-table>
-            </v-sheet>
+            <AppContentList
+              ref="postListRef"
+              content-type="table"
+              :load-data-api="articleListApi"
+              :delete-api="articleDetailApi"
+              :table-headers="postHeaders"
+              :enable-search="true"
+              search-label="搜索发布的文章"
+              search-placeholder="输入文章标题关键词"
+              :hide-default-footer="false"
+              empty-icon="mdi-file-document-outline"
+              empty-headline="暂无发布"
+              empty-text="你还没有发布过任何内容"
+              :get-item-id="(item) => item.id"
+            >
+              <template #column-title="{ item }">
+                <router-link :to="`/detail/${item.id}`" 
+                class="text-decoration-none text-primary"
+                style="display: inline-block; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                >
+                  {{ item.title }}
+                </router-link>
+              </template>
+
+              <template #column-category="{ item }">
+                {{ item.cateName || '未分类' }}
+              </template>
+
+              <template #column-views="{ item }">
+                {{ item.viewCount || 0 }}
+              </template>
+
+              <template #column-createdAt="{ item }">
+                {{ formatDate(item.createTime) }}
+              </template>
+
+              <template #column-actions="{ item }">
+                <v-btn icon variant="text" size="small" color="red" @click="postListRef?.deleteItem?.(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+            </AppContentList>
           </v-tabs-window-item>
 
           <!-- 我的评论 Tab -->
@@ -387,6 +405,7 @@ import { useRouter } from 'vue-router'
 import { watch } from 'vue'
 import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
 import AppContentList from './AppContentList.vue'
+import { articleDetailApi, articleListApi } from '@/api/article'
 
 
 
@@ -526,7 +545,7 @@ const loadFeedback = async () => {
   }
 }
 
-const loadPosts = async () => {
+/* const loadPosts = async () => {
   postLoading.value = true
   try {
     postList.value = [
@@ -535,9 +554,10 @@ const loadPosts = async () => {
   } finally {
     postLoading.value = false
   }
-}
+} */
 
 // 组件引用
+const postListRef = ref(null)
 const commentListRef = ref(null)
 const favoriteListRef = ref(null)
 
@@ -549,7 +569,7 @@ watch(tab, (newTab) => {
       if (feedbackList.value.length === 0) loadFeedback()
       break
     case 'posts':
-      if (postList.value.length === 0) loadPosts()
+      postListRef.value?.loadData()
       break
     case 'comments':
         commentListRef.value?.loadData()

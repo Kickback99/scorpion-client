@@ -4,7 +4,12 @@ import http from '@/utils/http'
 export const cateListApi = () => http.get('/user/content/category')
 
 // 所有文章
-export const articleListApi = (pageNum,pageSize,searchData) => http.get(`/user/content/article/${pageNum}/${pageSize}`,{params:searchData})
+export const articleListApi = (params) => {
+  const pageNum = params?.pageNum || 1
+  const pageSize = params?.pageSize || 10
+  const searchData = params?.searchData || {}
+  return http.get(`/user/content/article/${pageNum}/${pageSize}`, { params: searchData })
+}
 
 // 热门文章
 export const hotListApi = () => http.get('/user/content/article/hot')

@@ -20,7 +20,86 @@
       />
     </div>
 
-    <!-- 列表展示区域(表格布局) -->
+    <!-- ==================== Table 模式（v-data-table + 分页）==================== -->
+    <div v-if="contentType === 'table'">
+      <!-- 数据加载中，显示 loading -->
+      <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
+        <v-progress-circular indeterminate color="primary" size="40" />
+        <span class="mt-3 text-grey text-caption">加载中...</span>
+      </div>
+
+      <!-- 有数据时显示表格 -->
+      <!-- 使用 Vuetify 默认分页（一次性加载所有数据） -->
+      <v-data-table
+        v-else-if="!hideDefaultFooter && filteredItems.length > 0"
+        :headers="tableHeaders"
+        :items="filteredItems"
+        hover
+      >
+        <template 
+          v-for="header in tableHeaders" 
+          :key="header.key"
+          #[`item.${header.key}`]="{ item }"
+        >
+          <slot :name="`column-${header.key}`" :item="item">
+            <span>{{ item[header.key] }}</span>
+          </slot>
+        </template>
+
+        <template #no-data>
+          <slot name="empty" :searchKeyword="searchKeyword">
+            <v-empty-state
+              :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
+              :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
+              :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
+              class="custom-empty-state"
+            />
+          </slot>
+        </template>
+      </v-data-table>
+
+      <!-- 使用自定义分页（后端分页，按需加载） -->
+      <div v-else-if="hideDefaultFooter && filteredItems.length > 0">
+        <v-data-table
+          :headers="tableHeaders"
+          :items="filteredItems"
+          :hide-default-footer="true"
+          hover
+        >
+          <template 
+            v-for="header in tableHeaders" 
+            :key="header.key"
+            #[`item.${header.key}`]="{ item }"
+          >
+            <slot :name="`column-${header.key}`" :item="item">
+              <span>{{ item[header.key] }}</span>
+            </slot>
+          </template>
+        </v-data-table>
+
+        <!-- 自定义分页组件 -->
+        <div class="d-flex justify-center mt-4">
+          <v-pagination
+            v-model="currentPage"
+            :length="totalPages"
+            :total-visible="display.mobile.value ? 5 : 7"
+            @update:model-value="handlePageChange"
+          />
+        </div>
+      </div>
+
+      <!-- 无数据且不在加载中时显示空状态 -->
+      <slot v-else name="empty" :searchKeyword="searchKeyword">
+        <v-empty-state
+          :headline="searchKeyword ? '未找到相关内容' : emptyHeadline"
+          :text="searchKeyword ? `没有找到包含“${searchKeyword}”的内容` : emptyText"
+          :icon="searchKeyword ? 'mdi-magnify-remove-outline' : emptyIcon"
+          class="custom-empty-state"
+        />
+      </slot>
+    </div>
+
+    <!-- ==================== Grid 模式（虚拟滚动表格）==================== -->
     <div v-if="contentType === 'grid'" class="grid-container">
       
       <!-- 数据加载之前，使用 loading -->
@@ -76,7 +155,7 @@
     </slot>
     </div>
 
-    <!-- Card模式：卡片列表布局 -->
+     <!-- ==================== Card 模式（卡片列表布局）==================== -->
     <div v-else-if="contentType === 'card'" class="content-card-list">
 
       <!-- 数据加载之前，使用 loading -->
@@ -163,11 +242,11 @@ import { useDisplay } from 'vuetify'
 
 // Props 定义
 const props = defineProps({
-  // 内容类型：'grid'（网格/表格）或 'card'（卡片/列表）
+  // 内容类型：'grid'（虚拟滚动）、'card'（卡片）、'table'（表格+分页）
   contentType: {
     type: String,
     default: 'grid',
-    validator: (value) => ['grid', 'card'].includes(value)
+    validator: (value) => ['grid', 'card', 'table'].includes(value)
   },
   // 数据加载函数（必须返回 Promise）
   loadDataApi: {
@@ -206,6 +285,16 @@ const props = defineProps({
   searchFields: {
     type: Array,
     default: () => ['title']
+  },
+  // 是否隐藏 Vuetify 默认分页脚（true=使用自定义 v-pagination，false=使用默认分页）
+  hideDefaultFooter: {
+    type: Boolean,
+    default: false
+  },
+  // 每页显示数量（当 hideDefaultFooter=true 时，默认为 5；否则为 9999）
+  pageSize: {
+    type: Number,
+    default: null
   },
   // 空状态图标
   emptyIcon: {
@@ -268,6 +357,17 @@ const currentPage = ref(1)
 const total = ref(0)
 const deletingIds = ref([]) // 正在删除的ID列表
 
+// 计算每页显示数量
+const itemsPerPage  = computed(() => {
+  if (props.pageSize !== null) return props.pageSize
+  return props.hideDefaultFooter ? 5 : 9999
+})
+
+// 计算总页数
+const totalPages = computed(() => {
+  return Math.ceil(total.value / itemsPerPage.value)
+})
+
 // 计算属性
 const filteredItems = computed(() => {
   if (!props.enableSearch || !searchKeyword.value.trim()) {
@@ -286,15 +386,22 @@ const hasData = computed(() => {
   return filteredItems.value.length > (display.mobile.value ? 5 : 6)
 })
 
-const totalPages = computed(() => {
-  return Math.ceil(total.value / props.pageSize)
-})
-
 // 方法
-const loadData = async () => {
+const loadData = async (page = currentPage.value) => {
   loading.value = true
   try {
-    const params = props.pagination ? { pageNum: currentPage.value, pageSize: props.pageSize } : {}
+    let params = {}
+    
+    if (props.contentType === 'table') {
+      if (props.hideDefaultFooter) {
+        // 自定义分页：按需加载
+        params = { pageNum: page, pageSize: itemsPerPage.value }
+      } else {
+        // 默认分页：一次性加载所有数据
+        params = { pageNum: 1, pageSize: 9999 }
+      }
+    }
+    
     const result = await props.loadDataApi(params)
     
     if (result && result.data) {
@@ -314,6 +421,11 @@ const loadData = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 自定义分页切换
+const handlePageChange = (page) => {
+  loadData(page)
 }
 
 const handleDelete = async (item) => {
@@ -351,6 +463,13 @@ const handleClearSearch = () => {
   if (!date) return ''
   return new Date(date).toLocaleString('zh-CN')
 } */
+
+// 监听搜索关键词变化
+watch(searchKeyword, () => {
+  if (props.contentType !== 'table') {
+    // grid/card 模式重新过滤
+  }
+})
 
 // 监听
 watch(() => props.enableSearch, () => {

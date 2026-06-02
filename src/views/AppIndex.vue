@@ -100,7 +100,11 @@ const renderArticleList = async() => {
     // console.log('searchData.value',searchData.value)
     isLoading.value = true
     try {
-      const res = await articleListApi(params.value.pageNum,params.value.pageSize,searchData.value)
+      const res = await articleListApi({
+        pageNum: params.value.pageNum,
+        pageSize: params.value.pageSize,
+        searchData: searchData.value
+      })
       // console.log('renderArticleList...')
       console.log('res.data.items',res.data.items)
       articleList.value = res.data.items.map(item => ({
