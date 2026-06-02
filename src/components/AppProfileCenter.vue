@@ -195,22 +195,23 @@
               <template #column-title="{ item }">
                 <router-link :to="`/detail/${item.id}`" 
                 class="text-decoration-none text-primary"
-                style="display: inline-block; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                    style="display: inline-block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                 >
                   {{ item.title }}
                 </router-link>
               </template>
 
-              <template #column-category="{ item }">
+              <template #column-cateName="{ item }">
                 {{ item.cateName || '未分类' }}
               </template>
 
-              <template #column-views="{ item }">
+              <template #column-viewCount="{ item }">
                 {{ item.viewCount || 0 }}
               </template>
 
-              <template #column-createdAt="{ item }">
-                {{ formatDate(item.createTime) }}
+              <template #column-createTime="{ item }">
+                <!-- {{ formatDate(item.createTime) }} -->
+                {{ item.createTime }}
               </template>
 
               <template #column-actions="{ item }">
@@ -457,10 +458,10 @@ const feedbackLoading = ref(false)
 
 // 发布数据
 const postHeaders = [
-  { title: '标题', key: 'title', align: 'start' },
-  { title: '分类', key: 'category' },
-  { title: '阅读量', key: 'views' },
-  { title: '发布时间', key: 'createdAt' }
+  { title: '标题', key: 'title', align: 'start', width: '220px' },
+  { title: '分类', key: 'cateName', width: '100px' },
+  { title: '阅读量', key: 'viewCount', width: '80px' },
+  { title: '发布时间', key: 'createTime', width:'160px' }
 ]
 const postList = ref([])
 const postLoading = ref(false)
