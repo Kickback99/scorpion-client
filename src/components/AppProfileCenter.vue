@@ -227,6 +227,7 @@
               ref="commentListRef"
               content-type="card"
               :load-data-api="getUserCommentsApi"
+              :pagination="true"
               :delete-api="deleteCommentApi"
               :table-headers="commentHeaders"
               :enable-search="true"
