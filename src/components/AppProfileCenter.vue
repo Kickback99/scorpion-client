@@ -21,15 +21,15 @@
             <v-icon left class="mr-2">mdi-message-text</v-icon>
             我的反馈
           </v-tab>
-          <v-tab value="posts" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab v-if="configStore.isMyPublishesEnabled" value="posts" :class="display.mobile.value ? 'justify-start' : ''">
             <v-icon left class="mr-2">mdi-file-document</v-icon>
             我的发布
           </v-tab>
-          <v-tab value="comments" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab v-if="configStore.isMyCommentsEnabled" value="comments" :class="display.mobile.value ? 'justify-start' : ''">
             <v-icon left class="mr-2">mdi-comment</v-icon>
             我的评论
           </v-tab>
-          <v-tab value="favorites" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab v-if="configStore.isMyFavoritesEnabled" value="favorites" :class="display.mobile.value ? 'justify-start' : ''">
             <v-icon left class="mr-2">mdi-heart</v-icon>
             我的收藏
           </v-tab>
@@ -176,7 +176,7 @@
           </v-tabs-window-item>
 
           <!-- 我的发布 Tab -->
-          <v-tabs-window-item value="posts">
+          <v-tabs-window-item v-if="configStore.isMyPublishesEnabled" value="posts">
             <AppContentList
               ref="postListRef"
               content-type="table"
@@ -224,7 +224,7 @@
           </v-tabs-window-item>
 
           <!-- 我的评论 Tab -->
-          <v-tabs-window-item value="comments">
+          <v-tabs-window-item v-if="configStore.isMyCommentsEnabled" value="comments">
             <AppContentList
               ref="commentListRef"
               content-type="card"
@@ -289,7 +289,7 @@
           </v-tabs-window-item>
 
           <!-- 我的收藏 Tab -->
-          <v-tabs-window-item value="favorites">
+          <v-tabs-window-item v-if="configStore.isMyFavoritesEnabled" value="favorites">
             <AppContentList
               ref="favoriteListRef"
               content-type="grid"
@@ -410,8 +410,9 @@ import { watch } from 'vue'
 import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
 import AppContentList from './AppContentList.vue'
 import { articleDetailApi, articleListApi } from '@/api/article'
+import { useConfigStore } from '@/store/config.js'
 
-
+const configStore = useConfigStore()
 
 const display = useDisplay()
 const userStore = useUserStore()
@@ -573,13 +574,19 @@ watch(tab, (newTab) => {
       if (feedbackList.value.length === 0) loadFeedback()
       break
     case 'posts':
-      postListRef.value?.loadData()
+      if (configStore.isMyPublishesEnabled) {
+        postListRef.value?.loadData()
+      }
       break
     case 'comments':
+      if (configStore.isMyCommentsEnabled) {
         commentListRef.value?.loadData()
+      }
       break
     case 'favorites':
-      favoriteListRef.value?.loadData()
+      if (configStore.isMyFavoritesEnabled) {
+        favoriteListRef.value?.loadData()
+      }
       break
   }
 })
