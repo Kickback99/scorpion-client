@@ -34,6 +34,7 @@
         v-else-if="!hideDefaultFooter && filteredItems.length > 0"
         :headers="tableHeaders"
         :items="filteredItems"
+        :hide-default-header="hideDefaultHeader"
         hover
       >
         <template 
@@ -63,6 +64,7 @@
         <v-data-table
           :headers="tableHeaders"
           :items="filteredItems"
+          :hide-default-header="hideDefaultHeader"
           :hide-default-footer="true"
           hover
         >
@@ -116,7 +118,7 @@
         :items="filteredItems"
         :height="hasData ? (display.mobile.value ? 'calc(100vh - 380px)' : 'calc(100vh - 360px)') : 'auto'"
         hover
-        hide-default-header
+        :hide-default-header="hideDefaultHeader"
         hide-default-footer
       >
         <!-- 动态遍历所有列，使用具名插槽 -->
@@ -287,6 +289,11 @@ const props = defineProps({
   searchFields: {
     type: Array,
     default: () => ['title']
+  },
+  // 是否隐藏标题行，（true=隐藏标题行，false=不隐藏标题行）
+  hideDefaultHeader:{
+    type: Boolean,
+    default: true
   },
   // 是否隐藏 Vuetify 默认分页脚（true=使用自定义 v-pagination，false=使用默认分页）
   hideDefaultFooter: {
