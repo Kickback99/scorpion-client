@@ -28,6 +28,13 @@ export const useConfigStore = defineStore('config', {
       login_enabled: true,
       // 友链显示
       friend_link_enabled: false,
+    },
+
+    // 个人中心相关
+    profile: {
+      my_publishes_enabled: false,
+      my_comments_enabled: true,
+      my_favorites_enabled: true
     }
 
   }),
@@ -118,7 +125,28 @@ export const useConfigStore = defineStore('config', {
      */
     getChildPageSize() {
       return this.comment?.child_page_size ?? 7
-    }
+    },
+
+    /**
+     *  获取我的发布是否开启
+     */
+    getPublishesEnabled(){
+      return this.profile?.my_publishes_enabled ?? true
+    },
+
+    /**
+     *  获取我的评论是否开启
+     */
+    getMyCommentsEnabled(){
+      return this.profile?.my_comments_enabled ?? true
+    },
+
+    /**
+     *  获取我的收藏是否开启
+     */
+    getMyFavoritesEnabled(){
+      return this.profile?.my_Favorites_enabled ?? true
+    },
 
   },
 
@@ -129,6 +157,9 @@ export const useConfigStore = defineStore('config', {
     isArticleCommentEnabled: (state) => state.comment?.article_comment_enabled === true,
     isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
     childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,
-    childPageSize: (state) => state.comment?.child_page_size ?? 7
+    childPageSize: (state) => state.comment?.child_page_size ?? 7,
+    isMyPublishesEnabled: (state) => state.profile?.my_publishes_enabled ?? true,
+    isMyCommentsEnabled: (state) => state.profile?.my_comments_enabled ?? true,
+    isMyFavoritesEnabled: (state) => state.profile?.my_favorites_enabled ?? true,
   }
 })
