@@ -187,6 +187,7 @@
               search-label="搜索发布的文章"
               search-placeholder="输入文章标题关键词"
               :hide-default-footer="false"
+              :hide-default-header="false"
               empty-icon="mdi-file-document-outline"
               empty-headline="暂无发布"
               empty-text="你还没有发布过任何内容"
@@ -295,6 +296,7 @@
               :load-data-api="userFavoritesApi"
               :delete-api="deleteFavoriteApi"
               :table-headers="favoriteHeaders"
+              :hideDefaultHeader="true"
               :enable-search="true"
               search-label="搜索收藏的文章"
               search-placeholder="输入文章标题关键词"
@@ -469,8 +471,8 @@ const postLoading = ref(false)
 // 收藏数据
 const favoriteHeaders = [
   { title: '标题', key: 'title', align: 'start' },
-  { title: '作者', key: 'author' },
-  { title: '收藏时间', key: 'createdAt' },
+  // { title: '作者', key: 'author' },
+  // { title: '收藏时间', key: 'createdAt' },
   { title: '操作', key: 'actions', sortable: false,align: 'end'  }
 ]
 
