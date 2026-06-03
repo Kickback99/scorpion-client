@@ -29,12 +29,15 @@
       </div>
 
       <!-- 有数据时显示表格 -->
-      <!-- 使用 Vuetify 默认分页（一次性加载所有数据） -->
+       <!-- 分页方式： -->
+      <!-- hide-default-footer = true  使用 Vuetify 默认分页（一次性加载所有数据） -->
+      <!-- hide-default-footer = false  使用自定义分页（后端分页，按需加载） -->
       <v-data-table
-        v-else-if="!hideDefaultFooter && filteredItems.length > 0"
+        v-else-if="filteredItems.length > 0"
         :headers="tableHeaders"
         :items="filteredItems"
         :hide-default-header="hideDefaultHeader"
+        :hide-default-footer="hideDefaultFooter"
         hover
       >
         <template 
@@ -59,38 +62,6 @@
         </template>
       </v-data-table>
 
-      <!-- 使用自定义分页（后端分页，按需加载） -->
-      <div v-else-if="hideDefaultFooter && filteredItems.length > 0">
-        <v-data-table
-          :headers="tableHeaders"
-          :items="filteredItems"
-          :hide-default-header="hideDefaultHeader"
-          :hide-default-footer="true"
-          hover
-        >
-          <template 
-            v-for="header in tableHeaders" 
-            :key="header.key"
-            #[`item.${header.key}`]="{ item }"
-          >
-            <slot :name="`column-${header.key}`" :item="item">
-              <span>{{ item[header.key] }}</span>
-            </slot>
-          </template>
-        </v-data-table>
-
-        <!-- 自定义分页组件 -->
-        <div class="d-flex justify-center mt-4">
-          <v-pagination
-            v-show="paginationVisible"
-            v-model="currentPage"
-            :length="totalPages"
-            :total-visible="display.mobile.value ? 5 : 7"
-            @update:model-value="handlePageChange"
-          />
-        </div>
-      </div>
-
       <!-- 无数据且不在加载中时显示空状态 -->
       <slot v-else name="empty" :searchKeyword="searchKeyword">
         <v-empty-state
@@ -100,6 +71,17 @@
           class="custom-empty-state"
         />
       </slot>
+
+        <!-- 自定义分页组件 -->
+        <div v-if="hideDefaultFooter && filteredItems.length > 0" class="d-flex justify-center mt-4">
+          <v-pagination
+            v-show="paginationVisible"
+            v-model="currentPage"
+            :length="totalPages"
+            :total-visible="display.mobile.value ? 5 : 7"
+            @update:model-value="handlePageChange"
+          />
+        </div>
     </div>
 
     <!-- ==================== Grid 模式（虚拟滚动表格）==================== -->
@@ -225,17 +207,17 @@
           class="custom-empty-state"
         />
       </slot>
-    </div>
 
-    <!-- 分页组件 -->
-    <div v-if="pagination" class="d-flex justify-center mt-4">
-      <v-pagination
-        v-show="paginationVisible"
-        v-model="currentPage"
-        :length="totalPages"
-        :total-visible="display.mobile.value ? 5 : 7"
-        @update:model-value="handlePageChange"
-      />
+      <!-- 分页组件 -->
+      <div v-if="pagination && filteredItems.length > 0" class="d-flex justify-center mt-4">
+        <v-pagination
+          v-show="paginationVisible"
+          v-model="currentPage"
+          :length="totalPages"
+          :total-visible="display.mobile.value ? 5 : 7"
+          @update:model-value="handlePageChange"
+        />
+      </div>
     </div>
   </v-sheet>
 </template>
