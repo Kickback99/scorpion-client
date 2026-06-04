@@ -31,7 +31,7 @@
         </v-icon>
         <div class="d-flex align-center">
           <span>收藏</span>
-          <span v-if="article.favoriteCount > 0">
+          <span v-if="configStore.getFavoriteCountEnabled() && article.favoriteCount > 0">
             {{ article.favoriteCount }}
           </span>
         </div>
@@ -285,6 +285,11 @@ const renderArticleItem = async() => {
     generateTocAnchors();
     calculatePosition(); // 初始化时计算一次
   });
+};
+
+const updateFavoriteIcon  = async() => {
+  const res = await articleDetailApi(props.id);
+  isFavorite.value = res.data.isFavorite || false;
 };
 
 // 添加处理刷新评论数方法
@@ -629,6 +634,14 @@ watch(() => themeStore.isDark, () => {
   if (!hasToc.value || !showToc.value) return;
   reinitializeToc();
 }) */
+
+watch(() => isLoggedIn.value, () => {
+  if (isLoggedIn.value) {
+    updateFavoriteIcon();
+  } else {
+    isFavorite.value = false;
+  }
+}, { immediate: false }); // 页面初始化时不触发，避免重复请求
 </script>
 
 <style scoped>
