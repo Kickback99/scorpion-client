@@ -55,15 +55,15 @@
                        <v-icon icon="mdi-clock-outline" size="small" class="mr-1"></v-icon>
                     {{  createTime }}
                   </span>
-                  <span class="d-inline-flex mr-3">
+                  <span v-if="configStore.getListViewEnabled()" class="d-inline-flex mr-3">
                       <v-icon icon="mdi-eye" size="small" class="mr-1"></v-icon>
                     {{ viewCount }}
                   </span>
-                    <span class="d-inline-flex mr-3">
+                    <span v-if="configStore.getListFavoriteEnabled()" class="d-inline-flex mr-3">
                     <v-icon icon="mdi-heart-outline" size="small" class="mr-1"></v-icon>
                     {{ favoriteCount || 0 }}
                   </span>
-                  <span class="d-inline-flex mr-3">
+                  <span v-if="configStore.getListCommentEnabled()" class="d-inline-flex mr-3">
                     <v-icon icon="mdi-comment" size="small" class="mr-1"></v-icon>
                     {{ commentCount || 0 }}
                   </span>
@@ -74,9 +74,11 @@
   </template>
 
 <script setup>
+import { useConfigStore } from '@/store/config';
 import { useThemeStore } from '@/store/theme';
 import { useDisplay } from 'vuetify'
 const display = useDisplay()
+const configStore = useConfigStore()
 
 /* const posts = ref([
   {
