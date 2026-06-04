@@ -11,7 +11,7 @@
         :text="article.content"
         ref="preview"
         @copy-code-success="handleCopySuccess"
-        :key="configStore.theme"
+        :key="configStore.article_detail?.theme"
         :class="themeStore.isDark?'user-dark':'user-light'"
         /> 
     </div>
@@ -470,7 +470,7 @@ const themeStore = useThemeStore()
 // 使用 computed 每次重新创建组件
 const MarkdownPreview = computed(() => {
   console.log('创建主题:', themeStore.isDark?"vuepress":"github")
-  const currentThem = configStore.getCurrentTheme()
+  const currentThem = configStore.getArticleTheme()
   return createMarkdownPreview(currentThem)
 })
 
@@ -625,7 +625,7 @@ watch(() => themeStore.isDark, () => {
 });
 
 // 监听配置切换
-/* watch(() => configStore.theme,() => {
+/* watch(() => configStore.article.detail?.theme,() => {
   if (!hasToc.value || !showToc.value) return;
   reinitializeToc();
 }) */

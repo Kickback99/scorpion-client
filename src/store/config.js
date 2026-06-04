@@ -3,10 +3,6 @@ import { getConfigApi } from "@/api/config"
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
-    // 锚点显示（true开启，false禁用）
-    anchor_enabled: true,
-    // 前端主题（0：github主题，1：vuepress主题）
-    theme: 0,
     // 加载状态
     loading: false,
 
@@ -35,8 +31,14 @@ export const useConfigStore = defineStore('config', {
       my_publishes_enabled: false,
       my_comments_enabled: true,
       my_favorites_enabled: true
-    }
+    },
 
+    // 文章详情相关
+    article_detail: {
+      theme: 0, // 前端主题（0：github主题，1：vuepress主题）
+      anchor_enabled: true, // 锚点显示（true开启，false禁用）
+      favorite_count_enabled: true
+    }
   }),
 
   actions: {
@@ -55,20 +57,6 @@ export const useConfigStore = defineStore('config', {
       } finally {
         this.loading = false
       }
-    },
-
-    /**
-     * 获取锚点是否启用
-     */
-    getAnchorEnabled() {
-      return this.anchor_enabled === true
-    },
-
-    /**
-     * 获取当前主题名称
-     */
-    getCurrentTheme() {
-      return this.theme === 0 ? 'github' : 'vuepress'
     },
 
     /**
@@ -148,12 +136,31 @@ export const useConfigStore = defineStore('config', {
       return this.profile?.my_Favorites_enabled ?? true
     },
 
+    /**
+     * 获取文章主题名称
+     */
+    getArticleTheme() {
+      return this.article_detail?.theme === 0 ? 'github' : 'vuepress'
+    },
+
+    /**
+     * 获取文章锚点是否启用
+     */
+    getAnchorEnabled() {
+      return this.article_detail?.anchor_enabled ?? true
+    },
+
+    /**
+     * 获取文章收藏数是否启用
+     */
+    getFavoriteCountEnabled(){
+      return this.article_detail?.favorite_count_enabled ?? true
+    }
+
   },
 
   getters: {
-    isAnchorEnabled: (state) => state.anchor_enabled === true,
     isLoginEnabled: (state) => state.login_enabled === true,
-    currentThemeName: (state) => state.theme === 0 ? 'github' : 'vuepress',
     isArticleCommentEnabled: (state) => state.comment?.article_comment_enabled === true,
     isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
     childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,
@@ -161,5 +168,8 @@ export const useConfigStore = defineStore('config', {
     isMyPublishesEnabled: (state) => state.profile?.my_publishes_enabled ?? true,
     isMyCommentsEnabled: (state) => state.profile?.my_comments_enabled ?? true,
     isMyFavoritesEnabled: (state) => state.profile?.my_favorites_enabled ?? true,
+    currentArticleTheme: (state) => state.article_detail?.theme === 0 ? 'github' : 'vuepress',
+    isAnchorEnabled: (state) => state.article_detail?.anchor_enabled ?? true,
+    isFavoriteCountEnabled: (state) => state.article_detail?.favorite_count_enabled ?? true
   }
 })

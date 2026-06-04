@@ -66,7 +66,7 @@ const loadClientConfig = async (forceRefresh = false) => {
       await configStore.loadConfig()
       configLoaded = true
       lastLoadTime = now
-      console.log('客户端配置加载成功, 主题:', configStore.currentThemeName)
+      console.log('客户端配置加载成功, 主题:', configStore.article_detail?.theme)
     } catch (error) {
       console.error('加载客户端配置失败:', error)
       // 配置加载失败时，使用默认配置
