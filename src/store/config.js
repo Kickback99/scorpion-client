@@ -38,6 +38,13 @@ export const useConfigStore = defineStore('config', {
       theme: 0, // 前端主题（0：github主题，1：vuepress主题）
       anchor_enabled: true, // 锚点显示（true开启，false禁用）
       favorite_count_enabled: true
+    },
+
+    // 文章列表相关
+    article_list: {
+      view_enabled: true,
+      favorite_enabled: true,
+      comment_enabled: true
     }
   }),
 
@@ -155,7 +162,28 @@ export const useConfigStore = defineStore('config', {
      */
     getFavoriteCountEnabled(){
       return this.article_detail?.favorite_count_enabled ?? true
-    }
+    },
+
+    /**
+     * 获取文章列表浏览是否启用
+     */
+    getListViewEnabled(){
+      return this.article_list?.view_enabled ?? true
+    },
+
+    /**
+     * 获取文章列表收藏是否启用
+     */
+    getListFavoriteEnabled(){
+      return this.article_list?.favorite_enabled ?? true
+    },
+
+    /**
+     * 获取文章列表评论是否启用
+     */
+    getListCommentEnabled(){
+      return this.article_list?.comment_enabled ?? true
+    },
 
   },
 
@@ -170,6 +198,9 @@ export const useConfigStore = defineStore('config', {
     isMyFavoritesEnabled: (state) => state.profile?.my_favorites_enabled ?? true,
     currentArticleTheme: (state) => state.article_detail?.theme === 0 ? 'github' : 'vuepress',
     isAnchorEnabled: (state) => state.article_detail?.anchor_enabled ?? true,
-    isFavoriteCountEnabled: (state) => state.article_detail?.favorite_count_enabled ?? true
+    isFavoriteCountEnabled: (state) => state.article_detail?.favorite_count_enabled ?? true,
+    isListViewEnabled: (state) => state.article_list?.view_enabled ?? true,
+    isListFavoriteEnabled: (state) => state.article_list?.favorite_enabled ?? true,
+    isListCommentEnabled: (state) => state.article_list?.comment_enabled ?? true
   }
 })
