@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { articleDetailApi, toggleFavoriteApi } from '@/api/article';
+import { articleDetailApi, toggleFavoriteApi, updateViewCountApi } from '@/api/article';
 import { onMounted, ref, watch, nextTick, computed, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import MarkdownIt from 'markdown-it';
@@ -280,6 +280,9 @@ const renderArticleItem = async() => {
     cateArticles: cateArticles.value, 
     tags: tags.value
   });
+
+  // 更新文章浏览量到redis
+  updateViewCountApi(props.id).catch(err => window.$snackbar?.error(err))
   
   nextTick(() => {
     generateTocAnchors();
