@@ -22,3 +22,6 @@ export const articleDetailApi = (param) => http.get(`/user/content/article/detai
 
 //切换收藏状态
 export const toggleFavoriteApi = (articleId) => http.post(`/user/favorite/toggle/${articleId}`)
+
+// 更新文章浏览量到redis
+export const updateViewCountApi = (id) => http.put(`/user/content/article/updateViewCount/${id}`)
