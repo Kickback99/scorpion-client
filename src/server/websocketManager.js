@@ -34,7 +34,7 @@ class WebSocketManager {
     this.isConnecting = true
     
     try {
-      const wsUrl = `ws://localhost:8800/websocket/${role}/${userId}`
+      const wsUrl = `ws://localhost:8800/websocket/${role}/${userId}?ip=127.0.0.1`
       this.socket = new WebSocket(wsUrl)
 
       this.socket.onopen = () => {
