@@ -1,5 +1,6 @@
 import { useUserStore } from '@/store/user'
 import router from '@/router';
+import emitter from '@/utils/event-bus.js'
 
 class WebSocketManager {
   constructor() {
@@ -69,7 +70,6 @@ class WebSocketManager {
       this.isConnecting = false
     }
   }
-
     // 判断是否应该重连
   shouldReconnectOnClose(code) {
     // 正常关闭，不重连
@@ -141,6 +141,7 @@ class WebSocketManager {
 
   // 显示强制退出对话框
   showForceLogoutDialog(title, message) {
+    sessionStorage.setItem('force_logout_pending', 'true')
     window.$dialog.alert({
       title: title,
       content: message,
@@ -149,6 +150,8 @@ class WebSocketManager {
       confirmText: '重新登录',
       persistent: true,
       onConfirm: () => {
+        // 用户点击确认，清除标记并执行退出
+        sessionStorage.removeItem('force_logout_pending')
         this.logoutAndRedirect()
       }
     })
@@ -190,8 +193,20 @@ class WebSocketManager {
     // 提示用户重新登录
     emitter.emit('loginDialogVisible',true)
     // 提示信息
-    window.$snackbar?.error(res.data?.message || '登录已过期，请重新登录')
+    window.$snackbar?.error('请重新登录')
     router.replace('/')
+  }
+
+  // 检查并处理强退用户点击刷新标记
+  checkAndHandleForceLogout() {
+    const pendingLogout = sessionStorage.getItem('force_logout_pending')
+    if (pendingLogout === 'true') {
+      sessionStorage.removeItem('force_logout_pending')
+      this.logoutAndRedirect()
+      sessionStorage.setItem('need_login_dialog', 'true') //这个标记是给 APPLogin 的 OnMounted使用
+      return true
+    }
+    return false
   }
 
   // 关闭 WebSocket 连接

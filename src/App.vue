@@ -19,6 +19,7 @@ const dialogRef = ref(null)
 
 // 初始化 WebSocket
 const { initWebSocketListener, closeWebSocket } = useWebSocket()
+import websocketManager from '@/server/websocketManager'
 
 onMounted(() => {
    // 挂载 snackbar 到全局
@@ -30,6 +31,9 @@ onMounted(() => {
   if (dialogRef.value) {
     window.$dialog = dialogRef.value
   }
+
+  // 检查并处理强退用户点击刷新标记
+  websocketManager.checkAndHandleForceLogout()
 
   initWebSocketListener()
 })
