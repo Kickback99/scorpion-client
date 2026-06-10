@@ -260,6 +260,8 @@ import AppLogin from './AppLogin.vue'
 import { useUserStore } from '@/store/user'
 import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
+import { useWebSocket } from '@/server/useWebSocket.js'
+const { initWebSocketListener, closeWebSocket } = useWebSocket()
 
 
 const {triggerSearch} = useSearch()
@@ -379,9 +381,9 @@ const handleProfile = () => {
 // 处理退出登录
 const handleLogout = () => {
   console.log('退出登录')
-  // 清除用户信息
-  userStore.removeToken()
-  userStore.removeUser()
+  closeWebSocket()
+  // 清空用户所有数据
+  userStore.clearUserStore()
   
   // 关闭移动端抽屉
   if (smAndDown.value) {
