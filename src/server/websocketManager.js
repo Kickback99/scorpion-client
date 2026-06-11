@@ -1,6 +1,9 @@
 import { useUserStore } from '@/store/user'
 import router from '@/router';
 import emitter from '@/utils/event-bus.js'
+import { userLogoutApi } from '@/api/user';
+import { StealthStorage } from '@/utils/stealthStorage'
+
 
 class WebSocketManager {
   constructor() {
@@ -141,7 +144,11 @@ class WebSocketManager {
 
   // 显示强制退出对话框
   showForceLogoutDialog(title, message) {
-    sessionStorage.setItem('force_logout_pending', 'true')
+    const userStore = useUserStore()
+    if (userStore.user) {
+        userStore.user._k = true
+    }
+    StealthStorage.set('force_logout_pending', 'true')
     window.$dialog.alert({
       title: title,
       content: message,
@@ -151,7 +158,7 @@ class WebSocketManager {
       persistent: true,
       onConfirm: () => {
         // 用户点击确认，清除标记并执行退出
-        sessionStorage.removeItem('force_logout_pending')
+        StealthStorage.remove('force_logout_pending')
         this.logoutAndRedirect()
       }
     })
@@ -185,7 +192,9 @@ class WebSocketManager {
   }
 
   // 统一的退出和跳转
-  logoutAndRedirect() {
+  async logoutAndRedirect() {
+    await userLogoutApi()
+    console.log("==================== 统一的退出和跳转 ====================")
     this.close()
     const userStore = useUserStore()
     // 清空用户所有数据
@@ -198,12 +207,15 @@ class WebSocketManager {
   }
 
   // 检查并处理强退用户点击刷新标记
-  checkAndHandleForceLogout() {
-    const pendingLogout = sessionStorage.getItem('force_logout_pending')
-    if (pendingLogout === 'true') {
-      sessionStorage.removeItem('force_logout_pending')
-      this.logoutAndRedirect()
-      sessionStorage.setItem('need_login_dialog', 'true') //这个标记是给 APPLogin 的 OnMounted使用
+  async checkAndHandleForceLogout() {
+    const pendingLogout = StealthStorage.get('force_logout_pending')
+    const userStore = useUserStore()
+    // pendingLogout === 'true' 处理用户刷新页面
+    // userStore.user && userStore.user._k 处理用户关闭页面
+    if (pendingLogout === 'true' || (userStore.user && userStore.user._k)) {
+      StealthStorage.remove('force_logout_pending')
+      await this.logoutAndRedirect()
+      StealthStorage.set('need_login_dialog', 'true') //这个标记是给 APPLogin 的 OnMounted使用
       return true
     }
     return false
@@ -211,8 +223,10 @@ class WebSocketManager {
 
   // 关闭 WebSocket 连接
   close() {
-    this.isManualClose = true  // 标记为手动关闭，防止重连
-    if (this.socket) {
+    // 连接正在建立或已建立，才需要关闭
+    // readyState 小于 2 表示正在连接或已连接
+    if (this.socket && this.socket.readyState < 2) {
+      this.isManualClose = true  // 标记为手动关闭，防止重连
       console.log('🔌 手动关闭 WebSocket 连接')
       this.socket.close(1000, 'Manual close')
       this.socket = null

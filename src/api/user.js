@@ -6,6 +6,9 @@ export const userLoginApi = (params) => http.post('/user/login',params)
 // 用户详情
 export const userInfoApi = () => http.get('/user/userDetailInfo')
 
+// 用户注销
+export const userLogoutApi = () => http.get("/user/logout")
+
 // 用户收藏
 export const userFavoritesApi = (params) => {
   const pageNum = params?.pageNum || 1

@@ -286,14 +286,17 @@ emitter.on('loginDialogVisible',param => {
 import { onMounted, onUnmounted } from 'vue'
 import { userLoginApi } from '@/api/user';
 import { useUserStore } from '@/store/user';
+import { StealthStorage } from '@/utils/stealthStorage'
 
 onMounted(()=>{
     console.log("==================== 登录组件已挂载 ====================")
 
+    console.log(`==================== ${StealthStorage.get('need_login_dialog')} ====================`)
+
     // 检查并处理强退用户点击刷新标记
-    const needLoginDialog = sessionStorage.getItem('need_login_dialog')
+    const needLoginDialog = StealthStorage.get('need_login_dialog')
     if (needLoginDialog === 'true') {
-        sessionStorage.removeItem('need_login_dialog')
+        StealthStorage.remove('need_login_dialog')
         console.log('🟢 从 sessionStorage 触发登录对话框')
         dialogVisible.value = true
         if(step.value != 1){

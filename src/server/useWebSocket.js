@@ -28,7 +28,7 @@ export function useWebSocket(role = 'user') {
     // 监听用户信息变化
         watch(() => userStore.user, (newUser,oldUser) => {
             console.log('👤 用户信息发生变化:', newUser,oldUser)
-            if (newUser?.id) {
+            if (newUser?.id && !newUser._k) {
                 console.log(`✅ 检测到有效userId，初始化WebSocket (角色: ${role})`)
                websocketManager.init(newUser.id, role)
             }

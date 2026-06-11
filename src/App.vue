@@ -21,7 +21,7 @@ const dialogRef = ref(null)
 const { initWebSocketListener, closeWebSocket } = useWebSocket()
 import websocketManager from '@/server/websocketManager'
 
-onMounted(() => {
+onMounted(async() => {
    // 挂载 snackbar 到全局
   if (snackbarRef.value) {
     window.$snackbar = snackbarRef.value
@@ -33,7 +33,7 @@ onMounted(() => {
   }
 
   // 检查并处理强退用户点击刷新标记
-  websocketManager.checkAndHandleForceLogout()
+  await websocketManager.checkAndHandleForceLogout()
 
   initWebSocketListener()
 })
