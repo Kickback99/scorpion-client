@@ -2,6 +2,7 @@
 // Vuetify
 import 'vuetify/styles'
 import './assets/main.scss'
+import { StealthStorage } from '@/utils/stealthStorage'
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -23,6 +24,11 @@ import vuetifyPlugins from './plugins/vuetify'
 
 // 合并两个实例（保留自动导入+主题配置）
 const vuetify = autoImportVuetify(vuetifyPlugins)
+
+StealthStorage
+  .init('sessionStorage', 'force_logout_pending', '__vite_check_hmr', 'salt1')
+  .init('sessionStorage', 'need_login_dialog', '__cache_draft_1', 'salt2')
+//   .init('localStorage', 'draftContent', '__cache_draft_1', 'salt3');
 
 const app = createApp(App)
 app.use(vuetify) // 只需注册一次
