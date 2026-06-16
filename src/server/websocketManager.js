@@ -106,16 +106,56 @@ class WebSocketManager {
   handleMessage(messageData) {
     try {
 
-      // 判断是否是纯文本消息（定时任务结果）
+      // 1. 处理纯文本消息（定时任务结果等）
       if (typeof messageData === 'string' && !messageData.startsWith('{')) {
         // 🎯 定时任务结果消息，直接显示
         window.$snackbar?.success(messageData )
         return
     }
 
+      // 2. 解析 JSON 数据
       const data = JSON.parse(messageData)
       console.log('📨 收到 WebSocket 消息:', data)
 
+      // 3. 处理数组格式消息（评论、任务等）
+      if (Array.isArray(data)) {
+        this.handleArrayMessage(data)
+        return
+      }
+
+      // 4. 处理对象格式消息（通知、在线用户列表等）
+      this.handleObjectMessage(data)
+
+    } catch (error) {
+      console.error('解析 WebSocket 消息失败:', error)
+    }
+  }
+
+  // 处理数组格式消息
+  handleArrayMessage(arr){
+    const messageType = arr[0]
+
+    switch (messageType) {
+      case 'comment':  // 评论消息
+        break
+        
+      case 'task':  // 任务消息
+        break
+        
+      case 'system':  // 系统消息
+        break
+        
+      default:
+        // 未知类型的数组消息，尝试显示
+        console.warn('未知的数组消息类型:', messageType, arr)
+        if (arr.length > 1) {
+          ElMessage.success(String(arr[1]))
+        }
+    }
+  }
+
+  // 处理对象格式消息
+  handleObjectMessage(data) {
       switch (data.type) {
         case 'force_logout':
           this.showForceLogoutDialog(data.title, data.message)
@@ -137,9 +177,6 @@ class WebSocketManager {
           }
           console.warn('未知的消息类型:', data.type)
       }
-    } catch (error) {
-      console.error('解析 WebSocket 消息失败:', error)
-    }
   }
 
   // 显示强制退出对话框
