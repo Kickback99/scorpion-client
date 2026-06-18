@@ -107,6 +107,27 @@ export const useConfigStore = defineStore('config', {
       return this.getArticleCommentEnabled()
     },
 
+    /**
+     * 根据评论类型和文章自身的评论开关，综合判断评论是否启用
+     * @param {String} commentType 评论类型（'article' 或 'friendLink'）
+     * @param {String|Number} isComment 文章自身的评论开关（'1'开启，'0'关闭），仅 commentType='article' 时有效
+     * @returns {Boolean}
+     */
+    isCommentTypeEnabledWithExtra(commentType, isComment) {
+      // 1. 先检查全局开关
+      const globalEnabled = this.isCommentTypeEnabled(commentType)
+      if (!globalEnabled) return false
+
+      // 2. 如果是文章评论，额外检查文章自身的 isComment
+      if (commentType === 'article') {
+        // isComment 为 '1' 表示允许评论
+        return isComment === '1' || isComment === 1 || isComment === true
+      }
+
+      // 3. 友链评论直接返回全局开关结果
+      return globalEnabled
+    },
+
 
     /**
      * 🎯 获取子评论默认显示数量

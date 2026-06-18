@@ -334,6 +334,9 @@ const props = defineProps({
     type: [Number, String],
     required: true
   },
+  isComment: {
+    type: [Number, String],
+  },
   totalCount: {
     type: Number,
     default: 0
@@ -374,7 +377,7 @@ const replyLoading = ref(false)
 
 // 根据评论类型动态获取评论是否启用（使用 configStore 的方法）
 const isCommentTypeEnabled = () => {
-  return configStore.isCommentTypeEnabled(props.commentType)
+  return configStore.isCommentTypeEnabledWithExtra(props.commentType, props.isComment)
 }
 
 const checkLogin = () => {
