@@ -15,7 +15,9 @@ export const useConfigStore = defineStore('config', {
       // 子评论默认显示数量
       child_comment_limit: 3,
       // 子评论分页大小
-      child_page_size: 7
+      child_page_size: 7,
+      // 父评论分页大小
+      parent_page_size: 10
     },
 
     // 导航相关
@@ -44,7 +46,10 @@ export const useConfigStore = defineStore('config', {
     article_list: {
       view_enabled: true,
       favorite_enabled: true,
-      comment_enabled: true
+      comment_enabled: true,
+      load_mode: 'scroll',
+      scroll_page_size: 10,
+      pagination_page_size: 7
     }
   }),
 
@@ -144,6 +149,13 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     *  获取父评论分页大小
+     */
+    getParentPageSize(){
+      return this.comment?.parent_page_size ?? 10
+    },
+
+    /**
      *  获取我的发布是否开启
      */
     getPublishesEnabled(){
@@ -206,6 +218,27 @@ export const useConfigStore = defineStore('config', {
       return this.article_list?.comment_enabled ?? true
     },
 
+    /**
+     * 获取文章列表加载方式
+     */
+    getListLoadMode(){
+      return this.article_list?.load_mode
+    },
+
+    /**
+     * 获取滚动模式分页大小
+     */
+    getListScrollPageSize(){
+      return this.article_list?.scroll_page_size ?? 10
+    },
+
+    /**
+     * 获取分页模式分页大小
+     */
+    getListPaginationPageSize(){
+      return this.article_list?.pagination_page_size ?? 7
+    }
+
   },
 
   getters: {
@@ -214,6 +247,7 @@ export const useConfigStore = defineStore('config', {
     isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
     childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,
     childPageSize: (state) => state.comment?.child_page_size ?? 7,
+    parentPageSize: (state) => state.comment?.parent_page_size ?? 10,
     isMyPublishesEnabled: (state) => state.profile?.my_publishes_enabled ?? true,
     isMyCommentsEnabled: (state) => state.profile?.my_comments_enabled ?? true,
     isMyFavoritesEnabled: (state) => state.profile?.my_favorites_enabled ?? true,
@@ -222,6 +256,9 @@ export const useConfigStore = defineStore('config', {
     isFavoriteCountEnabled: (state) => state.article_detail?.favorite_count_enabled ?? true,
     isListViewEnabled: (state) => state.article_list?.view_enabled ?? true,
     isListFavoriteEnabled: (state) => state.article_list?.favorite_enabled ?? true,
-    isListCommentEnabled: (state) => state.article_list?.comment_enabled ?? true
+    isListCommentEnabled: (state) => state.article_list?.comment_enabled ?? true,
+    currentListLoadMode: (state) => state. article_list?.load_mode === 'scroll' ? 'scroll' : 'pagination',
+    scrollPageSize: (state) => state.article_list?.scroll_page_size ?? 10,
+    paginationPageSize: (state) => state.article_list?.pagination_page_size ?? 7,
   }
 })

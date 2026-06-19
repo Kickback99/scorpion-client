@@ -321,7 +321,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
@@ -364,7 +364,7 @@ const loading = ref(false)
 const scrollLoading = ref(false)
 const commentList = ref([])
 const total = ref(0)
-const pageSize = ref(10)
+const pageSize = computed(() => configStore.parentPageSize)
 const currentPage = ref(1)
 const hasMore = ref(true)
 
