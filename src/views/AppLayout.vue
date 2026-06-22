@@ -38,8 +38,11 @@ import { useRoute } from 'vue-router';
 // 全局总线
 import emitter from '@/utils/event-bus.js'
 import { useDisplay } from 'vuetify';
+import { useConfigStore } from '@/store/config';
 
 const {mdAndUp} = useDisplay()
+
+const configStore = useConfigStore()
 
 
 const route = useRoute()
@@ -67,8 +70,8 @@ renderCateList()
 const isBigScreen = computed(() => route.path === '/about' || route.path === '/profile' || route.path === '/friendLink')
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
 const showSidebar = computed(() => !isBigScreen.value)
-// 轮播图显示条件：首页 + 大屏
-const showCarousel = computed(() => route.path === '/' && mdAndUp.value)
+// 轮播图显示条件：首页 + 大屏 + 轮播图数量限制(>0)
+const showCarousel = computed(() => route.path === '/' && mdAndUp.value && configStore.getCarouselLimit)
 
 
 

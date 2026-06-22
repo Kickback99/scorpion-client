@@ -6,6 +6,9 @@ export const useConfigStore = defineStore('config', {
     // 加载状态
     loading: false,
 
+    // 轮播数量
+    carousel_limit: 3,
+
     // 评论相关
     comment: {
       // 文章评论显示（true开启，false禁用）
@@ -69,6 +72,13 @@ export const useConfigStore = defineStore('config', {
       } finally {
         this.loading = false
       }
+    },
+
+    /**
+     * 获取轮播数量限制
+     */
+    getCarouselLimit(){
+      return this.carousel_limit ?? 3
     },
 
     /**
@@ -242,6 +252,7 @@ export const useConfigStore = defineStore('config', {
   },
 
   getters: {
+    carouselLimit: (state) => state.carousel_limit ?? 3,
     isLoginEnabled: (state) => state.login_enabled === true,
     isArticleCommentEnabled: (state) => state.comment?.article_comment_enabled === true,
     isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
