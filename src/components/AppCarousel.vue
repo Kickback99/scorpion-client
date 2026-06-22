@@ -1,24 +1,71 @@
 <template>
-  <v-container>
-      <v-card>
-  <v-carousel height="250px" hide-delimiters>
-    <v-carousel-item
-      v-for="(item, i) in carouselItems"
-      :key="i"
-    >
-      <v-img :src="item.src" cover />
-    </v-carousel-item>
-  </v-carousel>
-  </v-card>
-  </v-container>
+    <v-container>
+        <v-card>
+            <v-carousel  v-if="carouselItems.length > 0" 
+                height="250px" hide-delimiters show-arrows="hover" style="cursor: pointer;">
+                <v-carousel-item
+                    v-for="(item, index) in carouselItems"
+                    :key="index"
+                    @click="goToLink(item.link)"
+                >
+                    <v-img :src="item.img" cover />
+                    <!-- 轮播标题 -->
+                    <v-overlay
+                        absolute
+                        class="d-flex align-center justify-center"
+                        style="background: linear-gradient(transparent, rgba(0,0,0,0.6));"
+                    >
+                    </v-overlay>
+                        <v-card-title
+                            class="text-white text-h6 font-weight-bold"
+                            style="position: absolute; bottom: 16px; left: 16px;"
+                        >
+                            {{ item.title }}
+                        </v-card-title>
+                </v-carousel-item>
+            </v-carousel>
+        </v-card>
+    </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue'
+import { getCarouselListApi } from '@/api/carousel'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
-const carouselItems = ref([
-  { src: new URL('../assets/course01.png', import.meta.url).href },
-  { src: new URL('../assets/course02.png', import.meta.url).href },
-  { src: new URL('../assets/course03.png', import.meta.url).href },
-]);
+const carouselItems = ref([])
+
+// 加载轮播图
+const loadCarousel = async () => {
+    try {
+        const res = await getCarouselListApi()
+        carouselItems.value = res.data || []
+    } catch (error) {
+        console.error('加载轮播图失败:', error)
+    }
+}
+
+// 跳转链接：外部链接新窗口打开，内部链接路由跳转
+const goToLink = (link) => {
+    if (!link) return
+    
+    // 判断是否为 http 或 https 开头的外部链接
+    if (link.startsWith('http://') || link.startsWith('https://')) {
+        window.open(link, '_blank')
+    } else {
+        router.push(link)
+    }
+}
+
+onMounted(() => {
+    loadCarousel()
+})
 </script>
+
+<style scoped>
+/* 轮播图标题样式 */
+.v-overlay {
+    pointer-events: none;
+}
+</style>
