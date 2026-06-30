@@ -18,10 +18,24 @@
         <v-col cols="12" class="text-center">
           <div class="avatar-wrapper mb-4">
             <v-avatar size="100" color="grey-lighten-2">
-              <v-img v-if="profileData.avatar" :src="profileData.avatar"></v-img>
+              <!-- 使用预览URL或默认头像 -->
+              <v-img v-if="avatarPreview || profileData.avatar" :src="avatarPreview || profileData.avatar"></v-img>
               <v-icon v-else size="60" color="grey">mdi-account-circle</v-icon>
+              <!-- 使用 v-file-input 触发文件选择 -->
+              <v-file-input
+                ref="fileInputRef"
+                v-model="profileData.avatar"
+                accept="image/jpeg,image/jpg,image/png"
+                density="compact"
+                variant="plain"
+                class="edit-avatar-btn"
+                prepend-icon="mdi-camera"
+                hide-details
+                @update:model-value="handleFileChange"
+                hide-input
+              ></v-file-input>
             </v-avatar>
-            <v-btn
+            <!-- <v-btn
               icon
               size="small"
               color="primary"
@@ -29,13 +43,13 @@
               @click="changeAvatar"
             >
               <v-icon size="18">mdi-camera</v-icon>
-            </v-btn>
+            </v-btn> -->
           </div>
           <v-btn
             variant="text"
             color="primary"
             size="small"
-            @click="changeAvatar"
+            @click="triggerFileInput"
           >
             更换头像
           </v-btn>
@@ -159,6 +173,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useUserStore } from '@/store/user'
+import { userUpdateInfoApi } from '@/api/user'
 
 // 定义事件
 const emit = defineEmits(['profile-saved'])
@@ -177,6 +192,10 @@ const profileData = reactive({
 const profileFormRef = ref(null)
 const saving = ref(false)
 
+// 文件相关
+const fileInputRef = ref(null)
+const avatarPreview = ref(null) // 头像预览URL
+
 // 修改密码
 const showChangePasswordDialog = ref(false)
 const passwordData = reactive({
@@ -187,10 +206,42 @@ const passwordData = reactive({
 const passwordFormRef = ref(null)
 const changingPassword = ref(false)
 
-// 方法
-const changeAvatar = () => {
-  // TODO: 实现头像上传
-  console.log('更换头像')
+// 文件校验
+const validateFile = (file) => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!allowedTypes.includes(file.type)) {
+    window.$snackbar?.error('必须为 jpg | png | jpeg 格式')
+    return false
+  }
+  if (!isLt2M) {
+    window.$snackbar?.error('头像大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
+// 处理文件选择
+const handleFileChange = (file) => {
+  if (!file) return
+
+  // 校验文件
+  if (!validateFile(file)) {
+    return
+  }
+
+  // 创建预览
+  if (avatarPreview.value) {
+    URL.revokeObjectURL(avatarPreview.value)
+  }
+  avatarPreview.value = URL.createObjectURL(file)
+  profileData.avatar = file
+}
+
+// 触发文件选择
+const triggerFileInput = () => {
+  fileInputRef.value?.click()
 }
 
 const saveProfile = async () => {
@@ -199,12 +250,20 @@ const saveProfile = async () => {
   
   saving.value = true
   try {
-    // TODO: 调用保存接口
-    console.log('保存个人资料:', profileData)
+
+    // console.log('保存个人资料:', profileData)
+
+    // 调用更新接口
+    const res = await userUpdateInfoApi(profileData)
+
+    profileData.avatar = res.data?.avatar || profileData.avatar // 使用服务器返回的头像URL
+
     // 更新 store
     userStore.setUser({ ...userStore.user, ...profileData })
+    
     // 触发父组件事件
     emit('profile-saved', profileData)
+    window.$snackbar?.success('修改成功')
   } catch (error) {
     console.error('保存失败:', error)
   } finally {
@@ -257,8 +316,12 @@ defineExpose({
 
 .edit-avatar-btn {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  background-color: white;
-}
+  bottom: -2px;
+  right: 10px;
+  width: 32px !important;
+  min-width: 32px !important;
+  border-radius: 50% !important;
+  // background-color: white !important;
+  // box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
 </style>
