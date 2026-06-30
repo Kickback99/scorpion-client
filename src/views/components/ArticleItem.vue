@@ -4,9 +4,10 @@
             <template v-slot:prepend>
               <div class="cover-container">
                 <v-img
-                  src="https://img0.baidu.com/it/u=74028626,2723881857&fm=253&fmt=auto&app=138&f=JPEG"
+                  :src="cover || coverRect"
                   :alt="title"
                   class="cover-image rounded-lg"
+                  :class="{ 'default-cover': !cover }"
                   :width="display.smAndDown.value ? 150 : 250"
                   :aspect-ratio="16/9"
                   contain
@@ -76,7 +77,9 @@
 <script setup>
 import { useConfigStore } from '@/store/config';
 import { useThemeStore } from '@/store/theme';
-import { useDisplay } from 'vuetify'
+import { useDisplay } from 'vuetify';
+import coverRect from '@/assets/images/cover-rect.png';
+
 const display = useDisplay()
 const configStore = useConfigStore()
 
@@ -117,6 +120,11 @@ const themeStore = useThemeStore()
 .cover-container {
   position: relative;
   display: inline-block;
+}
+
+.default-cover{
+  border-radius: 20px; 
+  padding: 0 12px;
 }
 
 .ribbon-window {
@@ -221,9 +229,9 @@ const themeStore = useThemeStore()
 :deep(.v-list-item){
   padding-bottom: 10px !important;
   padding-top: 10px !important;
-  /* .v-img__img.v-img__img--contain {
+  .v-img__img.v-img__img--contain {
       border-radius: 20px; 
-  } */
+  }
 }
 
 /* .title-category h4 {
