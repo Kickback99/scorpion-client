@@ -59,7 +59,7 @@
                 <template v-slot:prepend>
                     <v-img
                     class="customImg"
-                    src="https://img0.baidu.com/it/u=74028626,2723881857&fm=253&fmt=auto&app=138&f=JPEG"
+                    :src="item.cover || coverRect"
                     width="90"
                     >
 
@@ -81,6 +81,7 @@ const keyword = ref('')
 import emitter from '@/utils/event-bus.js'
 import { useRoute } from 'vue-router';
 import { useSearch } from '@/utils/useSearch';
+import coverRect from '@/assets/images/cover-rect.png';
 const route = useRoute()
 
 const {triggerSearch} = useSearch()
