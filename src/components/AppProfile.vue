@@ -254,12 +254,17 @@ const saveProfile = async () => {
     // console.log('保存个人资料:', profileData)
 
     // 调用更新接口
-    const res = await userUpdateInfoApi(profileData)
+    await userUpdateInfoApi(profileData)
 
+    // 回显
+    await userStore.getUser()
+
+    // 这里是错误的，因为后端 userUpdateInfoApi 没有返回值
+    // 调用更新接口
+    /* const res = await userUpdateInfoApi(profileData)
     profileData.avatar = res.data?.avatar || profileData.avatar // 使用服务器返回的头像URL
-
     // 更新 store
-    userStore.setUser({ ...userStore.user, ...profileData })
+    userStore.setUser({ ...userStore.user, ...profileData }) */
     
     // 触发父组件事件
     emit('profile-saved', profileData)
