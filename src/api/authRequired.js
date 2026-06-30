@@ -9,7 +9,8 @@ export const AUTH_REQUIRED_PATHS = [
   '/user/msg/comment/reply',
   '/user/comments/',
   '/user/userComment',
-  '/user/logout'
+  '/user/logout',
+  '/user/updateUserDetailInfo',
 
   // 订单相关
   /* '/order/',

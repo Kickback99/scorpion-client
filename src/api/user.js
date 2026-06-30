@@ -33,3 +33,14 @@ export const deleteCommentApi = (commentId) => {
     method: 'delete'
   })
 }
+
+// 修改用户基本资料
+export const userUpdateInfoApi = (params) => {
+    const formData = new FormData()
+    for(const k in params){
+        if(params[k] != null){
+        formData.append(k,params[k])
+        }
+    }
+    return http.put('/user/updateUserDetailInfo',formData)
+}
