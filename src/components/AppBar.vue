@@ -36,6 +36,7 @@
         <p>邮箱: {{ user.email }}</p>
     </AppBlogBox>
 
+    <div ref="hotRef" class="hot-section" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
         <v-list color="primary">
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact>
@@ -47,7 +48,9 @@
             </v-list-item>
         </v-list>
     </AppBlogBox>
+    </div>
 
+    <div ref="recRef">
     <AppBlogBox :title="titles.articles">
         <v-list>
             <v-list-item 
@@ -70,6 +73,7 @@
             </v-list-item>
         </v-list>
     </AppBlogBox>
+    </div>
 </template>
 
 <script setup>
@@ -174,9 +178,62 @@ watch(() => route.path,(newPath) => {
     }
 })
 
+// -- 热门文章滚动跟随（今日头条式） --
+const hotRef = ref(null)
+const recRef = ref(null)
+const isHotFixed = ref(false)
+const hotFixedStyle = ref({})
+
+let originalRecBottom = 0
+
+const getAppBarHeight = () => {
+    const bar = document.querySelector('.v-app-bar')
+    return bar ? bar.offsetHeight : 64
+}
+
+const handleHotScroll = () => {
+    if (!hotRef.value || !recRef.value) return
+
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+    // 静态时持续更新「文章推荐」底部的文档坐标
+    if (!isHotFixed.value) {
+        const recRect = recRef.value.getBoundingClientRect()
+        originalRecBottom = recRect.bottom + scrollTop
+    }
+
+    if (scrollTop > originalRecBottom) {
+        if (!isHotFixed.value) {
+            const rect = hotRef.value.getBoundingClientRect()
+            hotFixedStyle.value = {
+                position: 'fixed',
+                top: getAppBarHeight() + 'px',
+                left: rect.left + 'px',
+                width: rect.width + 'px',
+                zIndex: 10,
+            }
+            isHotFixed.value = true
+        }
+    } else {
+        isHotFixed.value = false
+        hotFixedStyle.value = {}
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', handleHotScroll, { passive: true })
+})
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleHotScroll)
+})
 </script>
 
 <style scoped lang="scss">
+.hot-section {
+    transition: none; // 滚动时不拖影
+}
+
 /* 使用深度选择器 */
 :deep(.v-list-item__spacer) {
   width: 16px !important; /* 调整为更小的值 */
