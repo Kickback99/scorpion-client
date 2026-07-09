@@ -36,7 +36,7 @@
         <p>邮箱: {{ user.email }}</p>
     </AppBlogBox>
 
-    <div ref="hotRef" class="hot-section" :style="isHotFixed ? hotFixedStyle : {}">
+    <div ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
         <v-list color="primary">
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact>
@@ -185,10 +185,64 @@ const isHotFixed = ref(false)
 const hotFixedStyle = ref({})
 
 let originalRecBottom = 0
+let flipTimer = null
 
 const getAppBarHeight = () => {
     const bar = document.querySelector('.v-app-bar')
     return bar ? bar.offsetHeight : 64
+}
+
+const animateFlip = (toFixed) => {
+    const el = hotRef.value
+    if (!el) return
+
+    // 取消进行中的动画
+    clearTimeout(flipTimer)
+    el.style.transition = 'none'
+
+    // FIRST — 记录当前位置
+    const first = el.getBoundingClientRect()
+
+    // 切换状态
+    if (toFixed) {
+        hotFixedStyle.value = {
+            position: 'fixed',
+            top: getAppBarHeight() + 'px',
+            left: first.left + 'px',
+            width: first.width + 'px',
+            zIndex: 10,
+        }
+        isHotFixed.value = true
+    } else {
+        isHotFixed.value = false
+        hotFixedStyle.value = {}
+    }
+
+    // LAST — 记录新位置 & INVERT
+    requestAnimationFrame(() => {
+        const last = el.getBoundingClientRect()
+        const deltaY = first.top - last.top
+        const deltaX = first.left - last.left
+
+        if (Math.abs(deltaY) < 1 && Math.abs(deltaX) < 1) {
+            el.style.transform = ''
+            el.style.transition = ''
+            return
+        }
+
+        // 反偏移：视觉上留在原位
+        el.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+        el.offsetHeight // 强制回流
+
+        // PLAY — 动画归零
+        el.style.transition = 'transform 0.5s ease-out'
+        el.style.transform = 'translate(0, 0)'
+
+        flipTimer = setTimeout(() => {
+            el.style.transition = ''
+            el.style.transform = ''
+        }, 520)
+    })
 }
 
 const handleHotScroll = () => {
@@ -203,20 +257,9 @@ const handleHotScroll = () => {
     }
 
     if (scrollTop > originalRecBottom) {
-        if (!isHotFixed.value) {
-            const rect = hotRef.value.getBoundingClientRect()
-            hotFixedStyle.value = {
-                position: 'fixed',
-                top: getAppBarHeight() + 'px',
-                left: rect.left + 'px',
-                width: rect.width + 'px',
-                zIndex: 10,
-            }
-            isHotFixed.value = true
-        }
+        if (!isHotFixed.value) animateFlip(true)
     } else {
-        isHotFixed.value = false
-        hotFixedStyle.value = {}
+        if (isHotFixed.value) animateFlip(false)
     }
 }
 
@@ -231,8 +274,12 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .hot-section {
-    transition: none; // 滚动时不拖影
+    transition: none; // FLIP 自行管理动画，不靠 CSS transition
 }
+
+/* .hot-section.is-fixed {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+} */
 
 /* 使用深度选择器 */
 :deep(.v-list-item__spacer) {
