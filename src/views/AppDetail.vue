@@ -17,7 +17,10 @@
     </div>
   </v-card>
 
-  <v-card v-if="(configStore.getLoginEnabled() || isLoggedIn) && article.title" class="mt-5" style="background-color: transparent !important;"> 
+  <!-- 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） -->
+  <AppMobileRelated :tags="tags" :articles="cateArticles" />
+
+  <v-card v-if="(configStore.getLoginEnabled() || isLoggedIn) && article.title" class="mt-5" style="background-color: transparent !important;">
         <!-- 底部操作栏 -->
     <v-card-actions class="d-flex justify-center py-4">
       <v-btn
@@ -41,13 +44,14 @@
   
   <!-- 新增：评论组件 -->
   <div class="mt-5" v-if="configStore.getArticleCommentEnabled() && article.isComment === '1'">
-    <AppComment 
-    :articleId="props.id" 
+    <AppComment
+    :articleId="props.id"
     :isComment="article.isComment"
     :totalCount="article.commentCount"
     @comment-deleted="handleCommentCountChange"
     />
   </div>
+
 
   <v-sheet>
     <!-- 固定在右上角的目录按钮 -->
@@ -135,6 +139,7 @@ import { useThemeStore } from '@/store/theme';
 import { createMarkdownPreview } from '@/utils/markdown-config';
 import { useConfigStore } from '@/store/config';
 import AppComment from '@/components/AppComment.vue'
+import AppMobileRelated from '@/components/AppMobileRelated.vue'
 const userStore = useUserStore()
 
 // 判断用户是否已登录
