@@ -78,6 +78,7 @@
 
 <script setup>
 import { onMounted,onUnmounted,ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue';
 import { hotListApi, tagListApi } from '@/api/article';
 const keyword = ref('')
@@ -179,6 +180,8 @@ watch(() => route.path,(newPath) => {
 })
 
 // -- 热门文章滚动跟随（今日头条式） --
+const { mobile } = useDisplay()
+
 const hotRef = ref(null)
 const recRef = ref(null)
 const isHotFixed = ref(false)
@@ -186,11 +189,7 @@ const hotFixedStyle = ref({})
 
 let originalRecBottom = 0
 let flipTimer = null
-
-const getAppBarHeight = () => {
-    const bar = document.querySelector('.v-app-bar')
-    return bar ? bar.offsetHeight : 64
-}
+let sidebarNaturalTop = 0 // v-col 顶部的文档坐标，用于 fixed 时对齐「文章搜索」间距
 
 const animateFlip = (toFixed) => {
     const el = hotRef.value
@@ -205,9 +204,19 @@ const animateFlip = (toFixed) => {
 
     // 切换状态
     if (toFixed) {
+        // 测量 v-col 内容区顶部文档坐标（含 padding），保证与「文章搜索」位置一致
+        if (!sidebarNaturalTop) {
+            const vCol = el.closest('.v-col')
+            if (vCol) {
+                const r = vCol.getBoundingClientRect()
+                const s = getComputedStyle(vCol)
+                const padTop = parseFloat(s.paddingTop) || 0
+                sidebarNaturalTop = r.top + (window.pageYOffset || document.documentElement.scrollTop) + padTop
+            }
+        }
         hotFixedStyle.value = {
             position: 'fixed',
-            top: getAppBarHeight() + 'px',
+            top: (sidebarNaturalTop || 64) + 'px',
             left: first.left + 'px',
             width: first.width + 'px',
             zIndex: 10,
@@ -247,6 +256,7 @@ const animateFlip = (toFixed) => {
 
 const handleHotScroll = () => {
     if (!hotRef.value || !recRef.value) return
+    if (mobile.value) return
 
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
@@ -263,8 +273,21 @@ const handleHotScroll = () => {
     }
 }
 
+const bindScroll = () => {
+    if (!mobile.value) {
+        window.addEventListener('scroll', handleHotScroll, { passive: true })
+    } else {
+        window.removeEventListener('scroll', handleHotScroll)
+        // 移动端还原状态
+        isHotFixed.value = false
+        hotFixedStyle.value = {}
+        originalRecBottom = 0
+    }
+}
+
 onMounted(() => {
-    window.addEventListener('scroll', handleHotScroll, { passive: true })
+    bindScroll()
+    watch(mobile, bindScroll)
 })
 
 onUnmounted(() => {
