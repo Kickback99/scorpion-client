@@ -6,8 +6,11 @@
         <v-main>
             <v-container>
                 <v-row>
-                    <!-- 左侧内容：轮播图和文章列表 -->
+                    <!-- 左侧内容：面包屑、轮播图和文章列表 -->
                     <v-col :md="leftColMd" cols="12">
+                        <!-- 面包屑导航 -->
+                        <AppBreadcrumb :categories="categories" />
+
                         <!-- 轮播图 -->
                          <v-row v-if="showCarousel">
                             <AppCarousel></AppCarousel>
@@ -31,6 +34,7 @@
 <script setup>
 import { cateListApi } from '@/api/article';
 import AppBar from '@/components/AppBar.vue';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AppCarousel from '@/components/AppCarousel.vue';
 import AppHeader from '@/components/AppHeader.vue';
 import { computed, ref, watch } from 'vue';
