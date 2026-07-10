@@ -17,7 +17,7 @@
                 >
                     <!-- 登录视图 -->
                     <v-window-item :value="1">
-                        <v-card title :width="handleWidth" height="auto"  :class="`d-flex flex-column ${handlePadding}`">
+                        <v-card title height="auto"  :class="`d-flex flex-column ${handlePadding}`">
                             <v-container class="d-flex align-center">
                                 <h2>登录</h2>
                                 <span class="text-caption ml-auto">
@@ -115,7 +115,7 @@
 
                     <!-- 注册视图 -->
                     <v-window-item :value="2">
-                        <v-card title :width="handleWidth" height="auto" :class="`d-flex flex-column ${handlePadding}`">
+                        <v-card title height="auto" :class="`d-flex flex-column ${handlePadding}`">
                             <v-container class="d-flex align-center">
                                 <h2>注册</h2>
                                 <span class="text-caption ml-auto">
@@ -233,7 +233,7 @@
                         </v-card> 
                     </v-window-item>
                     <v-window-item :value="3">
-                        <v-card title :width="handleWidth" height="auto" class="d-flex align-center">
+                        <v-card title height="auto" class="d-flex align-center">
                             <v-container class="text-center">
                                 <v-icon size="120" color="success">mdi-check-circle</v-icon> 
                                 <h3 class="mt-4">恭喜你，注册成功</h3>
@@ -265,12 +265,12 @@ import emitter from '@/utils/event-bus.js'
 
 const handleWidth = computed(()=>{
     if(display.smAndDown.value){
-        return '350'
+        return '320'
     }else return '500'
 })
 
 const handlePadding = computed(()=>{
-    return display.mobile.value ? 'pa-8': 'pa-10'
+    return display.mobile.value ? 'pa-5': 'pa-10'
 })
 
 // ------------------------ 全局总线 ------------------------ 
