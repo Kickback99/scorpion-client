@@ -14,6 +14,9 @@ export const articleListApi = (params) => {
 // 热门文章
 export const hotListApi = () => http.get('/user/content/article/hot')
 
+// 最新文章
+export const latestListApi = () => http.get('/user/content/article/latest')
+
 // 所有标签
 export const tagListApi = () => http.get('/user/content/tag')
 
