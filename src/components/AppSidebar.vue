@@ -376,9 +376,14 @@ onUnmounted(() => {
   color: rgba(0, 0, 0, 0.38) !important; 
 }
 
-/* 禁用 focus 变色（可选） */
- :deep(.v-field--focused .v-field__outline) {
-  color: rgba(0, 0, 0, 0.38) !important; 
+/* 聚焦时使用 primary 颜色（含聚焦时悬停，避免反跳） */
+:deep(.v-field--focused .v-field__outline),
+:deep(.v-field--focused:hover .v-field__outline) {
+  color: rgb(var(--v-theme-primary)) !important;
+}
+
+:deep(.v-field__input) {
+  font-size: 12px !important;
 }
 
 
