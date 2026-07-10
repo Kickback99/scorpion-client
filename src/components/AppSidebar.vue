@@ -31,15 +31,15 @@
         </v-chip-group>
     </AppBlogBox>
 
-    <AppBlogBox title="个人信息">
+    <!-- <AppBlogBox title="个人信息">
         <p>用户名: {{ user.username }}</p>
         <p>邮箱: {{ user.email }}</p>
-    </AppBlogBox>
+    </AppBlogBox> -->
 
     <div ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
         <v-list color="primary">
-            <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact>
+            <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact :to="{name:'detail',params:{id:item.id}}">
                 <template v-slot:prepend>
                     <v-icon color="primary">mdi-numeric-{{index+1}}-box</v-icon>
                 </template>
