@@ -53,9 +53,9 @@
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
         <v-list>
-            <v-list-item 
-            v-for="(item, index) in hotBlogs" 
-            :key="item.id"  
+            <v-list-item
+            v-for="(item, index) in latestBlogs"
+            :key="item.id"
             :value="item.id"
             :to="{name:'detail',params:{id:item.id}}"
             >
@@ -80,7 +80,7 @@
 import { nextTick, onMounted,onUnmounted,ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue';
-import { hotListApi, tagListApi } from '@/api/article';
+import { hotListApi, latestListApi, tagListApi } from '@/api/article';
 const keyword = ref('')
 // 全局总线
 import emitter from '@/utils/event-bus.js'
@@ -97,6 +97,7 @@ const user = ref({
 });
 
 const hotBlogs = ref([])
+const latestBlogs = ref([])
 
 // 搜索功能
 const onSearch = (type,param) => {
@@ -126,14 +127,19 @@ const onSearch = (type,param) => {
 
 // 动态标题状态
 const titles = ref({
-    articles:'文章推荐',
+    articles:'最新发布',
     tags:'文章标签'
 })
 
 const renderHotList = async() => {
     const res = await hotListApi()
-    titles.value.articles = '文章推荐'
     hotBlogs.value =  res.data
+}
+
+const renderLatestList = async() => {
+    const res = await latestListApi()
+    titles.value.articles = '最新发布'
+    latestBlogs.value = res.data
 }
 
 
@@ -152,7 +158,7 @@ const handleDetailData = (data) => {
     // 如果有分类文章数据，更新分类文章
     if (data.cateArticles && data.cateArticles.length > 0) {
         titles.value.articles = '相关文章'
-        hotBlogs.value = data.cateArticles
+        latestBlogs.value = data.cateArticles
     } 
     // 如果有标签数据，更新标签数据
     if (data.tags && data.tags.length > 0) {
@@ -163,6 +169,7 @@ const handleDetailData = (data) => {
 
 onMounted(()=>{
     renderHotList()
+    renderLatestList()
     renderTagList()
     emitter.on('detail-data',handleDetailData)
 })
@@ -175,6 +182,7 @@ onUnmounted(() => {
 watch(() => route.path,(newPath) => {
     if(!newPath.includes('/detail')){
         renderHotList()
+        renderLatestList()
         renderTagList()
     }
 })
