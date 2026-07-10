@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { onMounted,onUnmounted,ref, watch } from 'vue'
+import { nextTick, onMounted,onUnmounted,ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue';
 import { hotListApi, tagListApi } from '@/api/article';
@@ -254,6 +254,34 @@ const animateFlip = (toFixed) => {
     })
 }
 
+const updateFixedStyle = () => {
+    const el = hotRef.value
+    if (!el) return
+
+    const vCol = el.closest('.v-col')
+    if (!vCol) return
+
+    const r = vCol.getBoundingClientRect()
+    const s = getComputedStyle(vCol)
+    const padTop = parseFloat(s.paddingTop) || 0
+    const padLeft = parseFloat(s.paddingLeft) || 0
+    const padRight = parseFloat(s.paddingRight) || 0
+    sidebarNaturalTop = r.top + (window.pageYOffset || document.documentElement.scrollTop) + padTop
+
+    hotFixedStyle.value = {
+        position: 'fixed',
+        top: sidebarNaturalTop + 'px',
+        left: (r.left + padLeft) + 'px',
+        width: (r.width - padLeft - padRight) + 'px',
+        zIndex: 10,
+    }
+}
+
+const handleResize = () => {
+    if (!isHotFixed.value) return
+    updateFixedStyle()
+}
+
 const handleHotScroll = () => {
     if (!hotRef.value || !recRef.value) return
     if (mobile.value) return
@@ -276,12 +304,23 @@ const handleHotScroll = () => {
 const bindScroll = () => {
     if (!mobile.value) {
         window.addEventListener('scroll', handleHotScroll, { passive: true })
+        window.addEventListener('resize', handleResize)
+        // 从移动端切回桌面端：等 DOM 更新后再检查，避免 v-col 仍为 display:none 导致测量为 0
+        nextTick(() => handleHotScroll())
     } else {
         window.removeEventListener('scroll', handleHotScroll)
+        window.removeEventListener('resize', handleResize)
+        // 清理 FLIP 动画残留
+        clearTimeout(flipTimer)
+        if (hotRef.value) {
+            hotRef.value.style.transition = ''
+            hotRef.value.style.transform = ''
+        }
         // 移动端还原状态
         isHotFixed.value = false
         hotFixedStyle.value = {}
         originalRecBottom = 0
+        sidebarNaturalTop = 0
     }
 }
 
@@ -292,6 +331,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.removeEventListener('scroll', handleHotScroll)
+    window.removeEventListener('resize', handleResize)
 })
 </script>
 
