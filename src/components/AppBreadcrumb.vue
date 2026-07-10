@@ -14,8 +14,8 @@
         <template v-slot:item="{ item }">
           <v-breadcrumbs-item
             :disabled="item.disabled"
-            :to="item.to"
-            :class="smAndUp ? 'text-body-2' : 'text-caption'"
+            @click="handleItemClick(item)"
+            :class="[smAndUp ? 'text-body-2' : 'text-caption', item.to && !item.disabled ? 'breadcrumb-link' : '']"
           >
             {{ item.title }}
           </v-breadcrumbs-item>
@@ -42,10 +42,11 @@
 <script setup>
 // 依赖导入
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { tagListApi } from '@/api/article'
 import { useSearch } from '@/utils/useSearch'
+import emitter from '@/utils/event-bus.js'
 
 // ============================================================
 // 数据
@@ -57,6 +58,7 @@ import { useSearch } from '@/utils/useSearch'
 const HOME_DEFAULT_LABEL = '最新文章'
 
 const route = useRoute()
+const router = useRouter()
 const { smAndUp, smAndDown } = useDisplay()
 const { triggerSearch } = useSearch()
 
@@ -180,6 +182,29 @@ const items = computed(() => {
 })
 
 // ============================================================
+// 导航
+// ============================================================
+
+/**
+ * 面包屑点击导航 — 处理首页 query 参数清除的边界情况
+ */
+const handleItemClick = (item) => {
+  if (item.disabled || !item.to) return
+
+  // 点击"首页"且当前在首页带查询参数时，需强制重置搜索 + 清 URL
+  if (route.path === '/' && route.query.type) {
+    const toPath = typeof item.to === 'string' ? item.to : item.to.path || ''
+    if (toPath === '/' && !item.to.query) {
+      emitter.emit('reset-search')
+      router.push('/')
+      return
+    }
+  }
+
+  router.push(item.to)
+}
+
+// ============================================================
 // 初始加载
 // ============================================================
 
@@ -203,6 +228,14 @@ onMounted(async () => {
 .breadcrumb-wrapper {
   // Vuetify 工具类已处理深浅模式适配，不需要额外样式
   // text-medium-emphasis / text-high-emphasis 自动适配主题
+}
+
+.breadcrumb-link {
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 // ============================================================
