@@ -1,7 +1,7 @@
 <template>
-    <v-container>
+    <v-container v-if="carouselItems.length > 0">
         <v-card>
-            <v-carousel  v-if="carouselItems.length > 0" 
+            <v-carousel
                 height="250px" hide-delimiters show-arrows="hover" style="cursor: pointer;">
                 <v-carousel-item
                     v-for="(item, index) in carouselItems"
