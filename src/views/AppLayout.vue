@@ -23,7 +23,7 @@
 
                     <!-- 右侧侧边栏 -->
                     <v-col md="3" v-show="showSidebar && mdAndUp">
-                        <AppBar></AppBar>
+                        <AppSidebar></AppSidebar>
                     </v-col>
                 </v-row>
             </v-container>
@@ -33,7 +33,7 @@
 
 <script setup>
 import { cateListApi } from '@/api/article';
-import AppBar from '@/components/AppBar.vue';
+import AppSidebar from '@/components/AppSidebar.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AppCarousel from '@/components/AppCarousel.vue';
 import AppHeader from '@/components/AppHeader.vue';
