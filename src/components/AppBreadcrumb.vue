@@ -1,24 +1,41 @@
 <template>
-  <div class="breadcrumb-wrapper py-2" v-if="items.length > 1">
-    <v-breadcrumbs
-      :items="items"
-      density="compact"
-      class="pa-0"
-    >
-      <template v-slot:divider>
-        <v-icon size="16" class="text-medium-emphasis">mdi-chevron-right</v-icon>
-      </template>
+  <div class="breadcrumb-wrapper py-2" v-if="items.length > 1 || smAndDown">
+    <div class="d-flex align-center">
+      <v-breadcrumbs
+        v-if="items.length > 1"
+        :items="items"
+        density="compact"
+        class="pa-0 flex-grow-0"
+      >
+        <template v-slot:divider>
+          <v-icon size="16" class="text-medium-emphasis">mdi-chevron-right</v-icon>
+        </template>
 
-      <template v-slot:item="{ item }">
-        <v-breadcrumbs-item
-          :disabled="item.disabled"
-          :to="item.to"
-          :class="smAndUp ? 'text-body-2' : 'text-caption'"
-        >
-          {{ item.title }}
-        </v-breadcrumbs-item>
-      </template>
-    </v-breadcrumbs>
+        <template v-slot:item="{ item }">
+          <v-breadcrumbs-item
+            :disabled="item.disabled"
+            :to="item.to"
+            :class="smAndUp ? 'text-body-2' : 'text-caption'"
+          >
+            {{ item.title }}
+          </v-breadcrumbs-item>
+        </template>
+      </v-breadcrumbs>
+
+      <!-- 移动端搜索 -->
+      <v-text-field
+        v-if="smAndDown"
+        v-model="keyword"
+        label="请输入标题/内容"
+        variant="outlined"
+        density="compact"
+        hide-details
+        append-inner-icon="mdi-magnify"
+        @click:append-inner="onSearch('keyword', keyword)"
+        @keyup.enter="onSearch('keyword', keyword)"
+        class="mobile-search px-2 ml-auto"
+      />
+    </div>
   </div>
 </template>
 
@@ -28,6 +45,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { tagListApi } from '@/api/article'
+import { useSearch } from '@/utils/useSearch'
 
 // ============================================================
 // 数据
@@ -39,7 +57,21 @@ import { tagListApi } from '@/api/article'
 const HOME_DEFAULT_LABEL = '最新文章'
 
 const route = useRoute()
-const { smAndUp } = useDisplay()
+const { smAndUp, smAndDown } = useDisplay()
+const { triggerSearch } = useSearch()
+
+const keyword = ref('')
+
+// 移动端搜索
+const onSearch = (type, param) => {
+  if (type === 'keyword') {
+    if (!param.trim()) {
+      return
+    }
+  }
+  triggerSearch(type, param)
+  keyword.value = ''
+}
 
 const props = defineProps({
   categories: {
@@ -171,5 +203,27 @@ onMounted(async () => {
 .breadcrumb-wrapper {
   // Vuetify 工具类已处理深浅模式适配，不需要额外样式
   // text-medium-emphasis / text-high-emphasis 自动适配主题
+}
+
+// ============================================================
+// 移动端搜索
+// ============================================================
+
+.mobile-search {
+  max-width: 200px;
+  align-self: center !important;
+}
+
+:deep(.v-text-field .v-label) {
+  font-size: 10px !important;
+}
+
+:deep(.v-field__input) {
+  font-size: 12px !important;
+}
+
+:deep(.v-field--focused .v-field__outline),
+:deep(.v-field--focused:hover .v-field__outline) {
+  color: rgb(var(--v-theme-primary)) !important;
 }
 </style>
