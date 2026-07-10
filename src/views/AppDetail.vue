@@ -1,6 +1,6 @@
 <template>
   <v-container>
-  <v-card>
+  <v-card variant="flat">
     <v-card-title class="d-flex justify-space-between align-center">
       <span>{{ article.title }}</span>
     </v-card-title>
@@ -20,27 +20,26 @@
   <!-- 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） -->
   <AppMobileRelated :tags="tags" :articles="cateArticles" />
 
-  <v-card v-if="(configStore.getLoginEnabled() || isLoggedIn) && article.title" class="mt-5" style="background-color: transparent !important;">
-        <!-- 底部操作栏 -->
-    <v-card-actions class="d-flex justify-center py-4">
-      <v-btn
-        :color="isFavorite ? 'red' : 'grey'"
-        @click="handleFavoriteToggle"
-        :loading="favoriteLoading"
-        stacked
-      >
-        <v-icon size="15" class="mb-1">
-          {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
-        </v-icon>
-        <div class="d-flex align-center">
-          <span>收藏</span>
-          <span v-if="configStore.getFavoriteCountEnabled() && article.favoriteCount > 0">
-            {{ article.favoriteCount }}
-          </span>
-        </div>
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+  <!-- 底部操作栏 -->
+  <div v-if="(configStore.getLoginEnabled() || isLoggedIn) && article.title" class="mt-5 d-flex justify-center py-4">
+    <v-btn
+      variant="text"
+      :color="isFavorite ? 'red' : 'grey'"
+      @click="handleFavoriteToggle"
+      :loading="favoriteLoading"
+      stacked
+    >
+      <v-icon size="15" class="mb-1">
+        {{ isFavorite ? 'mdi-heart-broken' : 'mdi-heart-outline' }}
+      </v-icon>
+      <div class="d-flex align-center">
+        <span>收藏</span>
+        <span v-if="configStore.getFavoriteCountEnabled() && article.favoriteCount > 0">
+          {{ article.favoriteCount }}
+        </span>
+      </div>
+    </v-btn>
+  </div>
   
   <!-- 新增：评论组件 -->
   <div class="mt-5" v-if="configStore.getArticleCommentEnabled() && article.isComment === '1'">
