@@ -25,10 +25,14 @@ export const useConfigStore = defineStore('config', {
 
     // 导航相关
     nav:{
-      // 前端登录（true开启，false禁用）
-      login_enabled: true,
       // 友链显示
       friend_link_enabled: false,
+    },
+
+    // 用户相关
+    user: {
+      // 前端登录（true开启，false禁用）
+      login_enabled: true,
     },
 
     // 个人中心相关
@@ -82,17 +86,17 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
-     * 获取登录是否启用
-     */
-    getLoginEnabled(){
-      return this.nav?.login_enabled === true
-    },
-
-    /**
      * 获取友链是否启用
      */
     getFriendLinkEnabled(){
       return this.nav?.friend_link_enabled === true
+    },
+
+    /**
+     * 获取登录是否启用
+     */
+    getUserLoginEnabled(){
+      return this.user?.login_enabled === true
     },
 
     /**
@@ -253,7 +257,8 @@ export const useConfigStore = defineStore('config', {
 
   getters: {
     carouselLimit: (state) => state.carousel_limit ?? 3,
-    isLoginEnabled: (state) => state.login_enabled === true,
+    isNavFriendLinkEnabled:(state) => state.nav?.friend_link_enabled === true,
+    isUserLoginEnabled: (state) => state.user?.login_enabled === true,
     isArticleCommentEnabled: (state) => state.comment?.article_comment_enabled === true,
     isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
     childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,

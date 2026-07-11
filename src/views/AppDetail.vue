@@ -21,7 +21,7 @@
   <AppMobileRelated :tags="tags" :articles="cateArticles" />
 
   <!-- 底部操作栏 -->
-  <div v-if="(configStore.getLoginEnabled() || isLoggedIn) && article.title" class="mt-5 d-flex justify-center py-4">
+  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && article.title" class="mt-5 d-flex justify-center py-4">
     <v-btn
       variant="text"
       :color="isFavorite ? 'red' : 'grey'"
@@ -42,7 +42,7 @@
   </div>
   
   <!-- 新增：评论组件 -->
-  <div class="mt-5" v-if="configStore.getArticleCommentEnabled() && article.isComment === '1'">
+  <div class="mt-5" v-if="configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
     :articleId="props.id"
     :isComment="article.isComment"

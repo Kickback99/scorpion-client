@@ -109,7 +109,7 @@
             </v-menu>
           </div>
           <v-btn
-            v-else-if="configStore.getLoginEnabled()"
+            v-else-if="configStore.getUserLoginEnabled()"
             color="white"
             variant="outlined"
             @click="handleLogin"
@@ -161,7 +161,7 @@
             </v-menu>
           </div>
           <v-btn
-            v-else-if="configStore.getLoginEnabled()"
+            v-else-if="configStore.getUserLoginEnabled()"
             color="white"
             variant="outlined"
             @click="handleLogin"
