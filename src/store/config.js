@@ -33,6 +33,8 @@ export const useConfigStore = defineStore('config', {
     user: {
       // 前端登录（true开启，false禁用）
       login_enabled: true,
+      // 前端其他登录（true开启，false禁用）
+      other_login_enabled: false
     },
 
     // 个人中心相关
@@ -97,6 +99,13 @@ export const useConfigStore = defineStore('config', {
      */
     getUserLoginEnabled(){
       return this.user?.login_enabled === true
+    },
+
+    /**
+     * 获取其他登录是否启用
+     */
+    getUserOtherLoginEnabled(){
+      return this.user?.other_login_enabled === true
     },
 
     /**
@@ -259,6 +268,7 @@ export const useConfigStore = defineStore('config', {
     carouselLimit: (state) => state.carousel_limit ?? 3,
     isNavFriendLinkEnabled:(state) => state.nav?.friend_link_enabled === true,
     isUserLoginEnabled: (state) => state.user?.login_enabled === true,
+    isUserOtherLoginEnabled: (state) => state.user?.other_login_enabled === true,
     isArticleCommentEnabled: (state) => state.comment?.article_comment_enabled === true,
     isFriendLinkCommentEnabled: (state) => state.comment?.friend_link_comment_enabled === true,
     childCommentLimit: (state) => state.comment?.child_comment_limit ?? 3,

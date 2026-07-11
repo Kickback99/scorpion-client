@@ -86,7 +86,7 @@
                                 </v-form>
                             </v-container>
                             <!-- 其他登录方式 -->
-                            <v-container class="mt-auto pt-0">
+                            <v-container class="mt-auto pt-0" v-if="configStore.getUserOtherLoginEnabled()">
                                 <!-- <v-sheet class="d-flex align-center mb-3">
                                     <v-divider class="flex-grow-1" />
                                     <span class="text-caption mx-4 text-grey" style="flex-shrink: 0;">其他的登录方式</span>
@@ -252,7 +252,11 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify'
+import { useConfigStore } from '@/store/config';
+
 const display = useDisplay()
+
+const configStore = useConfigStore()
 
 const dialogVisible = ref(false)
 
