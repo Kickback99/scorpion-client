@@ -13,6 +13,8 @@ import AppSnackbar from './components/AppSnackbar.vue';
 import AppDialog from './components/AppDialog.vue';
 import {useWebSocket} from '@/server/useWebSocket'
 import { onMounted, ref } from 'vue'
+import { useConfigStore } from './store/config.js';
+const configStore = useConfigStore()
 
 const snackbarRef = ref(null)
 const dialogRef = ref(null)
@@ -32,10 +34,12 @@ onMounted(async() => {
     window.$dialog = dialogRef.value
   }
 
-  // 检查并处理强退用户点击刷新标记
-  await websocketManager.checkAndHandleForceLogout()
+  if(configStore.getWebsocketEnabled()){
+    // 检查并处理强退用户点击刷新标记
+    await websocketManager.checkAndHandleForceLogout()
 
-  initWebSocketListener()
+    initWebSocketListener()
+  }
 })
 </script>
 
