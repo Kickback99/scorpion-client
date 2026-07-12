@@ -9,8 +9,8 @@ class WebSocketManager {
   constructor() {
     this.socket = null
     this.reconnectAttempts = 0
-    this.maxReconnectAttempts = 5
-    this.reconnectInterval = 3000
+    this.maxReconnectAttempts = 10
+    this.reconnectInterval = 5000
     this.isConnecting = false
     this.isManualClose = false  // 是否手动关闭
   }
