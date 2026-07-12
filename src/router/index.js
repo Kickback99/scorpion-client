@@ -104,6 +104,9 @@ router.afterEach(() => {
   window.scrollTo(0, 0)
 })
 
+// 暴露 loadClientConfig 供根组件等待配置就绪
+export { loadClientConfig }
+
 // 提供一个方法，用于在配置更新后重新加载（可选，供其他组件调用）
 export const refreshClientConfig = () => {
   configLoaded = false
