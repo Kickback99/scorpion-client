@@ -8,6 +8,7 @@ export const useConfigStore = defineStore('config', {
 
     // 轮播数量
     carousel_limit: 3,
+    websocket_enabled: true,
 
     // 评论相关
     comment: {
@@ -260,7 +261,15 @@ export const useConfigStore = defineStore('config', {
      */
     getListPaginationPageSize(){
       return this.article_list?.pagination_page_size ?? 7
-    }
+    },
+
+    /**
+     * 
+     * 获取 websocket 连接
+     */
+    getWebsocketEnabled(){
+      return this.websocket_enabled ?? true
+    },
 
   },
 
@@ -286,5 +295,6 @@ export const useConfigStore = defineStore('config', {
     currentListLoadMode: (state) => state. article_list?.load_mode === 'scroll' ? 'scroll' : 'pagination',
     scrollPageSize: (state) => state.article_list?.scroll_page_size ?? 10,
     paginationPageSize: (state) => state.article_list?.pagination_page_size ?? 7,
+    isWebsocketEnabled: (state) => state.websocket_enabled ?? true,
   }
 })
