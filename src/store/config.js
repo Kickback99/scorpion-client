@@ -2,48 +2,65 @@
  * 用户端 ConfigStore — 动态分组映射
  *
  * 核心设计：
- * - _groupMap 定义每个 key 所属的 group（client / admin / user），是唯一需要手动维护的映射表
- * - getValue / setValue 通过 _groupMap 动态拼接 state 路径
- * - loadConfig 按 group key 注入后端数据
- * - 所有专用方法和 getter 改为 thin wrapper，内部调用 getValue
+ * - _groupKeys 按 group 归类 key 列表，是唯一需要手动维护的地方
+ * - 模块加载时自动构建 _keyToGroup 反向索引，getValue / setValue 通过它动态拼接 state 路径
+ * - 将来某项从 client 移到 user：只需在 _groupKeys 中移动那个 key 字符串
  *
- * 将来 configItems 分类变化（如某项从 client 移到 user），只需改 _groupMap 一处，
- * 所有读写路径自动跟随新 group，无需改 state / 方法 / getter。
+ * 示例：'comment.article_comment_enabled' 从 client 移到 user
+ *   client: [                        client: [
+ *     'comment.article_comment_enabled',  →  （删除这行）
+ *   ]                                 ]
+ *                                      user: [
+ *                                        'comment.article_comment_enabled',  →  （加到这里）
+ *                                      ]
+ *   所有 getValue('comment.article_comment_enabled') 自动读 this.user.comment...
  */
 
 import { defineStore } from "pinia"
 import { getConfigApi } from "@/api/config"
 
 // ============================================================
-// key → group 映射表（唯一需要手动维护的地方）
-// key 不含 group 前缀，如 'comment.article_comment_enabled'
+// key 按 group 归类（唯一需要手动维护的地方）
+// 迁移时只需把 key 字符串从一个数组移到另一个数组
 // ============================================================
-const _groupMap = {
-  // ===== client 组 =====
-  'websocket_enabled':                     'client',
-  'comment.article_comment_enabled':       'client',
-  'comment.friend_link_comment_enabled':   'client',
-  'comment.child_comment_limit':           'client',
-  'comment.child_page_size':               'client',
-  'comment.parent_page_size':              'client',
-  'nav.friend_link_enabled':               'client',
-  'user.login_enabled':                    'client',
-  'user.other_login_enabled':              'client',
-  'profile.my_publishes_enabled':          'client',
-  'profile.my_comments_enabled':           'client',
-  'profile.my_favorites_enabled':          'client',
-  'article_detail.theme':                  'client',
-  'article_detail.anchor_enabled':         'client',
-  'article_detail.favorite_count_enabled': 'client',
-  'article_list.view_enabled':             'client',
-  'article_list.favorite_enabled':         'client',
-  'article_list.comment_enabled':          'client',
-  'article_list.load_mode':                'client',
-  'article_list.scroll_page_size':         'client',
-  'article_list.pagination_page_size':     'client',
+const _groupKeys = {
+  client: [
+    'websocket_enabled',
+    'comment.article_comment_enabled',
+    'comment.friend_link_comment_enabled',
+    'comment.child_comment_limit',
+    'comment.child_page_size',
+    'comment.parent_page_size',
+    'nav.friend_link_enabled',
+    'user.login_enabled',
+    'user.other_login_enabled',
+    'profile.my_publishes_enabled',
+    'profile.my_comments_enabled',
+    'profile.my_favorites_enabled',
+    'article_detail.theme',
+    'article_detail.anchor_enabled',
+    'article_detail.favorite_count_enabled',
+    'article_list.view_enabled',
+    'article_list.favorite_enabled',
+    'article_list.comment_enabled',
+    'article_list.load_mode',
+    'article_list.scroll_page_size',
+    'article_list.pagination_page_size',
+  ],
 
-  // ===== admin 组 =====
-  'article.carousel_limit':                'admin',
+  admin: [
+    'article.carousel_limit',
+  ],
+}
+
+// ============================================================
+// 自动构建反向索引 key → group（模块加载时执行一次）
+// ============================================================
+const _keyToGroup = {}
+for (const [group, keys] of Object.entries(_groupKeys)) {
+  for (const key of keys) {
+    _keyToGroup[key] = group
+  }
 }
 
 // ============================================================
@@ -141,21 +158,19 @@ export const useConfigStore = defineStore('config', {
     // ==================== 核心：动态读写 ====================
 
     /**
-     * 按 key 读取配置值，通过 _groupMap 自动定位所属 group
+     * 按 key 读取配置值，通过 _keyToGroup 自动定位所属 group
      * @param {string} key — 如 'comment.article_comment_enabled'
      * @returns {any}
      */
     getValue(key) {
-      const gk = _groupMap[key]
-      if (!gk) {
-        // 未在 _groupMap 中声明 → 遍历所有 group 查找（兜底）
-        for (const g of ['client', 'admin', 'user']) {
-          const val = deepGet(this, [g, ...key.split('.')])
-          if (val !== undefined) return val
-        }
-        return undefined
+      const gk = _keyToGroup[key]
+      if (gk) return deepGet(this, [gk, ...key.split('.')])
+      // 未在 _groupKeys 中声明 → 遍历所有 group 查找（兜底）
+      for (const g of ['client', 'admin', 'user']) {
+        const val = deepGet(this, [g, ...key.split('.')])
+        if (val !== undefined) return val
       }
-      return deepGet(this, [gk, ...key.split('.')])
+      return undefined
     },
 
     /**
@@ -164,10 +179,8 @@ export const useConfigStore = defineStore('config', {
      * @param {any} value
      */
     setValue(key, value) {
-      const gk = _groupMap[key]
-      if (gk) {
-        deepSet(this, [gk, ...key.split('.')], value)
-      }
+      const gk = _keyToGroup[key]
+      if (gk) deepSet(this, [gk, ...key.split('.')], value)
     },
 
     // ==================== 加载 ====================
@@ -194,7 +207,7 @@ export const useConfigStore = defineStore('config', {
       }
     },
 
-    // ==================== 专用方法（thin wrapper） ====================
+    // ==================== 专用方法（thin wrapper，全部调 getValue） ====================
 
     /**
      * 获取轮播数量限制
