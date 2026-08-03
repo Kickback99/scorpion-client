@@ -8,6 +8,13 @@
         </v-card-text>
     </v-card> -->
 
+    <!-- <v-card class="mb-4">
+        <v-card-title>公告消息</v-card-title>
+        <v-card-text>
+            {{ noticeContent }}
+        </v-card-text>
+    </v-card> -->
+
     <AppBlogBox title="文章搜索">
         <v-text-field
         v-model="keyword"
@@ -21,6 +28,12 @@
         class="px-2"
         >
         </v-text-field>
+    </AppBlogBox>
+
+    <AppBlogBox title="公告消息">
+        <v-card-text>
+            {{ noticeContent }}
+        </v-card-text>
     </AppBlogBox>
 
     <AppBlogBox :title="titles.tags">
@@ -90,6 +103,33 @@ import coverRect from '@/assets/images/cover-rect.png';
 const route = useRoute()
 
 const {triggerSearch} = useSearch()
+
+// ============================================================
+// 公告相关（新增）
+// ============================================================
+import { getCurrentNoticeApi, connectNoticeSSE, disconnectNoticeSSE } from '@/api/notice'
+
+const noticeContent = ref('')
+
+/**
+ * 获取当前生效的公告（页面加载/刷新时调用）
+ */
+const fetchCurrentNotice = async () => {
+    try {
+        const res = await getCurrentNoticeApi()
+        noticeContent.value = res.data || '暂无公告'
+    } catch (error) {
+        noticeContent.value = '暂无公告'
+    }
+}
+
+/**
+ * 处理收到的公告消息（SSE 推送）
+ */
+const handleNoticeMessage = (data) => {
+    // console.log('📢 AppSidebar 收到公告:', data)
+    noticeContent.value = data || '暂无公告'
+}
   
 const user = ref({
     username: 'JohnDoe',
@@ -168,6 +208,11 @@ const handleDetailData = (data) => {
 }
 
 onMounted(()=>{
+    // 1. 获取当前公告
+    fetchCurrentNotice()
+    // 2. 建立 SSE 连接，接收实时推送
+    connectNoticeSSE(handleNoticeMessage)
+
     renderHotList()
     renderLatestList()
     renderTagList()
@@ -175,6 +220,8 @@ onMounted(()=>{
 })
 
 onUnmounted(() => {
+  // 断开 SSE 连接
+  disconnectNoticeSSE()
   emitter.off('detail-data', handleDetailData)
 })
 
