@@ -28,7 +28,7 @@ const vuetify = autoImportVuetify(vuetifyPlugins)
 StealthStorage
   .init('sessionStorage', 'force_logout_pending', '__vite_check_hmr', 'salt1')
   .init('sessionStorage', 'need_login_dialog', '__cache_draft_1', 'salt2')
-  .init('localStorage', 'dont_show_long_text_notice', '__analytics_session_id', 'salt4')
+  .init('localStorage', 'show_long_text_snackbar', '__analytics_session_id', 'salt4')
 //   .init('localStorage', 'draftContent', '__cache_draft_1', 'salt3');
 
 const app = createApp(App)

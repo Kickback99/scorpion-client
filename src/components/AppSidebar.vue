@@ -145,11 +145,18 @@ const renderNotices = (list, options = {}) => {
     longTextNotice.value = longTextItem
     hasLongTextNotice.value = !!longTextItem
 
-    // 弹出 Snackbar
+    // 弹出 Snackbar（有值显示，没值不显示）
     if (longTextItem) {
-        if (!skipDontShowCheck && StealthStorage.get('dont_show_long_text_notice')) {
-            console.log('📢 用户已选择"不再提示"，跳过弹窗')
-            return
+        if (!skipDontShowCheck) {
+            const flag = StealthStorage.get('show_long_text_snackbar')
+            if (flag === null) {
+                // 首次访问：自动初始化为显示
+                StealthStorage.set('show_long_text_snackbar', '1')
+            } else if (flag === '0') {
+                console.log('📢 用户已选择"不再提示"，跳过弹窗')
+                return
+            }
+            // flag === '1' → 显示
         }
         showLongTextSnackbar(longTextItem)
     }
@@ -175,17 +182,17 @@ const fetchCurrentNotices = async (options = {}) => {
 
 /**
  * 处理收到的公告消息（SSE 推送）
- * dismissed_level=session（07a968e）：清空标记后正常弹出，每次推送重置
- * dismissed_level=permanent（00d29ea）：绕过标记强制弹出，标记持久保留
+ * dismissed_level=session（07a968e）：set 标记为 '1'，新公告弹出
+ * dismissed_level=permanent（00d29ea）：绕过标记检查强制弹出，标记保留原值
  */
 const handleNoticeMessage = (data) => {
     const configStore = useConfigStore()
     if (configStore.getNoticeDismissedLevel() === 'session') {
-        // session 模式：删掉标记，等同于"不再提示"失效
-        StealthStorage.remove('dont_show_long_text_notice')
+        // session 模式：set '1'，公告显示
+        StealthStorage.set('show_long_text_snackbar', '1')
         fetchCurrentNotices()
     } else {
-        // permanent 模式：绕过标记检查，强制弹出但保留标记
+        // permanent 模式：绕过标记检查，强制弹出但保留原标记
         fetchCurrentNotices({ skipDontShowCheck: true })
     }
 }
@@ -210,9 +217,9 @@ const showLongTextSnackbar = (item) => {
             actionBtnText: '查看详情',
             actionBtnColor: 'primary',
             showDontShowAgain: true,
-            // 点击"不再提示"写入 StealthStorage
+            // 点击"不再提示"写入 StealthStorage（'0' = 不显示）
             onDontShowAgain: () => {
-                StealthStorage.set('dont_show_long_text_notice', '1')
+                StealthStorage.set('show_long_text_snackbar', '0')
                 console.log('📢 用户选择不再提示长文本公告')
             },
             // 点击"查看详情"按钮打开 Dialog
