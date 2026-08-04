@@ -32,7 +32,9 @@
 
     <AppBlogBox title="公告消息">
         <v-card-text>
-            {{ noticeContent }}
+            <!-- 普通消息显示在卡片内 -->
+            <div v-if="normalNotice">{{ normalNotice }}</div>
+            <div v-else-if="!hasLongTextNotice" style="color: #999;">暂无公告</div>
         </v-card-text>
     </AppBlogBox>
 
@@ -107,19 +109,58 @@ const {triggerSearch} = useSearch()
 // ============================================================
 // 公告相关（新增）
 // ============================================================
-import { getCurrentNoticeApi, connectNoticeSSE, disconnectNoticeSSE } from '@/api/notice'
+import { getCurrentNoticeListApi, connectNoticeSSE, disconnectNoticeSSE } from '@/api/notice'
 
-const noticeContent = ref('')
+const normalNotice = ref('')        // 普通消息内容
+const longTextNotice = ref(null)    // 长文本消息对象 { id, title, content, type }
+const hasLongTextNotice = ref(false)
+// 记录已展示的长文本公告 ID，防止重复弹出
+const shownLongTextIds = new Set()
 
 /**
- * 获取当前生效的公告（页面加载/刷新时调用）
+ * 渲染公告列表
+ * @param {Array} list 公告列表
  */
-const fetchCurrentNotice = async () => {
+const renderNotices = (list) => {
+    let normalContent = ''
+    let longTextItem = null
+    
+    list.forEach(item => {
+        if (item.type === 0) {
+            normalContent = item.content
+        } else if (item.type === 1) {
+            longTextItem = item
+        }
+    })
+
+    console.log('📢 短文本', normalContent)
+    console.log('📢 长文本', longTextItem)
+    
+    normalNotice.value = normalContent || '暂无公告'
+    longTextNotice.value = longTextItem
+    hasLongTextNotice.value = !!longTextItem
+    
+    // 弹出 Snackbar
+    if (longTextItem) {
+        showLongTextSnackbar(longTextItem)
+    }
+
+}
+
+/**
+ * 获取当前展示的公告列表
+ */
+const fetchCurrentNotices = async () => {
     try {
-        const res = await getCurrentNoticeApi()
-        noticeContent.value = res.data || '暂无公告'
+        const res = await getCurrentNoticeListApi()
+        const list = res.data || []
+        // 渲染 notices
+        renderNotices(list)
     } catch (error) {
-        noticeContent.value = '暂无公告'
+        console.error('获取公告列表失败:', error)
+        normalNotice.value = '暂无公告'
+        longTextNotice.value = null
+        hasLongTextNotice.value = false
     }
 }
 
@@ -127,8 +168,56 @@ const fetchCurrentNotice = async () => {
  * 处理收到的公告消息（SSE 推送）
  */
 const handleNoticeMessage = (data) => {
-    // console.log('📢 AppSidebar 收到公告:', data)
-    noticeContent.value = data || '暂无公告'
+    // SSE 推送后，重新拉取最新的公告列表
+    fetchCurrentNotices()
+}
+
+/**
+ * 显示长文本公告 Snackbar
+ */
+const showLongTextSnackbar = (item) => {
+    if (window.$snackbar) {
+        window.$snackbar.show({
+            text: item.content || '',
+            title: item.title || '公告消息',
+            color: 'info',
+            iconColor: 'white',
+            location: 'bottom right',
+            timeout: -1,  // 不自动关闭
+            persistent: true,
+            maxWidth: 300,
+            showCloseBtn: true,
+            btnColor: 'white',
+            showActionBtn: true,
+            actionBtnText: '查看详情',
+            actionBtnColor: 'primary',
+            showDontShowAgain: true,
+            // 点击"查看详情"按钮打开 Dialog
+            onAction: () => {
+                console.log('📢 点击查看详情，打开 Dialog')
+                showLongTextDialog(item)
+            }
+        })
+    }
+}
+
+/**
+ * 显示长文本公告 Dialog
+ */
+const showLongTextDialog = (item) => {
+    if (window.$dialog) {
+        window.$dialog.show({
+            title: item.title || '公告消息',
+            content: item.content || '',
+            // icon: 'mdi-file-document-outline',
+            iconColor: 'primary',
+            maxWidth: 600,
+            confirmText: '关闭',
+            showCancel: false,
+            // 可以使用 textClass 控制内容样式
+            textClass: 'long-text-content'
+        })
+    }
 }
   
 const user = ref({
@@ -208,8 +297,8 @@ const handleDetailData = (data) => {
 }
 
 onMounted(()=>{
-    // 1. 获取当前公告
-    fetchCurrentNotice()
+    // 1. 获取当前公告列表
+    fetchCurrentNotices()
     // 2. 建立 SSE 连接，接收实时推送
     connectNoticeSSE(handleNoticeMessage)
 
@@ -433,6 +522,15 @@ onUnmounted(() => {
   font-size: 12px !important;
 }
 
-
+/* 长文本内容样式 */
+.long-text-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.8;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px 4px;
+  font-size: 14px;
+}
 
 </style>

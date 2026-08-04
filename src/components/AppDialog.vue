@@ -13,9 +13,17 @@
         {{ config.title }}
       </v-card-title>
       
-      <!-- 内容区域 -->
+      <!-- 内容区域：支持纯文本和 Markdown -->
       <v-card-text class="pt-4" :class="config.textClass">
-        {{ config.content }}
+        <!-- 纯文本模式 -->
+        <div v-if="!config.useMarkdown" class="long-text-content">
+          {{ config.content }}
+        </div>
+        <!-- Markdown 模式（暂不实现，预留） -->
+        <div v-else>
+          <!-- 后续支持 Markdown 渲染 -->
+          {{ config.content }}
+        </div>
       </v-card-text>
 
       <!-- 按钮区域 -->
@@ -64,6 +72,7 @@ const config = reactive({
   confirmText: '确定',
   confirmColor: 'primary',
   confirmVariant: 'flat',
+  useMarkdown: false,  // 是否使用 Markdown
   onConfirm: null,
   onCancel: null
 })
@@ -89,7 +98,8 @@ const show = (options) => {
     cancelVariant: options.cancelVariant || 'text',
     confirmText: options.confirmText || '确定',
     confirmColor: options.confirmColor || 'primary',
-    confirmVariant: options.confirmVariant || 'flat'
+    confirmVariant: options.confirmVariant || 'flat',
+    useMarkdown: options.useMarkdown || false
   })
   
   confirmCallback = options.onConfirm || null
