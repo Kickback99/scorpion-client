@@ -110,6 +110,7 @@ const {triggerSearch} = useSearch()
 // 公告相关（新增）
 // ============================================================
 import { getCurrentNoticeListApi, connectNoticeSSE, disconnectNoticeSSE } from '@/api/notice'
+import { StealthStorage } from '@/utils/stealthStorage'
 
 const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 长文本消息对象 { id, title, content, type }
@@ -120,11 +121,14 @@ const shownLongTextIds = new Set()
 /**
  * 渲染公告列表
  * @param {Array} list 公告列表
+ * @param {Object} options 选项
+ * @param {boolean} options.skipDontShowCheck 跳过"不再提示"检查（SSE 推送时为 true）
  */
-const renderNotices = (list) => {
+const renderNotices = (list, options = {}) => {
+    const { skipDontShowCheck = false } = options
     let normalContent = ''
     let longTextItem = null
-    
+
     list.forEach(item => {
         if (item.type === 0) {
             normalContent = item.content
@@ -135,13 +139,17 @@ const renderNotices = (list) => {
 
     console.log('📢 短文本', normalContent)
     console.log('📢 长文本', longTextItem)
-    
+
     normalNotice.value = normalContent || '暂无公告'
     longTextNotice.value = longTextItem
     hasLongTextNotice.value = !!longTextItem
-    
-    // 弹出 Snackbar
+
+    // 弹出 Snackbar（SSE 推送不受本地存储影响）
     if (longTextItem) {
+        if (!skipDontShowCheck && StealthStorage.get('dont_show_long_text_notice')) {
+            console.log('📢 用户已选择"不再提示"，跳过弹窗')
+            return
+        }
         showLongTextSnackbar(longTextItem)
     }
 
@@ -149,13 +157,14 @@ const renderNotices = (list) => {
 
 /**
  * 获取当前展示的公告列表
+ * @param {Object} options 选项，透传给 renderNotices
  */
-const fetchCurrentNotices = async () => {
+const fetchCurrentNotices = async (options = {}) => {
     try {
         const res = await getCurrentNoticeListApi()
         const list = res.data || []
         // 渲染 notices
-        renderNotices(list)
+        renderNotices(list, options)
     } catch (error) {
         console.error('获取公告列表失败:', error)
         normalNotice.value = '暂无公告'
@@ -166,10 +175,11 @@ const fetchCurrentNotices = async () => {
 
 /**
  * 处理收到的公告消息（SSE 推送）
+ * 管理员实时推送不受本地"不再提示"存储影响
  */
 const handleNoticeMessage = (data) => {
-    // SSE 推送后，重新拉取最新的公告列表
-    fetchCurrentNotices()
+    // SSE 推送后，重新拉取最新的公告列表（跳过"不再提示"检查）
+    fetchCurrentNotices({ skipDontShowCheck: true })
 }
 
 /**
@@ -192,6 +202,11 @@ const showLongTextSnackbar = (item) => {
             actionBtnText: '查看详情',
             actionBtnColor: 'primary',
             showDontShowAgain: true,
+            // 点击"不再提示"写入 StealthStorage
+            onDontShowAgain: () => {
+                StealthStorage.set('dont_show_long_text_notice', '1')
+                console.log('📢 用户选择不再提示长文本公告')
+            },
             // 点击"查看详情"按钮打开 Dialog
             onAction: () => {
                 console.log('📢 点击查看详情，打开 Dialog')

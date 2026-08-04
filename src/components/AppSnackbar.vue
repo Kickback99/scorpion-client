@@ -91,6 +91,7 @@ import { ref, reactive } from 'vue'
 
 const visible = ref(false)
 let actionCallback = null
+let dontShowAgainCallback = null
 
 const config = reactive({
   text: '',
@@ -146,6 +147,7 @@ const show = (options) => {
     })
     // 保存回调函数
     actionCallback = options.onAction || null
+    dontShowAgainCallback = options.onDontShowAgain || null
     console.log('📢 Snackbar 保存回调:', actionCallback)  // 调试日志
   }
   
@@ -159,8 +161,11 @@ const handleAction = () => {
   }
 }
 
-// "不再提示"按钮处理（逻辑待实现）
+// "不再提示"按钮处理
 const handleDontShowAgain = () => {
+  if (dontShowAgainCallback) {
+    dontShowAgainCallback()
+  }
   visible.value = false
 }
 
