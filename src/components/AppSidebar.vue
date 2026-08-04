@@ -111,6 +111,7 @@ const {triggerSearch} = useSearch()
 // ============================================================
 import { getCurrentNoticeListApi, connectNoticeSSE, disconnectNoticeSSE } from '@/api/notice'
 import { StealthStorage } from '@/utils/stealthStorage'
+import { useConfigStore } from '@/store/config'
 
 const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 长文本消息对象 { id, title, content, type }
@@ -121,8 +122,11 @@ const shownLongTextIds = new Set()
 /**
  * 渲染公告列表
  * @param {Array} list 公告列表
+ * @param {Object} options 选项
+ * @param {boolean} options.skipDontShowCheck 跳过"不再提示"检查（permanent 模式 SSE 推送时为 true）
  */
-const renderNotices = (list) => {
+const renderNotices = (list, options = {}) => {
+    const { skipDontShowCheck = false } = options
     let normalContent = ''
     let longTextItem = null
 
@@ -141,9 +145,9 @@ const renderNotices = (list) => {
     longTextNotice.value = longTextItem
     hasLongTextNotice.value = !!longTextItem
 
-    // 弹出 Snackbar（如果用户已选择"不再提示"则跳过）
+    // 弹出 Snackbar
     if (longTextItem) {
-        if (StealthStorage.get('dont_show_long_text_notice')) {
+        if (!skipDontShowCheck && StealthStorage.get('dont_show_long_text_notice')) {
             console.log('📢 用户已选择"不再提示"，跳过弹窗')
             return
         }
@@ -154,12 +158,13 @@ const renderNotices = (list) => {
 
 /**
  * 获取当前展示的公告列表
+ * @param {Object} options 选项，透传给 renderNotices
  */
-const fetchCurrentNotices = async () => {
+const fetchCurrentNotices = async (options = {}) => {
     try {
         const res = await getCurrentNoticeListApi()
         const list = res.data || []
-        renderNotices(list)
+        renderNotices(list, options)
     } catch (error) {
         console.error('获取公告列表失败:', error)
         normalNotice.value = '暂无公告'
@@ -170,11 +175,19 @@ const fetchCurrentNotices = async () => {
 
 /**
  * 处理收到的公告消息（SSE 推送）
- * 管理员每次推送时清空"不再提示"标记，新公告始终弹出
+ * dismissed_level=session（07a968e）：清空标记后正常弹出，每次推送重置
+ * dismissed_level=permanent（00d29ea）：绕过标记强制弹出，标记持久保留
  */
 const handleNoticeMessage = (data) => {
-    StealthStorage.remove('dont_show_long_text_notice')
-    fetchCurrentNotices()
+    const configStore = useConfigStore()
+    if (configStore.getNoticeDismissedLevel() === 'session') {
+        // session 模式：删掉标记，等同于"不再提示"失效
+        StealthStorage.remove('dont_show_long_text_notice')
+        fetchCurrentNotices()
+    } else {
+        // permanent 模式：绕过标记检查，强制弹出但保留标记
+        fetchCurrentNotices({ skipDontShowCheck: true })
+    }
 }
 
 /**

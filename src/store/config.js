@@ -46,6 +46,7 @@ const _groupKeys = {
     'article_list.load_mode',
     'article_list.scroll_page_size',
     'article_list.pagination_page_size',
+    'notice.dismissed_level'
   ],
 
   admin: [
@@ -142,6 +143,11 @@ export const useConfigStore = defineStore('config', {
         load_mode: 'scroll',
         scroll_page_size: 10,
         pagination_page_size: 7
+      },
+    
+      // 公告相关
+      notice: {
+        dismissed_level: 'session'
       }
     },
 
@@ -399,6 +405,13 @@ export const useConfigStore = defineStore('config', {
       return this.getValue('websocket_enabled') ?? true
     },
 
+    /**
+     * 获取公告不再提示级别
+     */
+    getNoticeDismissedLevel(){
+      return this.getValue('notice.dismissed_level') || 'session'
+    }
+
   },
 
   getters: {
@@ -424,5 +437,6 @@ export const useConfigStore = defineStore('config', {
     scrollPageSize()          { return this.getValue('article_list.scroll_page_size') ?? 10 },
     paginationPageSize()      { return this.getValue('article_list.pagination_page_size') ?? 7 },
     isWebsocketEnabled()      { return this.getValue('websocket_enabled') ?? true },
+    isNoticeDismissedLevel()  { return this.getValue('notice.dismissed_level') === 'session' ? 'session' : 'permanent' },
   }
 })
