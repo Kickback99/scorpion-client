@@ -121,11 +121,8 @@ const shownLongTextIds = new Set()
 /**
  * 渲染公告列表
  * @param {Array} list 公告列表
- * @param {Object} options 选项
- * @param {boolean} options.skipDontShowCheck 跳过"不再提示"检查（SSE 推送时为 true）
  */
-const renderNotices = (list, options = {}) => {
-    const { skipDontShowCheck = false } = options
+const renderNotices = (list) => {
     let normalContent = ''
     let longTextItem = null
 
@@ -144,9 +141,9 @@ const renderNotices = (list, options = {}) => {
     longTextNotice.value = longTextItem
     hasLongTextNotice.value = !!longTextItem
 
-    // 弹出 Snackbar（SSE 推送不受本地存储影响）
+    // 弹出 Snackbar（如果用户已选择"不再提示"则跳过）
     if (longTextItem) {
-        if (!skipDontShowCheck && StealthStorage.get('dont_show_long_text_notice')) {
+        if (StealthStorage.get('dont_show_long_text_notice')) {
             console.log('📢 用户已选择"不再提示"，跳过弹窗')
             return
         }
@@ -157,14 +154,12 @@ const renderNotices = (list, options = {}) => {
 
 /**
  * 获取当前展示的公告列表
- * @param {Object} options 选项，透传给 renderNotices
  */
-const fetchCurrentNotices = async (options = {}) => {
+const fetchCurrentNotices = async () => {
     try {
         const res = await getCurrentNoticeListApi()
         const list = res.data || []
-        // 渲染 notices
-        renderNotices(list, options)
+        renderNotices(list)
     } catch (error) {
         console.error('获取公告列表失败:', error)
         normalNotice.value = '暂无公告'
@@ -175,11 +170,11 @@ const fetchCurrentNotices = async (options = {}) => {
 
 /**
  * 处理收到的公告消息（SSE 推送）
- * 管理员实时推送不受本地"不再提示"存储影响
+ * 管理员每次推送时清空"不再提示"标记，新公告始终弹出
  */
 const handleNoticeMessage = (data) => {
-    // SSE 推送后，重新拉取最新的公告列表（跳过"不再提示"检查）
-    fetchCurrentNotices({ skipDontShowCheck: true })
+    StealthStorage.remove('dont_show_long_text_notice')
+    fetchCurrentNotices()
 }
 
 /**
