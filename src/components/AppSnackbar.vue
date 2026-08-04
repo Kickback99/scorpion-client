@@ -10,15 +10,53 @@
     multi-line
     position="fixed"
   >
-    <div class="d-flex align-center" style="gap: 12px;">
+    <!-- 带标题的列布局（长文本公告等场景） -->
+    <div v-if="config.showTitle && config.title" style="width: 300PX;">
+      <!-- 标题栏：标题 + 关闭图标 -->
+      <div class="d-flex align-center justify-space-between mb-1">
+        <span class="text-subtitle-1 font-weight-bold text-truncate">{{ config.title }}</span>
+        <v-btn
+          v-if="config.showCloseBtn"
+          icon="mdi-close"
+          variant="text"
+          density="compact"
+          size="small"
+          :color="config.btnColor"
+          @click="visible = false"
+        />
+      </div>
+      <!-- 内容（单行截断） -->
+      <div class="text-body-2 text-truncate mb-2">{{ config.text }}</div>
+      <!-- 底部操作按钮 -->
+      <div class="d-flex justify-end align-center" style="gap: 8px;">
+        <v-btn
+          v-if="config.showDontShowAgain"
+          variant="text"
+          size="small"
+          class="text-caption"
+          @click="handleDontShowAgain"
+        >
+          不再提示
+        </v-btn>
+        <v-btn
+          v-if="config.showActionBtn"
+          :color="config.actionBtnColor || 'primary'"
+          variant="flat"
+          size="small"
+          @click="handleAction"
+        >
+          {{ config.actionBtnText }}
+        </v-btn>
+      </div>
+    </div>
+
+    <!-- 默认行内布局（无标题时） -->
+    <div v-else class="d-flex align-center" style="gap: 12px;">
       <!-- 图标 -->
       <v-icon v-if="config.icon" :icon="config.icon" :color="config.iconColor" size="24"></v-icon>
-      
+
       <!-- 内容区域 -->
       <div class="flex-grow-1">
-        <div v-if="config.showTitle && config.title" class="text-subtitle-1 font-weight-bold mb-1">
-          {{ config.title }}
-        </div>
         <div class="text-body-2">
           {{ config.text }}
         </div>
@@ -34,16 +72,16 @@
       >
         {{ config.btnText }}
       </v-btn>
-        <!-- 自定义按钮（如"查看详情"） -->
-        <v-btn
-          v-if="config.showActionBtn"
-          :color="config.actionBtnColor || 'primary'"
-          variant="flat"
-          size="small"
-          @click="handleAction"
-        >
-          {{ config.actionBtnText }}
-        </v-btn>
+      <!-- 自定义按钮（如"查看详情"） -->
+      <v-btn
+        v-if="config.showActionBtn"
+        :color="config.actionBtnColor || 'primary'"
+        variant="flat"
+        size="small"
+        @click="handleAction"
+      >
+        {{ config.actionBtnText }}
+      </v-btn>
     </div>
   </v-snackbar>
 </template>
@@ -65,10 +103,12 @@ const config = reactive({
   timeout: 3000,
   variant: 'elevated',
   rounded: 'md',
+  maxWidth: undefined,
   showCloseBtn: true,
   btnText: '关闭',
   btnColor: 'white',
   persistent: false,
+  showDontShowAgain: false,
 })
 
 // 显示消息的方法
@@ -94,13 +134,15 @@ const show = (options) => {
       timeout: options.persistent ? -1 : (options.timeout !== undefined ? options.timeout : 3000),
       variant: options.variant || 'elevated',
       rounded: options.rounded || 'md',
+      maxWidth: options.maxWidth || undefined,
       showCloseBtn: options.showCloseBtn !== false,
       btnText: options.btnText || '关闭',
       btnColor: options.btnColor || 'white',
       persistent: options.persistent || false,
       showActionBtn: options.showActionBtn || false,
       actionBtnText: options.actionBtnText || '查看详情',
-      actionBtnColor: options.actionBtnColor || 'primary'
+      actionBtnColor: options.actionBtnColor || 'primary',
+      showDontShowAgain: options.showDontShowAgain || false
     })
     // 保存回调函数
     actionCallback = options.onAction || null
@@ -115,6 +157,11 @@ const handleAction = () => {
   if (actionCallback) {
     actionCallback()
   }
+}
+
+// "不再提示"按钮处理（逻辑待实现）
+const handleDontShowAgain = () => {
+  visible.value = false
 }
 
 // 统一参数处理函数
