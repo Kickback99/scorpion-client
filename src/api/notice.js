@@ -2,10 +2,10 @@ import http from '@/utils/http'
 import sseManager from '@/server/SSEManager'
 
 /**
- * 获取当前生效的公告（用户端）
- * @returns {Promise<String>}
+ * 获取当前展示的公告列表（包含类型信息）
+ * @returns {Promise<Array>}
  */
-export const getCurrentNoticeApi = () => http.get('/client/notice/current')
+export const getCurrentNoticeListApi = () => http.get('/client/notice/current/list')
 
 /**
  * 建立 SSE 连接，接收实时公告推送（用户端）

@@ -34,6 +34,16 @@
       >
         {{ config.btnText }}
       </v-btn>
+        <!-- 自定义按钮（如"查看详情"） -->
+        <v-btn
+          v-if="config.showActionBtn"
+          :color="config.actionBtnColor || 'primary'"
+          variant="flat"
+          size="small"
+          @click="handleAction"
+        >
+          {{ config.actionBtnText }}
+        </v-btn>
     </div>
   </v-snackbar>
 </template>
@@ -42,6 +52,7 @@
 import { ref, reactive } from 'vue'
 
 const visible = ref(false)
+let actionCallback = null
 
 const config = reactive({
   text: '',
@@ -57,7 +68,7 @@ const config = reactive({
   showCloseBtn: true,
   btnText: '关闭',
   btnColor: 'white',
-  persistent: false
+  persistent: false,
 })
 
 // 显示消息的方法
@@ -86,11 +97,24 @@ const show = (options) => {
       showCloseBtn: options.showCloseBtn !== false,
       btnText: options.btnText || '关闭',
       btnColor: options.btnColor || 'white',
-      persistent: options.persistent || false
+      persistent: options.persistent || false,
+      showActionBtn: options.showActionBtn || false,
+      actionBtnText: options.actionBtnText || '查看详情',
+      actionBtnColor: options.actionBtnColor || 'primary'
     })
+    // 保存回调函数
+    actionCallback = options.onAction || null
+    console.log('📢 Snackbar 保存回调:', actionCallback)  // 调试日志
   }
   
   visible.value = true
+}
+
+// 操作按钮处理
+const handleAction = () => {
+  if (actionCallback) {
+    actionCallback()
+  }
 }
 
 // 统一参数处理函数
