@@ -125,12 +125,15 @@ const handleCopySuccess = () => {
 }
 
 :deep(.v-md-copy-code-btn.copied::after) {
-  content: "✓";
-  color: rgb(var(--v-theme-on-primary)) !important;
-  font-size: 16px;
+  content: "";
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 45%;
+  width: 8px;
+  height: 14px;
+  border-right: 2.5px solid rgb(var(--v-theme-on-primary));
+  border-bottom: 2.5px solid rgb(var(--v-theme-on-primary));
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-radius: 1px;
 }
 </style>
