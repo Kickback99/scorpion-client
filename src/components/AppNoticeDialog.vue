@@ -14,6 +14,7 @@
           :text="content"
           :key="configStore.article_detail?.theme"
           :class="themeStore.isDark ? 'user-dark' : 'user-light'"
+          @copy-code-success="handleCopySuccess"
         />
       </v-card-text>
 
@@ -65,4 +66,71 @@ watch(visible, (val) => { emit('update:modelValue', val) })
 // 事件处理
 // ============================================================
 const handleClose = () => { visible.value = false }
+
+const handleCopySuccess = () => {
+  const copyButtons = document.querySelectorAll('.v-md-copy-code-btn')
+  copyButtons.forEach(btn => {
+    btn.classList.add('copied')
+    setTimeout(() => {
+      btn.classList.remove('copied')
+    }, 1500)
+  })
+}
 </script>
+
+<style scoped lang="scss">
+// ============================================================
+// vuepress 主题：深色背景
+// ============================================================
+:deep(.v-md-editor-preview.user-dark .vuepress-markdown-body) {
+  background: var(--v-theme-surface);
+  color: #fff;
+  code:not(pre code) {
+    background-color: rgb(var(--v-theme-surface-variant), 0.7) !important;
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+}
+
+// ============================================================
+// vuepress 主题：浅色背景
+// ============================================================
+:deep(.v-md-editor-preview.user-light .vuepress-markdown-body) {
+  background: var(--v-theme-surface);
+  color: #000;
+  code:not(pre code) {
+    background-color: rgb(var(--v-theme-surface-variant), 0.7) !important;
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+}
+
+// ============================================================
+// github 主题：内联代码样式
+// ============================================================
+:deep(.v-md-editor-preview .github-markdown-body) {
+  code:not(pre code) {
+    background-color: rgb(var(--v-theme-surface-variant), 0.7) !important;
+    color: rgb(var(--v-theme-primary)) !important;
+  }
+}
+
+// ============================================================
+// 代码块复制按钮
+// ============================================================
+:deep(.v-md-copy-code-btn) {
+  background-color: rgb(var(--v-theme-primary), 0.7) !important;
+}
+
+:deep(.v-md-copy-code-btn.copied svg) {
+  display: none;
+}
+
+:deep(.v-md-copy-code-btn.copied::after) {
+  content: "✓";
+  color: rgb(var(--v-theme-on-primary)) !important;
+  font-size: 16px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
