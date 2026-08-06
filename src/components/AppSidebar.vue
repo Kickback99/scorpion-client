@@ -89,12 +89,22 @@
         </v-list>
     </AppBlogBox>
     </div>
+
+    <!-- 长文本公告 Snackbar -->
+    <AppNoticeSnackbar
+      v-model="noticeSnackbarVisible"
+      :title="longTextNotice?.title || '公告消息'"
+      :content="longTextNotice?.content || ''"
+      @action="handleNoticeAction"
+      @dont-show-again="handleNoticeDontShowAgain"
+    />
 </template>
 
 <script setup>
 import { nextTick, onMounted,onUnmounted,ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue';
+import AppNoticeSnackbar from './AppNoticeSnackbar.vue';
 import { hotListApi, latestListApi, tagListApi } from '@/api/article';
 const keyword = ref('')
 // 全局总线
@@ -116,6 +126,7 @@ import { useConfigStore } from '@/store/config'
 const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 长文本消息对象 { id, title, content, type }
 const hasLongTextNotice = ref(false)
+const noticeSnackbarVisible = ref(false)
 // 记录已展示的长文本公告 ID，防止重复弹出
 const shownLongTextIds = new Set()
 
@@ -158,7 +169,7 @@ const renderNotices = (list, options = {}) => {
             }
             // flag === '1' → 显示
         }
-        showLongTextSnackbar(longTextItem)
+        noticeSnackbarVisible.value = true
     }
 
 }
@@ -198,36 +209,20 @@ const handleNoticeMessage = (data) => {
 }
 
 /**
- * 显示长文本公告 Snackbar
+ * 点击"不再提示"：写入 StealthStorage 标记
  */
-const showLongTextSnackbar = (item) => {
-    if (window.$snackbar) {
-        window.$snackbar.show({
-            text: item.content || '',
-            title: item.title || '公告消息',
-            color: 'info',
-            iconColor: 'white',
-            location: 'bottom right',
-            timeout: -1,  // 不自动关闭
-            persistent: true,
-            maxWidth: 300,
-            showCloseBtn: true,
-            btnColor: 'white',
-            showActionBtn: true,
-            actionBtnText: '查看详情',
-            actionBtnColor: 'primary',
-            showDontShowAgain: true,
-            // 点击"不再提示"写入 StealthStorage（'0' = 不显示）
-            onDontShowAgain: () => {
-                StealthStorage.set('show_long_text_snackbar', '0')
-                console.log('📢 用户选择不再提示长文本公告')
-            },
-            // 点击"查看详情"按钮打开 Dialog
-            onAction: () => {
-                console.log('📢 点击查看详情，打开 Dialog')
-                showLongTextDialog(item)
-            }
-        })
+const handleNoticeDontShowAgain = () => {
+    StealthStorage.set('show_long_text_snackbar', '0')
+    console.log('📢 用户选择不再提示长文本公告')
+}
+
+/**
+ * 点击"查看详情"：打开 Dialog
+ */
+const handleNoticeAction = () => {
+    console.log('📢 点击查看详情，打开 Dialog')
+    if (longTextNotice.value) {
+        showLongTextDialog(longTextNotice.value)
     }
 }
 
