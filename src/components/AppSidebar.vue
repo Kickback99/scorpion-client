@@ -98,6 +98,13 @@
       @action="handleNoticeAction"
       @dont-show-again="handleNoticeDontShowAgain"
     />
+
+    <!-- 长文本公告 Dialog（Markdown 渲染） -->
+    <AppNoticeDialog
+      v-model="noticeDialogVisible"
+      :title="longTextNotice?.title || '公告消息'"
+      :content="longTextNotice?.content || ''"
+    />
 </template>
 
 <script setup>
@@ -105,6 +112,7 @@ import { nextTick, onMounted,onUnmounted,ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue';
 import AppNoticeSnackbar from './AppNoticeSnackbar.vue';
+import AppNoticeDialog from './AppNoticeDialog.vue';
 import { hotListApi, latestListApi, tagListApi } from '@/api/article';
 const keyword = ref('')
 // 全局总线
@@ -127,6 +135,7 @@ const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 长文本消息对象 { id, title, content, type }
 const hasLongTextNotice = ref(false)
 const noticeSnackbarVisible = ref(false)
+const noticeDialogVisible = ref(false)
 // 记录已展示的长文本公告 ID，防止重复弹出
 const shownLongTextIds = new Set()
 
@@ -217,34 +226,13 @@ const handleNoticeDontShowAgain = () => {
 }
 
 /**
- * 点击"查看详情"：打开 Dialog
+ * 点击"查看详情"：打开 Dialog（Markdown 渲染）
  */
 const handleNoticeAction = () => {
     console.log('📢 点击查看详情，打开 Dialog')
-    if (longTextNotice.value) {
-        showLongTextDialog(longTextNotice.value)
-    }
+    noticeDialogVisible.value = true
 }
 
-/**
- * 显示长文本公告 Dialog
- */
-const showLongTextDialog = (item) => {
-    if (window.$dialog) {
-        window.$dialog.show({
-            title: item.title || '公告消息',
-            content: item.content || '',
-            // icon: 'mdi-file-document-outline',
-            iconColor: 'primary',
-            maxWidth: 600,
-            confirmText: '关闭',
-            showCancel: false,
-            // 可以使用 textClass 控制内容样式
-            textClass: 'long-text-content'
-        })
-    }
-}
-  
 const user = ref({
     username: 'JohnDoe',
     email: 'johndoe@example.com',
