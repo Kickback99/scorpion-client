@@ -136,4 +136,13 @@ const handleCopySuccess = () => {
   transform: translate(-50%, -50%) rotate(45deg);
   border-radius: 1px;
 }
+
+// ============================================================
+// 公告图片样式
+// ============================================================
+:deep(.v-md-editor-preview img){
+    display: block !important;
+    width: 350px;
+    margin: auto !important;
+}
 </style>
