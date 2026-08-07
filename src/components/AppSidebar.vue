@@ -30,7 +30,7 @@
         </v-text-field>
     </AppBlogBox>
 
-    <AppBlogBox title="公告消息">
+    <AppBlogBox title="公告消息" v-if="configStore.getNoticeEnabled()">
         <v-card-text>
             <!-- 普通消息显示在卡片内 -->
             <div v-if="normalNotice">{{ normalNotice }}</div>
@@ -132,6 +132,7 @@ import { getCurrentNoticeListApi, connectNoticeSSE, disconnectNoticeSSE } from '
 import { StealthStorage } from '@/utils/stealthStorage'
 import { useConfigStore } from '@/store/config'
 
+const configStore = useConfigStore()
 const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 富文本消息对象 { id, title, content, type }
 const hasLongTextNotice = ref(false)
@@ -207,7 +208,6 @@ const fetchCurrentNotices = async (options = {}) => {
  * dismissed_level=permanent（00d29ea）：绕过标记检查强制弹出，标记保留原值
  */
 const handleNoticeMessage = (data) => {
-    const configStore = useConfigStore()
     if (configStore.getNoticeDismissedLevel() === 'session') {
         // session 模式：set '1'，公告显示
         StealthStorage.set('show_long_text_snackbar', '1')
