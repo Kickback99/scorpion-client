@@ -90,7 +90,7 @@
     </AppBlogBox>
     </div>
 
-    <!-- 长文本公告 Snackbar -->
+    <!-- 富文本公告 Snackbar -->
     <AppNoticeSnackbar
       v-model="noticeSnackbarVisible"
       :title="longTextNotice?.title || '公告消息'"
@@ -99,7 +99,7 @@
       @dont-show-again="handleNoticeDontShowAgain"
     />
 
-    <!-- 长文本公告 Dialog（Markdown 渲染） -->
+    <!-- 富文本公告 Dialog（Markdown 渲染） -->
     <AppNoticeDialog
       v-model="noticeDialogVisible"
       :title="longTextNotice?.title || '公告消息'"
@@ -133,11 +133,11 @@ import { StealthStorage } from '@/utils/stealthStorage'
 import { useConfigStore } from '@/store/config'
 
 const normalNotice = ref('')        // 普通消息内容
-const longTextNotice = ref(null)    // 长文本消息对象 { id, title, content, type }
+const longTextNotice = ref(null)    // 富文本消息对象 { id, title, content, type }
 const hasLongTextNotice = ref(false)
 const noticeSnackbarVisible = ref(false)
 const noticeDialogVisible = ref(false)
-// 记录已展示的长文本公告 ID，防止重复弹出
+// 记录已展示的富文本公告 ID，防止重复弹出
 const shownLongTextIds = new Set()
 
 /**
@@ -160,7 +160,7 @@ const renderNotices = (list, options = {}) => {
     })
 
     console.log('📢 短文本', normalContent)
-    console.log('📢 长文本', longTextItem)
+    console.log('📢 富文本', longTextItem)
 
     normalNotice.value = normalContent || '暂无公告'
     longTextNotice.value = longTextItem
@@ -223,7 +223,7 @@ const handleNoticeMessage = (data) => {
  */
 const handleNoticeDontShowAgain = () => {
     StealthStorage.set('show_long_text_snackbar', '0')
-    console.log('📢 用户选择不再提示长文本公告')
+    console.log('📢 用户选择不再提示富文本公告')
 }
 
 /**
@@ -536,7 +536,7 @@ onUnmounted(() => {
   font-size: 12px !important;
 }
 
-/* 长文本内容样式 */
+/* 富文本内容样式 */
 .long-text-content {
   white-space: pre-wrap;
   word-wrap: break-word;
