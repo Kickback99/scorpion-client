@@ -9,6 +9,7 @@
 
       <!-- 内容：Markdown 渲染 -->
       <v-card-text>
+        <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">推送时间：{{ pushTime || '-' }}</span></v-divider>
         <component
           :is="MarkdownPreview"
           :text="content"
@@ -44,6 +45,7 @@ const props = defineProps({
   modelValue: { type: Boolean, default: false },
   title: { type: String, default: '公告消息' },
   content: { type: String, default: '' },
+  pushTime: { type: String, default: '' },
 })
 
 const emit = defineEmits(['update:modelValue'])
