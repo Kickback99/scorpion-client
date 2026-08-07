@@ -104,6 +104,7 @@
       v-model="noticeDialogVisible"
       :title="longTextNotice?.title || '公告消息'"
       :content="longTextNotice?.content || ''"
+      :push-time="longTextNotice?.pushTime || ''"
     />
 </template>
 
