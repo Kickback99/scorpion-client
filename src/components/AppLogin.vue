@@ -69,7 +69,10 @@
                                 >
                                     <template #label>
                                         <span class="text-caption text-grey-darken-1">
-                                            同意本网站的条款与协议
+                                            同意本网站的
+                                            <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('terms')">《服务条款》</a>
+                                            和
+                                            <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('policy')">《隐私协议》</a>
                                         </span>
                                     </template> 
                                 </v-checkbox>
@@ -202,7 +205,10 @@
                                 >
                                     <template #label>
                                         <span class="text-caption text-grey-darken-1">
-                                            同意本网站的条款与协议
+                                            同意本网站的
+                                            <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('terms')">《服务条款》</a>
+                                            和
+                                            <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('policy')">《隐私协议》</a>
                                         </span>
                                     </template> 
                                 </v-checkbox>
@@ -232,12 +238,17 @@
             </div>
         </template>
     </v-dialog>
+
+    <!-- 条款/协议弹窗 -->
+    <AppTermsDialog v-model="termsVisible" :title="termsTitle" :content="termsContent" />
 </template>
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify'
 import { useConfigStore } from '@/store/config';
+import AppTermsDialog from '@/components/AppTermsDialog.vue'
+import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
 
 const display = useDisplay()
 
@@ -555,6 +566,18 @@ const sendVerifyCode = async () => {
 const stopCountdown = () => {
     countdown.value = 0
     isSending.value = false
+}
+
+// ------------------------ 条款弹窗相关 ------------------------ 
+
+const termsVisible = ref(false)
+const termsTitle = ref('')
+const termsContent = ref('')
+
+const handleOpenTerms = (type) => {
+    termsTitle.value = type === 'terms' ? '服务条款' : '隐私协议'
+    termsContent.value = type === 'terms' ? SERVICE_TERMS : PRIVACY_POLICY
+    termsVisible.value = true
 }
 
 // ------------------------ 切换步骤时重置表单 ------------------------ 
