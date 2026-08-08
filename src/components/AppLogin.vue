@@ -1,7 +1,7 @@
 <template>
     <v-dialog persistent no-click-animation :width="handleWidth" v-model="dialogVisible" content-class="rounded-8">
         <template #default>
-            <div class="dialog-container">
+            <div class="dialog-container" :style="{ '--login-scale': handleFontScale }">
                 <v-btn
                     icon
                     color="primary"
@@ -235,7 +235,7 @@
                     <v-window-item :value="3">
                         <v-card title height="auto" class="d-flex align-center">
                             <v-container class="text-center">
-                                <v-icon size="120" color="success">mdi-check-circle</v-icon> 
+                                <v-icon :size="handleIconSize" color="success">mdi-check-circle</v-icon> 
                                 <h3 class="mt-4">恭喜你，注册成功</h3>
                                 <p class="text-caption text-grey">请前往邮箱，查看账号信息
                                     <a href="#" @click="forwardLogin" class="text-decoration-none">前往登录</a>
@@ -276,6 +276,12 @@ const handleWidth = computed(()=>{
 const handlePadding = computed(()=>{
     return display.mobile.value ? 'pa-5': 'pa-10'
 })
+
+// 移动端字号缩放系数（动态 rem 适配）
+const handleFontScale = computed(() => (display.mobile.value ? 0.8 : 1))
+
+// 移动端成功页图标大小
+const handleIconSize = computed(() => (display.mobile.value ? 54 : 70))
 
 // ------------------------ 全局总线 ------------------------ 
 
@@ -644,5 +650,36 @@ const forwardLogin = () => {
 :deep(.v-window-item--active) {
     opacity: 1;
     transform: scale(1);
+}
+
+.dialog-container {
+    --login-scale: 1;
+
+    h2 {
+        font-size: calc(1.5rem * var(--login-scale)) !important;
+    }
+
+    h3 {
+        font-size: calc(1.25rem * var(--login-scale)) !important;
+    }
+
+    .text-caption {
+        font-size: calc(0.75rem * var(--login-scale)) !important;
+    }
+
+    // 表单整块缩放：input 经 font:inherit 继承、图标经 em 等比缩放
+    :deep(.v-field) {
+        font-size: calc(1rem * var(--login-scale)) !important;
+    }
+
+    // 浮动 label 固定 1rem，需单独命中（未聚焦时它看起来就是"占位符"）
+    :deep(.v-field .v-label) {
+        font-size: calc(1rem * var(--login-scale)) !important;
+    }
+
+    // 登录/注册/验证码按钮字号（Vuetify 经 --v-btn-size 控制）
+    :deep(.v-btn) {
+        --v-btn-size: calc(0.875rem * var(--login-scale)) !important;
+    }
 }
 </style>
