@@ -1,6 +1,6 @@
 <template>
   <!-- ===== Dialog ===== -->
-  <v-dialog v-model="visible" max-width="600" @update:model-value="handleClose">
+  <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
     <v-card>
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
@@ -29,6 +29,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import { createMarkdownPreview } from '@/utils/markdown-config'
 import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
@@ -36,6 +37,7 @@ import { useConfigStore } from '@/store/config'
 // ============================================================
 // 数据
 // ============================================================
+const display = useDisplay()
 const visible = ref(false)
 const configStore = useConfigStore()
 const themeStore = useThemeStore()
@@ -48,6 +50,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+// ============================================================
+// 响应式 max-width
+// ============================================================
+const dialogMaxWidth = computed(() => display.mobile.value ? '85%' : 600)
 
 // ============================================================
 // Markdown 预览组件（跟随主题）
