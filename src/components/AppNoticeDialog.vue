@@ -7,10 +7,12 @@
         {{ title }}
         <v-btn icon="mdi-close" variant="text" density="compact" size="small" @click="handleClose" />
       </v-card-title>
+      <v-card-subtitle>
+        <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">推送时间：{{ pushTime || '-' }}</span></v-divider>
+      </v-card-subtitle>
 
       <!-- 内容：Markdown 渲染 -->
-      <v-card-text>
-        <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">推送时间：{{ pushTime || '-' }}</span></v-divider>
+      <v-card-text>        
         <div class="detail-panel">
           <component
             :is="MarkdownPreview"
