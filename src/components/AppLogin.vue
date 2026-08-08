@@ -159,21 +159,6 @@
                                     color="primary"
                                     variant="outlined"
                                     density="compact"
-                                    v-model="registerModel.rePassword"
-                                    :append-inner-icon="registerShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                                    @click:append-inner="eyeRegisterPwd"
-                                    :type="registerShowPassword ? 'text' : 'password'"
-                                    label="确认密码"
-                                    placeholder="请输入确认密码"
-                                    :rules="registerRules.rePassword"
-                                    :prepend-inner-icon="registerShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
-                                    class="mb-3"
-                                >
-                                </v-text-field>
-                                <v-text-field
-                                    color="primary"
-                                    variant="outlined"
-                                    density="compact"
                                     v-model="registerModel.email"
                                     label="邮箱"
                                     placeholder="请输入邮箱"
@@ -463,10 +448,6 @@ const registerRules = {
     password: [
         (v) => !!v || '请输入密码',
         (v) => /^\S{4,15}$/.test(v) || '密码必须是 4-15位 的非空字符'
-    ],
-    rePassword: [
-        (v) => !!v || '请确认确认密码',
-        (v) => v === registerModel.password || '两次输入的密码不一致'
     ],
     email:[
         (v) => !!v || '请输入邮箱',
