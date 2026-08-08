@@ -3,8 +3,9 @@
   <v-dialog v-model="visible" max-width="600" @update:model-value="handleClose">
     <v-card>
       <!-- 标题栏 -->
-      <v-card-title class="d-flex align-center">
+      <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
+        <v-btn icon="mdi-close" variant="text" density="compact" size="small" @click="handleClose" />
       </v-card-title>
 
       <!-- 内容：Markdown 渲染 -->
@@ -18,12 +19,6 @@
           @copy-code-success="handleCopySuccess"
         />
       </v-card-text>
-
-      <!-- 按钮区域 -->
-      <v-card-actions>
-        <v-spacer />
-        <v-btn color="primary" variant="flat" @click="handleClose">关闭</v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -146,5 +141,14 @@ const handleCopySuccess = () => {
     display: block !important;
     width: 350px;
     margin: auto !important;
+}
+</style>
+
+<style lang="scss">
+// ============================================================
+// 背景暗化
+// ============================================================
+.v-overlay__scrim {
+  opacity: 0.6 !important;
 }
 </style>
