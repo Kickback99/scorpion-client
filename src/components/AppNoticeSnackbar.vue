@@ -9,6 +9,7 @@
     multi-line
     position="fixed"
     class="notice-snackbar"
+    :style="{ '--snackbar-width': snackbarWidth }"
   >
     <div>
       <!-- 标题栏：标题 + 关闭图标 -->
@@ -51,11 +52,13 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // ============================================================
 // 数据
 // ============================================================
+const display = useDisplay()
 const visible = ref(false)
 
 const props = defineProps({
@@ -68,6 +71,11 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'action', 'dontShowAgain'])
+
+// ============================================================
+// 响应式宽度
+// ============================================================
+const snackbarWidth = computed(() => display.mobile.value ? '45vw' : '300px')
 
 // ============================================================
 // 渲染（v-model 双向同步）
@@ -96,15 +104,8 @@ const handleAction = () => {
 // ============================================================
 .notice-snackbar .v-snackbar__wrapper,
 .notice-snackbar .v-snackbar__content {
-  width: 300px;
+  width: var(--snackbar-width);
   min-width: 0 !important;
   max-width: none !important;
-}
-
-@media (max-width: 600px) {
-  .notice-snackbar .v-snackbar__wrapper,
-  .notice-snackbar .v-snackbar__content {
-    width: 45vw;
-  }
 }
 </style>
