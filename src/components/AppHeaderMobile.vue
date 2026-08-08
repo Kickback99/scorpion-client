@@ -89,7 +89,7 @@
       temporary
       location="left"
     >
-      <v-list nav density="compact" color="primary">
+      <v-list nav density="compact" color="primary" open-strategy="single">
         <template v-for="item in categories" :key="item.id">
           <!-- 有子菜单的项 -->
           <v-list-group
