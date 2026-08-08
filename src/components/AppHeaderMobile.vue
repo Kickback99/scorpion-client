@@ -95,10 +95,16 @@
           <v-list-group
             v-if="hasChildren(item)"
             :value="item.id"
-            @click="!item.children && handleNavClick('cate',item.id)"
           >
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" :title="item.name"></v-list-item>
+              <v-list-item
+                v-bind="props"
+                class="nav-parent-group"
+              >
+                <template v-slot:title>
+                  <span class="nav-parent-text" @click.stop="handleNavClick('cate', item.id)">{{ item.name }}</span>
+                </template>
+              </v-list-item>
             </template>
 
             <v-list-item
