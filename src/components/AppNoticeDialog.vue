@@ -11,13 +11,15 @@
       <!-- 内容：Markdown 渲染 -->
       <v-card-text>
         <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">推送时间：{{ pushTime || '-' }}</span></v-divider>
-        <component
-          :is="MarkdownPreview"
-          :text="content"
-          :key="configStore.article_detail?.theme"
-          :class="themeStore.isDark ? 'user-dark' : 'user-light'"
-          @copy-code-success="handleCopySuccess"
-        />
+        <div class="detail-panel">
+          <component
+            :is="MarkdownPreview"
+            :text="content"
+            :key="configStore.article_detail?.theme"
+            :class="themeStore.isDark ? 'user-dark' : 'user-light'"
+            @copy-code-success="handleCopySuccess"
+          />
+        </div>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -141,6 +143,13 @@ const handleCopySuccess = () => {
     display: block !important;
     width: 350px;
     margin: auto !important;
+}
+
+.detail-panel {
+  :deep(.github-markdown-body),
+  :deep(.vuepress-markdown-body) {
+    padding: 0 !important;
+  }
 }
 </style>
 
