@@ -13,31 +13,45 @@
   <!-- 桌面导航 -->
   <div class="d-flex ml-4">
     <template v-for="item in categories" :key="item.id">
-      <!-- 一级导航项 -->
+      <!-- 有子菜单：hover 展开下拉，箭头跟随状态旋转 -->
+      <v-menu
+        v-if="hasChildren(item)"
+        open-on-hover
+        location="bottom"
+      >
+        <template v-slot:activator="{ props, isActive }">
+          <v-btn
+            v-bind="props"
+            variant="text"
+            :ripple="false"
+            @click="handleNavClick('cate', item.id)"
+            class="text-none nav-parent-btn"
+          >
+            {{ item.name }}
+            <v-icon size="small" class="ml-1 nav-arrow" :class="{ 'nav-arrow--open': isActive }">
+              mdi-chevron-down
+            </v-icon>
+          </v-btn>
+        </template>
+        <v-list density="compact">
+          <v-list-item
+            v-for="child in item.children"
+            :key="child.id"
+            @click="handleNavClick('cate',child.id)"
+          >
+            <v-list-item-title>{{ child.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <!-- 无子菜单：直接点击跳转 -->
       <v-btn
+        v-else
         variant="text"
         @click="handleNavClick('cate',item.id)"
         class="text-none"
       >
         {{ item.name }}
-
-        <!-- 二级菜单 (桌面端下拉) -->
-        <v-menu
-          v-if="hasChildren(item)"
-          activator="parent"
-          location="bottom"
-          open-on-hover
-        >
-          <v-list density="compact">
-            <v-list-item
-              v-for="child in item.children"
-              :key="child.id"
-              @click="handleNavClick('cate',child.id)"
-            >
-              <v-list-item-title>{{ child.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
       </v-btn>
     </template>
     <v-btn
@@ -235,6 +249,27 @@ const handleToggleTheme = () => {
 
 .v-btn:hover .v-btn__content {
   opacity: 0.8;
+}
+
+// ============================================================
+// 导航父子菜单
+// ============================================================
+
+// 箭头旋转动画
+.nav-arrow {
+  transition: transform 0.2s ease;
+}
+
+.nav-arrow--open {
+  transform: rotate(-90deg);
+}
+
+// 父级按钮：失焦后强制 overlay 立即归零，不保留减淡残留
+.nav-parent-btn:not(:hover):not(:focus-visible) {
+  :deep(.v-btn__overlay) {
+    opacity: 0 !important;
+    transition: none !important;
+  }
 }
 
 // ============================================================
