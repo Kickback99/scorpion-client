@@ -8,8 +8,9 @@
     :timeout="-1"
     multi-line
     position="fixed"
+    class="notice-snackbar"
   >
-    <div style="width: 300px;">
+    <div>
       <!-- 标题栏：标题 + 关闭图标 -->
       <div class="d-flex align-center justify-space-between mb-1">
         <span class="text-subtitle-1 font-weight-bold text-truncate">{{ title }}</span>
@@ -88,3 +89,22 @@ const handleAction = () => {
   emit('action')
 }
 </script>
+
+<style lang="scss">
+// ============================================================
+// 响应式宽度
+// ============================================================
+.notice-snackbar .v-snackbar__wrapper,
+.notice-snackbar .v-snackbar__content {
+  width: 300px;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+@media (max-width: 600px) {
+  .notice-snackbar .v-snackbar__wrapper,
+  .notice-snackbar .v-snackbar__content {
+    width: 45vw;
+  }
+}
+</style>
