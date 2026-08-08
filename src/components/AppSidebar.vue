@@ -231,6 +231,7 @@ const handleNoticeDontShowAgain = () => {
  */
 const handleNoticeAction = () => {
     console.log('📢 点击查看详情，打开 Dialog')
+    noticeSnackbarVisible.value = false
     noticeDialogVisible.value = true
 }
 
