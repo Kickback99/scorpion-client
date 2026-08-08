@@ -40,7 +40,7 @@
                                     placeholder="请输入账号 / 邮箱 / 手机号"
                                     :rules="loginRules.username"
                                     prepend-inner-icon="mdi-account"
-                                    class="mb-3"
+                                    class="mb-2"
                                 ></v-text-field>        
                                 <!-- 密码文本框 -->
                                 <v-text-field
@@ -140,7 +140,7 @@
                                     placeholder="请输入用户名"
                                     :rules="registerRules.username"
                                     prepend-inner-icon="mdi-account"
-                                    class="mb-3"
+                                    class="mb-2"
                                 >
                                 </v-text-field>
                                 <v-text-field
@@ -155,7 +155,7 @@
                                     placeholder="请输入密码"
                                     :rules="registerRules.password"
                                     :prepend-inner-icon="registerShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
-                                    class="mb-3"
+                                    class="mb-2"
                                 >
                                 </v-text-field>
                                 <v-text-field
@@ -167,7 +167,7 @@
                                     placeholder="请输入邮箱"
                                     :rules="registerRules.email"
                                     prepend-inner-icon="mdi-email"
-                                    class="mb-3"
+                                    class="mb-2"
                                     name="email"
                                 >
                                 </v-text-field>
