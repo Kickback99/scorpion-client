@@ -17,6 +17,13 @@ export const userRegisterApi = (params) => http.post('/user/register',params)
  */
 export const userPasswordResetApi = (params) => http.post('/user/password/reset',params)
 
+/**
+ * 注销账号
+ * @param {Object} params 请求参数，{ verifyCode }
+ * @returns {Promise}
+ */
+export const userCancelApi = (params) => http.post('/user/cancel',params)
+
 // 用户详情
 export const userInfoApi = () => http.get('/user/userDetailInfo')
 
