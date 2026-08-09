@@ -52,7 +52,7 @@ instance.interceptors.response.use(
                 window.$snackbar?.error(res.data?.message || '登录已过期，请重新登录')
                 router.replace('/')
 
-            }else ElMessage.error(res.data.message)
+            }else window.$snackbar?.error(res.data.message)
 
             // return Promise.reject(res.data.message)
             // 关键：返回pending的Promise，阻止错误开始向上传递的后续执行
