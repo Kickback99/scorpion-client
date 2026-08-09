@@ -11,6 +11,16 @@
           <v-icon left size="18">mdi-lock-reset</v-icon>
           修改密码
         </v-btn>
+        <v-btn
+          color="error"
+          variant="outlined"
+          size="small"
+          class="ml-2"
+          @click="openCancelDialog"
+        >
+          <v-icon left size="18">mdi-account-remove</v-icon>
+          注销账号
+        </v-btn>
       </div>
 
       <!-- 头像 -->
@@ -167,13 +177,46 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- 注销账号弹窗 -->
+    <v-dialog v-model="showCancelDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h6">
+          注销账号
+          <v-spacer></v-spacer>
+          <v-btn icon variant="text" @click="showCancelDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pt-4">
+          <v-alert type="warning" variant="tonal" density="compact" class="mb-4">
+            注销后账号将被删除且无法恢复
+          </v-alert>
+          <v-form ref="cancelFormRef">
+            <AppEmailCodeField
+              v-model:email="cancelData.email"
+              v-model:code="cancelData.verifyCode"
+              email-disabled
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="showCancelDialog = false">取消</v-btn>
+          <v-btn color="error" :loading="cancelling" @click="cancelAccount">确认注销</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-sheet>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
-import { userUpdateInfoApi } from '@/api/user'
+import { userUpdateInfoApi, userCancelApi } from '@/api/user'
+import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 
 // 定义事件
 const emit = defineEmits(['profile-saved'])
@@ -295,6 +338,44 @@ const changePassword = async () => {
     console.error('修改密码失败:', error)
   } finally {
     changingPassword.value = false
+  }
+}
+
+// ------------------------ 注销账号 ------------------------
+
+const router = useRouter()
+
+const showCancelDialog = ref(false)
+const cancelFormRef = ref(null)
+const cancelling = ref(false)
+const cancelData = reactive({
+  email: '',
+  verifyCode: ''
+})
+
+const openCancelDialog = () => {
+  // 邮箱锁定为当前账号邮箱
+  cancelData.email = userStore.user?.email || ''
+  cancelData.verifyCode = ''
+  showCancelDialog.value = true
+}
+
+const cancelAccount = async () => {
+  const { valid } = await cancelFormRef.value.validate()
+  if (!valid) return
+
+  cancelling.value = true
+  try {
+    await userCancelApi({ verifyCode: cancelData.verifyCode })
+    showCancelDialog.value = false
+    // 清空本地登录态并跳回首页
+    userStore.clearUserStore()
+    router.push('/')
+    window.$snackbar?.success('账号已注销，感谢使用')
+  } catch (error) {
+    console.error('注销账号失败:', error)
+  } finally {
+    cancelling.value = false
   }
 }
 

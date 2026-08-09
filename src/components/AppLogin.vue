@@ -159,42 +159,7 @@
                                     class="mb-2"
                                 >
                                 </v-text-field>
-                                <v-text-field
-                                    color="primary"
-                                    variant="outlined"
-                                    density="compact"
-                                    v-model="registerModel.email"
-                                    label="邮箱"
-                                    placeholder="请输入邮箱"
-                                    :rules="registerRules.email"
-                                    prepend-inner-icon="mdi-email"
-                                    class="mb-2"
-                                    name="email"
-                                >
-                                </v-text-field>
-                                <v-row  style="margin-bottom: -20px;">
-                                    <v-col :cols="!display.mobile.value?8:7">
-                                        <v-text-field
-                                        color="primary"
-                                        variant="outlined"
-                                        density="compact"
-                                        v-model="registerModel.verifyCode"
-                                        label="验证码"
-                                        placeholder="请输入验证码"
-                                        :rules="registerRules.verifyCode"
-                                        prepend-inner-icon="mdi-email"
-                                        > 
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col :cols="!display.mobile.value?4:5">
-                                        <v-btn block color="primary" :disabled="countdown > 0 || isSending"
-                                        @click="sendRegisterVerifyCode"
-                                        >
-                                            <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
-                                            <span v-else>获取验证码</span>
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
+                                <AppEmailCodeField v-model:email="registerModel.email" v-model:code="registerModel.verifyCode" />
                                     <!-- 条款与协议 -->
                                 <v-checkbox
                                 color="primary"
@@ -251,48 +216,12 @@
                             ref="forgotFormRef"
                             @submit.prevent="handleForgotNext"
                             >
-                                <v-text-field
-                                    color="primary"
-                                    variant="outlined"
-                                    density="compact"
-                                    v-model="forgotModel.email"
-                                    label="邮箱"
-                                    placeholder="请输入注册时使用的邮箱"
-                                    :rules="forgotRules.email"
-                                    prepend-inner-icon="mdi-email"
-                                    class="mb-2"
-                                    name="email"
-                                >
-                                </v-text-field>
-                                <v-row  style="margin-bottom: -20px;">
-                                    <v-col :cols="!display.mobile.value?8:7">
-                                        <v-text-field
-                                        color="primary"
-                                        variant="outlined"
-                                        density="compact"
-                                        v-model="forgotModel.verifyCode"
-                                        label="验证码"
-                                        placeholder="请输入验证码"
-                                        :rules="forgotRules.verifyCode"
-                                        prepend-inner-icon="mdi-email"
-                                        name="verifyCode"
-                                        class="mb-4"
-                                        >
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col :cols="!display.mobile.value?4:5">
-                                        <v-btn block color="primary" :disabled="countdown > 0 || isSending"
-                                        @click="sendForgotVerifyCode"
-                                        >
-                                            <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
-                                            <span v-else>获取验证码</span>
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
+                                <AppEmailCodeField v-model:email="forgotModel.email" v-model:code="forgotModel.verifyCode" email-placeholder="请输入注册时使用的邮箱" />
                                 <v-btn
                                 block
                                 color="primary"
                                 type="submit"
+                                class="mt-4"
                                 >下一步</v-btn>
                             </v-form>
                             </v-container>
@@ -367,6 +296,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify'
 import { useConfigStore } from '@/store/config';
 import AppTermsDialog from '@/components/AppTermsDialog.vue'
+import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
 
 const display = useDisplay()
@@ -410,7 +340,6 @@ emitter.on('loginDialogVisible',param => {
 
 import { onMounted, onUnmounted } from 'vue'
 import { userLoginApi, userRegisterApi, userPasswordResetApi } from '@/api/user';
-import { emailCodeSendApi } from '@/api/email';
 import { useUserStore } from '@/store/user';
 import { StealthStorage } from '@/utils/stealthStorage'
 
@@ -582,14 +511,6 @@ const registerRules = {
         (v) => !!v || '请输入密码',
         (v) => /^\S{4,15}$/.test(v) || '密码必须是 4-15位 的非空字符'
     ],
-    email:[
-        (v) => !!v || '请输入邮箱',
-        (v) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || '邮箱格式不正确'
-    ],
-    verifyCode:[
-        (v) => !!v || '请输入验证码',
-        (v) => /^\d{6}$/.test(v) || '验证码必须是6位数字'
-    ],
     term: [
         (v) => !!v || '请同意本网站的条款与协议'
     ]
@@ -619,99 +540,11 @@ const handleRegister = async () => {
     }
 }
 
-// ------------------------ 验证码倒计时相关 ------------------------
-
-const countdown = ref(0) // 倒计时秒数
-const isSending = ref(false) // 是否正在发送验证码
-
-// 封装：校验指定表单的多个字段（Vuetify 注册表单字段时 item.id 即输入框的 name 属性，按此匹配）
-const validateFields = async (formRef, fieldNames) => {
-    const items = formRef.value?.items ?? []
-    const fields = items.filter(item => fieldNames.includes(item.id))
-    
-    if (fields.length === 0) {
-        // 如果没有找到指定字段，校验整个表单
-        console.warn('validateFields: 未匹配到字段', fieldNames, '，当前表单已注册字段:', items.map(item => item.id))
-        const result = await formRef.value?.validate()
-        return result?.valid || false
-    }
-    
-    // 重置所有字段的校验状态
-    await Promise.all(fields.map(field => field.resetValidation()))
-    
-    // 同时校验所有字段
-    const results = await Promise.all(fields.map(field => field.validate()))
-    
-    // 检查是否有错误
-    return results.every(errors => errors.length === 0)
-}
-
-// 发送验证码（注册/忘记密码共用，传入对应表单的 ref 和 model）
-const sendVerifyCode = async (formRef, model) => {
-
-   // 校验邮箱字段
-    const isValid = await validateFields(formRef, ['email'])
-    
-    if (!isValid) {
-        console.log('校验失败')
-        return
-    }
-    
-    isSending.value = true
-    
-    try {
-        // 调用发送验证码的接口
-        await emailCodeSendApi({ email: model.email })
-        
-        // 发送成功后启动倒计时
-        countdown.value = 60
-        const timer = setInterval(() => {
-            if (countdown.value <= 1) {
-                clearInterval(timer)
-                countdown.value = 0
-                isSending.value = false
-            } else {
-                countdown.value--
-            }
-        }, 1000)
-        
-    } catch (error) {
-        console.error('发送验证码失败:', error)
-        countdown.value = 0
-        isSending.value = false
-    }
-}
-
-// 注册页发送验证码
-// 注意：模板表达式里顶层 ref 会被 Vue 自动解包（传到函数里的会是 ref.value 而非 ref 本身），
-// 所以表单 ref 不能从模板传参，必须在脚本内包一层闭包
-const sendRegisterVerifyCode = () => sendVerifyCode(registerFormRef, registerModel)
-
-// 忘记密码页发送验证码（同上）
-const sendForgotVerifyCode = () => sendVerifyCode(forgotFormRef, forgotModel)
-
-// 停止倒计时并重置状态（用于切换页面时）
-const stopCountdown = () => {
-    countdown.value = 0
-    isSending.value = false
-}
-
 // ------------------------ 忘记密码相关 ------------------------
 
 const forgotModel = reactive({})
 
 const forgotFormRef = ref(null)
-
-const forgotRules = {
-    email:[
-        (v) => !!v || '请输入邮箱',
-        (v) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || '邮箱格式不正确'
-    ],
-    verifyCode:[
-        (v) => !!v || '请输入验证码',
-        (v) => /^\d{6}$/.test(v) || '验证码必须是6位数字'
-    ]
-}
 
 // 切换到忘记密码
 const switchToForgot = () => {
@@ -814,8 +647,6 @@ const switchToLogin = () => {
     resetShowConfirmPassword.value = false
     forgotFormRef.value?.reset()
     resetFormRef.value?.reset()
-    // 停止验证码倒计时
-    stopCountdown()
 }
 
 const forwardLogin = () => {
@@ -824,8 +655,6 @@ const forwardLogin = () => {
     registerTerm.value = false
     // 清除注册表单的校验状态
     registerFormRef.value?.reset()
-    // 停止验证码倒计时
-    stopCountdown()
 }
 
 // 可选：监听 step 变化，当离开注册页时停止倒计时
