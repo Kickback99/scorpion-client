@@ -149,7 +149,7 @@ class WebSocketManager {
         // 未知类型的数组消息，尝试显示
         console.warn('未知的数组消息类型:', messageType, arr)
         if (arr.length > 1) {
-          ElMessage.success(String(arr[1]))
+          window.$snackbar?.success(String(arr[1]))
         }
     }
   }
@@ -202,27 +202,42 @@ class WebSocketManager {
   }
 
   showPasswordChangedDialog(title, message) {
-    ElMessageBox.alert(message, title, {
-      confirmButtonText: '重新登录',
-      callback: () => {
+    window.$dialog.alert({
+      title: title,
+      content: message,
+      icon: 'mdi-lock-reset',
+      iconColor: 'warning',
+      confirmText: '重新登录',
+      persistent: true,
+      onConfirm: () => {
         this.logoutAndRedirect()
       }
     })
   }
 
   showAccountDisabledDialog(title, message) {
-    ElMessageBox.alert(message, title, {
-      confirmButtonText: '确定',
-      callback: () => {
+    window.$dialog.alert({
+      title: title,
+      content: message,
+      icon: 'mdi-account-off-outline',
+      iconColor: 'error',
+      confirmText: '确定',
+      persistent: true,
+      onConfirm: () => {
         this.logoutAndRedirect()
       }
     })
   }
 
   showSessionExpiredDialog(title, message) {
-    ElMessageBox.alert(message, title, {
-      confirmButtonText: '重新登录',
-      callback: () => {
+    window.$dialog.alert({
+      title: title,
+      content: message,
+      icon: 'mdi-clock-alert-outline',
+      iconColor: 'warning',
+      confirmText: '重新登录',
+      persistent: true,
+      onConfirm: () => {
         this.logoutAndRedirect()
       }
     })
