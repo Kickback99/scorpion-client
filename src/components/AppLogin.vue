@@ -291,7 +291,8 @@ emitter.on('loginDialogVisible',param => {
 })
 
 import { onMounted, onUnmounted } from 'vue'
-import { userLoginApi } from '@/api/user';
+import { userLoginApi, userRegisterApi } from '@/api/user';
+import { emailCodeSendApi } from '@/api/email';
 import { useUserStore } from '@/store/user';
 import { StealthStorage } from '@/utils/stealthStorage'
 
@@ -468,7 +469,8 @@ const registerRules = {
         (v) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || '邮箱格式不正确'
     ],
     verifyCode:[
-        (v) => !!v || '请输入验证码'
+        (v) => !!v || '请输入验证码',
+        (v) => /^\d{6}$/.test(v) || '验证码必须是6位数字'
     ],
     term: [
         (v) => !!v || '请同意本网站的条款与协议'
@@ -488,7 +490,7 @@ const handleRegister = async () => {
         if (valid) {
             console.log('注册信息:', registerModel)
             // 这里调用注册接口
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            await userRegisterApi(registerModel)
             // 注册成功后切换到成功页面
             step.value = 3
         }
@@ -540,14 +542,13 @@ const sendVerifyCode = async () => {
     }
     
     isSending.value = true
-    countdown.value = 60
     
     try {
-        // 这里调用发送验证码的接口
-        console.log('发送验证码到邮箱:', registerModel.email)
-        // await sendVerifyCodeAPI(registerModel.email)
+        // 调用发送验证码的接口
+        await emailCodeSendApi({ email: registerModel.email })
         
-        // 启动倒计时
+        // 发送成功后启动倒计时
+        countdown.value = 60
         const timer = setInterval(() => {
             if (countdown.value <= 1) {
                 clearInterval(timer)

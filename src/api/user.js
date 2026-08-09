@@ -3,6 +3,13 @@ import http from '@/utils/http'
 // 用户登录
 export const userLoginApi = (params) => http.post('/user/login',params)
 
+/**
+ * 用户注册
+ * @param {Object} params 请求参数，{ username, password, email, verifyCode }
+ * @returns {Promise}
+ */
+export const userRegisterApi = (params) => http.post('/user/register',params)
+
 // 用户详情
 export const userInfoApi = () => http.get('/user/userDetailInfo')
 
