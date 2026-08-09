@@ -47,6 +47,7 @@
                                     color="primary"
                                     variant="outlined"
                                     density="compact"
+                                    class="mb-4"
                                     v-model="loginModel.password"
                                     :append-inner-icon="loginShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
                                     @click:append-inner="eyeLoginPwd"
@@ -59,7 +60,7 @@
                                 </v-text-field>
 
                                 <!-- 条款与协议 -->
-                                <v-checkbox
+                                <!-- <v-checkbox
                                 color="primary"
                                 density="compact"
                                 style="--v-input-control-height: 20px; --v-input-padding-top: 8px;"
@@ -75,7 +76,7 @@
                                             <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('policy')">《隐私协议》</a>
                                         </span>
                                     </template> 
-                                </v-checkbox>
+                                </v-checkbox> -->
 
                                 <v-btn 
                                 block 
