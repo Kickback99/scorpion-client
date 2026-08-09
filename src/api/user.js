@@ -10,6 +10,13 @@ export const userLoginApi = (params) => http.post('/user/login',params)
  */
 export const userRegisterApi = (params) => http.post('/user/register',params)
 
+/**
+ * 忘记密码-重置密码
+ * @param {Object} params 请求参数，{ email, verifyCode, newPassword, confirmPassword }
+ * @returns {Promise}
+ */
+export const userPasswordResetApi = (params) => http.post('/user/password/reset',params)
+
 // 用户详情
 export const userInfoApi = () => http.get('/user/userDetailInfo')
 

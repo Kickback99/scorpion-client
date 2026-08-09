@@ -85,7 +85,7 @@
                                 type="submit"
                                 >登录</v-btn>
                                 <v-container class="text-center">
-                                    <a href="" class="text-decoration-none text-caption text-grey">忘记密码</a>
+                                    <a href="#" class="text-decoration-none text-caption text-grey" @click.prevent="switchToForgot">忘记密码</a>
                                 </v-container>
                                 </v-form>
                             </v-container>
@@ -188,7 +188,7 @@
                                     </v-col>
                                     <v-col :cols="!display.mobile.value?4:5">
                                         <v-btn block color="primary" :disabled="countdown > 0 || isSending"
-                                        @click="sendVerifyCode"
+                                        @click="sendVerifyCode(registerFormRef, registerModel)"
                                         >
                                             <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
                                             <span v-else>获取验证码</span>
@@ -234,6 +234,124 @@
                                 </p>
                             </v-container>
                         </v-card> 
+                    </v-window-item>
+
+                    <!-- 忘记密码视图 -->
+                    <v-window-item :value="4">
+                        <v-card title height="auto" :class="`d-flex flex-column ${handlePadding}`">
+                            <v-container class="d-flex align-center">
+                                <h2>忘记密码</h2>
+                                <span class="text-caption ml-auto">
+                                    想起密码了?
+                                    <a class="text-decoration-none" href="#" @click="switchToLogin">返回登录</a>
+                                </span>
+                            </v-container>
+                            <v-container>
+                            <v-form
+                            ref="forgotFormRef"
+                            @submit.prevent="handleForgotNext"
+                            >
+                                <v-text-field
+                                    color="primary"
+                                    variant="outlined"
+                                    density="compact"
+                                    v-model="forgotModel.email"
+                                    label="邮箱"
+                                    placeholder="请输入注册时使用的邮箱"
+                                    :rules="forgotRules.email"
+                                    prepend-inner-icon="mdi-email"
+                                    class="mb-2"
+                                    name="email"
+                                >
+                                </v-text-field>
+                                <v-row  style="margin-bottom: -20px;">
+                                    <v-col :cols="!display.mobile.value?8:7">
+                                        <v-text-field
+                                        color="primary"
+                                        variant="outlined"
+                                        density="compact"
+                                        v-model="forgotModel.verifyCode"
+                                        label="验证码"
+                                        placeholder="请输入验证码"
+                                        :rules="forgotRules.verifyCode"
+                                        prepend-inner-icon="mdi-email"
+                                        name="verifyCode"
+                                        class="mb-4"
+                                        >
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col :cols="!display.mobile.value?4:5">
+                                        <v-btn block color="primary" :disabled="countdown > 0 || isSending"
+                                        @click="sendVerifyCode(forgotFormRef, forgotModel)"
+                                        >
+                                            <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
+                                            <span v-else>获取验证码</span>
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-btn
+                                block
+                                color="primary"
+                                type="submit"
+                                >下一步</v-btn>
+                            </v-form>
+                            </v-container>
+                        </v-card>
+                    </v-window-item>
+
+                    <!-- 重置密码视图 -->
+                    <v-window-item :value="5">
+                        <v-card title height="auto" :class="`d-flex flex-column ${handlePadding}`">
+                            <v-container class="d-flex align-center">
+                                <h2>重置密码</h2>
+                                <span class="text-caption ml-auto">
+                                    <a class="text-decoration-none" href="#" @click="step = 4">返回上一步</a>
+                                </span>
+                            </v-container>
+                            <v-container>
+                            <v-form
+                            ref="resetFormRef"
+                            @submit.prevent="handlePasswordReset"
+                            >
+                                <v-text-field
+                                    color="primary"
+                                    variant="outlined"
+                                    density="compact"
+                                    v-model="resetModel.newPassword"
+                                    :append-inner-icon="resetShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                    @click:append-inner="resetShowPassword = !resetShowPassword"
+                                    :type="resetShowPassword ? 'text' : 'password'"
+                                    label="新密码"
+                                    placeholder="请输入新密码"
+                                    :rules="resetRules.newPassword"
+                                    :prepend-inner-icon="resetShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
+                                    class="mb-2"
+                                >
+                                </v-text-field>
+                                <v-text-field
+                                    color="primary"
+                                    variant="outlined"
+                                    density="compact"
+                                    v-model="resetModel.confirmPassword"
+                                    :append-inner-icon="resetShowConfirmPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                    @click:append-inner="resetShowConfirmPassword = !resetShowConfirmPassword"
+                                    :type="resetShowConfirmPassword ? 'text' : 'password'"
+                                    label="确认密码"
+                                    placeholder="请再次输入新密码"
+                                    :rules="resetRules.confirmPassword"
+                                    :prepend-inner-icon="resetShowConfirmPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
+                                    class="mb-4"
+                                >
+                                </v-text-field>
+                                <v-btn
+                                block
+                                color="primary"
+                                :loading="resetLoading"
+                                type="submit"
+                                >确认重置</v-btn>
+                            </v-form>
+                            </v-container>
+                        </v-card>
                     </v-window-item>
                 </v-window>
             </div>
@@ -291,7 +409,7 @@ emitter.on('loginDialogVisible',param => {
 })
 
 import { onMounted, onUnmounted } from 'vue'
-import { userLoginApi, userRegisterApi } from '@/api/user';
+import { userLoginApi, userRegisterApi, userPasswordResetApi } from '@/api/user';
 import { emailCodeSendApi } from '@/api/email';
 import { useUserStore } from '@/store/user';
 import { StealthStorage } from '@/utils/stealthStorage'
@@ -506,17 +624,17 @@ const handleRegister = async () => {
 const countdown = ref(0) // 倒计时秒数
 const isSending = ref(false) // 是否正在发送验证码
 
-// 封装：校验指定的多个字段
-const validateFields = async (fieldNames) => {
+// 封装：校验指定表单的多个字段
+const validateFields = async (formRef, fieldNames) => {
     const fields = fieldNames.map(name => 
-        registerFormRef.value?.items?.find(item => 
+        formRef.value?.items?.find(item => 
             item.vm?.vnode?.props?.name === name || item.vm?.vnode?.props?.label === name
         )
     ).filter(Boolean)
     
     if (fields.length === 0) {
         // 如果没有找到指定字段，校验整个表单
-        const result = await registerFormRef.value?.validate()
+        const result = await formRef.value?.validate()
         return result?.valid || false
     }
     
@@ -530,11 +648,11 @@ const validateFields = async (fieldNames) => {
     return results.every(errors => errors.length === 0)
 }
 
-// 发送验证码
-const sendVerifyCode = async () => {
+// 发送验证码（注册/忘记密码共用，传入对应表单的 ref 和 model）
+const sendVerifyCode = async (formRef, model) => {
 
    // 校验邮箱字段
-    const isValid = await validateFields(['email'])
+    const isValid = await validateFields(formRef, ['email'])
     
     if (!isValid) {
         console.log('校验失败')
@@ -545,7 +663,7 @@ const sendVerifyCode = async () => {
     
     try {
         // 调用发送验证码的接口
-        await emailCodeSendApi({ email: registerModel.email })
+        await emailCodeSendApi({ email: model.email })
         
         // 发送成功后启动倒计时
         countdown.value = 60
@@ -570,6 +688,84 @@ const sendVerifyCode = async () => {
 const stopCountdown = () => {
     countdown.value = 0
     isSending.value = false
+}
+
+// ------------------------ 忘记密码相关 ------------------------
+
+const forgotModel = reactive({})
+
+const forgotFormRef = ref(null)
+
+const forgotRules = {
+    email:[
+        (v) => !!v || '请输入邮箱',
+        (v) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || '邮箱格式不正确'
+    ],
+    verifyCode:[
+        (v) => !!v || '请输入验证码',
+        (v) => /^\d{6}$/.test(v) || '验证码必须是6位数字'
+    ]
+}
+
+// 切换到忘记密码
+const switchToForgot = () => {
+    step.value = 4
+    loginShowPassword.value = false
+    // 清除登录表单的校验状态
+    loginFormRef.value?.reset()
+}
+
+// 下一步：仅做前端格式校验，验证码随重置密码一次性提交后端校验
+const handleForgotNext = async () => {
+    const { valid } = await forgotFormRef.value.validate()
+    if (valid) {
+        step.value = 5
+    }
+}
+
+// ------------------------ 重置密码相关 ------------------------
+
+const resetModel = reactive({})
+
+const resetFormRef = ref(null)
+
+const resetLoading = ref(false)
+
+const resetShowPassword = ref(false)
+
+const resetShowConfirmPassword = ref(false)
+
+const resetRules = {
+    newPassword: [
+        (v) => !!v || '请输入新密码',
+        (v) => /^\S{4,15}$/.test(v) || '密码必须是 4-15位 的非空字符'
+    ],
+    confirmPassword: [
+        (v) => !!v || '请再次输入新密码',
+        (v) => v === resetModel.newPassword || '两次输入的密码不一致'
+    ]
+}
+
+// 重置密码提交
+const handlePasswordReset = async () => {
+    const { valid } = await resetFormRef.value.validate()
+    if (!valid) return
+
+    resetLoading.value = true
+    try {
+        await userPasswordResetApi({
+            email: forgotModel.email,
+            verifyCode: forgotModel.verifyCode,
+            newPassword: resetModel.newPassword,
+            confirmPassword: resetModel.confirmPassword
+        })
+        window.$snackbar?.success('密码重置成功，请使用新密码登录')
+        switchToLogin()
+    } catch (error) {
+        console.error('重置密码失败:', error)
+    } finally {
+        resetLoading.value = false
+    }
 }
 
 // ------------------------ 条款弹窗相关 ------------------------ 
@@ -607,6 +803,11 @@ const switchToLogin = () => {
     registerTerm.value = false
     // 清除注册表单的校验状态
     registerFormRef.value?.reset()
+    // 清除忘记密码/重置密码表单的校验状态
+    resetShowPassword.value = false
+    resetShowConfirmPassword.value = false
+    forgotFormRef.value?.reset()
+    resetFormRef.value?.reset()
     // 停止验证码倒计时
     stopCountdown()
 }
