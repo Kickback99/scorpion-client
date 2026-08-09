@@ -160,8 +160,8 @@ const renderNotices = (list, options = {}) => {
         }
     })
 
-    console.log('📢 短文本', normalContent)
-    console.log('📢 富文本', longTextItem)
+    // console.log('📢 短文本', normalContent)
+    // console.log('📢 富文本', longTextItem)
 
     normalNotice.value = normalContent || '暂无公告'
     longTextNotice.value = longTextItem
@@ -175,7 +175,7 @@ const renderNotices = (list, options = {}) => {
                 // 首次访问：自动初始化为显示
                 StealthStorage.set('show_long_text_snackbar', '1')
             } else if (flag === '0') {
-                console.log('📢 用户已选择"不再提示"，跳过弹窗')
+                // console.log('📢 用户已选择"不再提示"，跳过弹窗')
                 return
             }
             // flag === '1' → 显示
@@ -223,14 +223,14 @@ const handleNoticeMessage = (data) => {
  */
 const handleNoticeDontShowAgain = () => {
     StealthStorage.set('show_long_text_snackbar', '0')
-    console.log('📢 用户选择不再提示富文本公告')
+    // console.log('📢 用户选择不再提示富文本公告')
 }
 
 /**
  * 点击"查看详情"：打开 Dialog（Markdown 渲染）
  */
 const handleNoticeAction = () => {
-    console.log('📢 点击查看详情，打开 Dialog')
+    // console.log('📢 点击查看详情，打开 Dialog')
     noticeSnackbarVisible.value = false
     noticeDialogVisible.value = true
 }
