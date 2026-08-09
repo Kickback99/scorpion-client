@@ -68,7 +68,7 @@ const config = reactive({
   rounded: 'md',
   showCloseBtn: true,
   btnText: '关闭',
-  btnColor: 'white',
+  btnColor: 'on-surface',
   persistent: false,
 })
 
@@ -95,7 +95,7 @@ const show = (options) => {
       rounded: options.rounded || 'md',
       showCloseBtn: options.showCloseBtn !== false,
       btnText: options.btnText || '关闭',
-      btnColor: options.btnColor || 'white',
+      btnColor: options.btnColor || 'on-surface',
       persistent: options.persistent || false,
       showActionBtn: options.showActionBtn || false,
       actionBtnText: options.actionBtnText || '查看详情',
