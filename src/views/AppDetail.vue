@@ -76,7 +76,8 @@
       elevation="4" 
       :style="{
         transform: `translateX(calc(${translateXValue} + ${POSITION_CONFIG.BUTTON_GAP}px))`,
-        top: `${POSITION_CONFIG.TOP + POSITION_CONFIG.VERTICAL_GAP}px` // 关键修改
+        top: `${POSITION_CONFIG.TOP + POSITION_CONFIG.VERTICAL_GAP}px`, // 关键修改
+        '--toc-scale': tocFontScale
       }"
     >
       <div class="toc-header-fixed">
@@ -131,6 +132,7 @@
 import { articleDetailApi, toggleFavoriteApi, updateViewCountApi } from '@/api/article';
 import { onMounted, ref, watch, nextTick, computed, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useDisplay } from 'vuetify'
 import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
 import { useUserStore } from '@/store/user';
@@ -140,6 +142,10 @@ import { useConfigStore } from '@/store/config';
 import AppComment from '@/components/AppComment.vue'
 import AppMobileRelated from '@/components/AppMobileRelated.vue'
 const userStore = useUserStore()
+
+const display = useDisplay()
+// 移动端目录字号缩放系数（沿用 AppLogin 的动态 rem 适配模式）
+const tocFontScale = computed(() => (display.mobile.value ? 0.85 : 1))
 
 // 判断用户是否已登录
 const isLoggedIn = computed(() => {
@@ -675,6 +681,12 @@ watch(() => isLoggedIn.value, () => {
   overflow-y: auto;
   width: 280px;
   /* background-color: rgba(255, 255, 255, 0.95); */
+  --toc-scale: 1;
+}
+
+/* 目录条目字号：移动端经 --toc-scale 缩小（基准对齐 v-list-item-title 默认 1rem） */
+.toc-card .toc-title-text {
+  font-size: calc(1rem * var(--toc-scale));
 }
 
 /* 动态缩进样式 */
