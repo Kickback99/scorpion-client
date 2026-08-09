@@ -419,6 +419,8 @@ const handleLogin = async () => {
 
             userStore.setUser(res.data.userInfo)
 
+            Object.assign(loginModel,{username:'',password:''})
+
             dialogVisible.value = false
             
             // 登录成功后的处理
