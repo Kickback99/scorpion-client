@@ -188,7 +188,7 @@
                                     </v-col>
                                     <v-col :cols="!display.mobile.value?4:5">
                                         <v-btn block color="primary" :disabled="countdown > 0 || isSending"
-                                        @click="sendVerifyCode(registerFormRef, registerModel)"
+                                        @click="sendRegisterVerifyCode"
                                         >
                                             <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
                                             <span v-else>获取验证码</span>
@@ -282,7 +282,7 @@
                                     </v-col>
                                     <v-col :cols="!display.mobile.value?4:5">
                                         <v-btn block color="primary" :disabled="countdown > 0 || isSending"
-                                        @click="sendVerifyCode(forgotFormRef, forgotModel)"
+                                        @click="sendForgotVerifyCode"
                                         >
                                             <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
                                             <span v-else>获取验证码</span>
@@ -624,16 +624,14 @@ const handleRegister = async () => {
 const countdown = ref(0) // 倒计时秒数
 const isSending = ref(false) // 是否正在发送验证码
 
-// 封装：校验指定表单的多个字段
+// 封装：校验指定表单的多个字段（Vuetify 注册表单字段时 item.id 即输入框的 name 属性，按此匹配）
 const validateFields = async (formRef, fieldNames) => {
-    const fields = fieldNames.map(name => 
-        formRef.value?.items?.find(item => 
-            item.vm?.vnode?.props?.name === name || item.vm?.vnode?.props?.label === name
-        )
-    ).filter(Boolean)
+    const items = formRef.value?.items ?? []
+    const fields = items.filter(item => fieldNames.includes(item.id))
     
     if (fields.length === 0) {
         // 如果没有找到指定字段，校验整个表单
+        console.warn('validateFields: 未匹配到字段', fieldNames, '，当前表单已注册字段:', items.map(item => item.id))
         const result = await formRef.value?.validate()
         return result?.valid || false
     }
@@ -683,6 +681,14 @@ const sendVerifyCode = async (formRef, model) => {
         isSending.value = false
     }
 }
+
+// 注册页发送验证码
+// 注意：模板表达式里顶层 ref 会被 Vue 自动解包（传到函数里的会是 ref.value 而非 ref 本身），
+// 所以表单 ref 不能从模板传参，必须在脚本内包一层闭包
+const sendRegisterVerifyCode = () => sendVerifyCode(registerFormRef, registerModel)
+
+// 忘记密码页发送验证码（同上）
+const sendForgotVerifyCode = () => sendVerifyCode(forgotFormRef, forgotModel)
 
 // 停止倒计时并重置状态（用于切换页面时）
 const stopCountdown = () => {
