@@ -25,7 +25,8 @@ import { getConfigApi } from "@/api/config"
 // ============================================================
 const _groupKeys = {
   client: [
-    'websocket_enabled',
+    'websocket.enabled',
+    'websocket.backend_enabled',
     'comment.article_comment_enabled',
     'comment.friend_link_comment_enabled',
     'comment.child_comment_limit',
@@ -92,7 +93,10 @@ export const useConfigStore = defineStore('config', {
 
     // ===== client 前台 =====
     client: {
-      websocket_enabled: true,
+      websocket: {
+        enabled: true,
+        backend_enabled: false,
+      },
 
       // 评论相关
       comment: {
@@ -404,7 +408,15 @@ export const useConfigStore = defineStore('config', {
      * 获取 websocket 连接
      */
     getWebsocketEnabled(){
-      return this.getValue('websocket_enabled') ?? true
+      return this.getValue('websocket.enabled') ?? true
+    },
+
+    /**
+     *
+     * 获取 websocket 后端连接
+     */
+    getWebsocketBackendEnabled(){
+      return this.getValue('websocket.backend_enabled') === true
     },
 
     /**
@@ -445,7 +457,8 @@ export const useConfigStore = defineStore('config', {
     currentListLoadMode()     { return this.getValue('article_list.load_mode') === 'scroll' ? 'scroll' : 'pagination' },
     scrollPageSize()          { return this.getValue('article_list.scroll_page_size') ?? 10 },
     paginationPageSize()      { return this.getValue('article_list.pagination_page_size') ?? 7 },
-    isWebsocketEnabled()      { return this.getValue('websocket_enabled') ?? true },
+    isWebsocketEnabled()      { return this.getValue('websocket.enabled') ?? true },
+    isWebsocketBackendEnabled()      { return this.getValue('websocket.backend_enabled') === true },
     isNoticeEnabled()         { return this.getValue('notice.enabled') ?? true },
     isNoticeDismissedLevel()  { return this.getValue('notice.dismissed_level') === 'session' ? 'session' : 'permanent' },
   }
