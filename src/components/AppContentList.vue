@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="pa-6">
+  <v-sheet class="content-list pa-6" :style="{ '--content-list-scale': handleFontScale }">
     <!-- 搜索框区域：只在非加载状态且启用搜索时显示 -->
     <div v-if="!loading && enableSearch" class="d-flex justify-center mb-4">
       <v-text-field
@@ -12,8 +12,8 @@
         clearable
         density="compact"
         :style="{
-          maxWidth: display.mobile.value ? '80%' : '400px',
-          width: display.mobile.value ? '80%' : '60%'
+          maxWidth: display.mobile.value ? '200px' : '400px',
+          width: display.mobile.value ? '100%' : '60%'
         }"
         @click:clear="handleClearSearch"
         @input="handleSearch"
@@ -337,6 +337,10 @@ const props = defineProps({
 
 // 响应式数据
 const display = useDisplay()
+
+// 移动端字号缩放系数（动态 rem 适配）
+const handleFontScale = computed(() => (display.mobile.value ? 0.8 : 1))
+
 const items = ref([])
 const loading = ref(false)
 const searchKeyword = ref('')
@@ -495,6 +499,57 @@ defineExpose({
 </script>
 
 <style scoped>
+.content-list {
+  --content-list-scale: 1;
+
+  h2 {
+    font-size: calc(1.5rem * var(--content-list-scale)) !important;
+  }
+
+  h3 {
+    font-size: calc(1.25rem * var(--content-list-scale)) !important;
+  }
+
+  .text-caption {
+    font-size: calc(0.75rem * var(--content-list-scale)) !important;
+  }
+
+  /* 搜索框整块缩放：input 经 font:inherit 继承、图标经 em 等比缩放 */
+  :deep(.v-field) {
+    font-size: calc(1rem * var(--content-list-scale)) !important;
+  }
+
+  /* 浮动 label 固定 1rem，需单独命中（未聚焦时它看起来就是"占位符"） */
+  :deep(.v-field .v-label) {
+    font-size: calc(1rem * var(--content-list-scale)) !important;
+  }
+
+  /* 按钮字号（Vuetify 经 --v-btn-size 控制） */
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--content-list-scale)) !important;
+  }
+
+  /* 表格/虚拟表格根节点字号，单元格文字继承缩放 */
+  :deep(.v-data-table),
+  :deep(.v-data-table-virtual) {
+    font-size: calc(0.875rem * var(--content-list-scale)) !important;
+  }
+
+  /* 表格表头字号 */
+  :deep(.v-data-table__th) {
+    font-size: calc(0.75rem * var(--content-list-scale)) !important;
+  }
+
+  /* Card 模式标题与副标题 */
+  :deep(.v-list-item-title) {
+    font-size: calc(0.875rem * var(--content-list-scale)) !important;
+  }
+
+  :deep(.v-list-item-subtitle) {
+    font-size: calc(0.75rem * var(--content-list-scale)) !important;
+  }
+}
+
 .content-item {
   border-bottom: 1px solid #e0e0e0;
 }
