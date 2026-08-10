@@ -9,7 +9,10 @@ const instance = axios.create({baseURL,timeout:4000})
 import router from '@/router';
 
 import {isAuthRequired} from '@/api/authRequired'
-import emitter from '@/utils/event-bus.js'
+import { useWebSocket } from '@/server/useWebSocket.js'
+// 关闭 WebSocket（修改密码/注销后断开连接，与 Header 的 handleLogout 保持一致）
+const { closeWebSocket } = useWebSocket()
+
 
 //添加请求拦截器
 instance.interceptors.request.use(
@@ -44,10 +47,12 @@ instance.interceptors.response.use(
                 console.log('响应拦截器执行...')
                 // 处理token过期或者篡改
                 const userStore = useUserStore()
+                // 清除 websocket 连接状态
+                closeWebSocket()
                 // 清空用户所有数据
                 userStore.clearUserStore()
                 // 提示用户重新登录
-                emitter.emit('loginDialogVisible',true)
+                // emitter.emit('loginDialogVisible',true)
                 // 提示信息
                 window.$snackbar?.error(res.data?.message || '登录已过期，请重新登录')
                 router.replace('/')
