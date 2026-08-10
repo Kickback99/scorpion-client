@@ -1,48 +1,44 @@
 <template>
   <v-container class="profile-center py-6">
-      <div :class="display.mobile.value ? 'd-flex flex-row' : ''">
+      <div>
         <!-- 使用动态 direction 属性 -->
         <v-sheet>
           <v-tabs 
           v-model="tab" 
           color="primary"
-          :direction="display.mobile.value ? 'vertical' : 'horizontal'"
-          :grow="!display.mobile.value"
-          :class="[
-            display.mobile.value ? 'mobile-tabs' : '',
-            display.mobile.value ? 'mr-4' : 'mb-4'  // 非移动端时，tabs 右侧添加间距
-        ]"
+          direction="horizontal"
+          grow
+          class="mb-4"
         >
-          <v-tab value="profile" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab value="profile">
             <v-icon left class="mr-2">mdi-account-circle</v-icon>
             个人资料
           </v-tab>
-          <v-tab value="feedback" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab value="feedback">
             <v-icon left class="mr-2">mdi-message-text</v-icon>
             我的反馈
           </v-tab>
-          <v-tab v-if="configStore.isMyPublishesEnabled" value="posts" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab v-if="configStore.isMyPublishesEnabled" value="posts">
             <v-icon left class="mr-2">mdi-file-document</v-icon>
             我的发布
           </v-tab>
-          <v-tab v-if="configStore.isMyCommentsEnabled" value="comments" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab v-if="configStore.isMyCommentsEnabled" value="comments">
             <v-icon left class="mr-2">mdi-comment</v-icon>
             我的评论
           </v-tab>
-          <v-tab v-if="configStore.isMyFavoritesEnabled" value="favorites" :class="display.mobile.value ? 'justify-start' : ''">
+          <v-tab v-if="configStore.isMyFavoritesEnabled" value="favorites">
             <v-icon left class="mr-2">mdi-heart</v-icon>
             我的收藏
           </v-tab>
           </v-tabs>
         </v-sheet>
 
-        <v-divider v-if="!display.mobile.value"></v-divider>
+        <v-divider></v-divider>
 
         <v-sheet elevation="2" rounded="lg"
-         :class="display.mobile.value ? 'flex-grow-1' : ''"
          style="overflow: hidden; min-width: 0;"
         >
-        <v-tabs-window v-model="tab" :class="display.mobile.value ? 'flex-grow-1 overflow-auto' : ''">
+        <v-tabs-window v-model="tab">
           <!-- 个人资料 Tab -->
           <v-tabs-window-item value="profile">
               <AppProfile @profile-saved="handleProfileSaved" ref="profileRef" />
@@ -250,7 +246,6 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue'
 import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
@@ -260,8 +255,6 @@ import { useConfigStore } from '@/store/config.js'
 import AppProfile from './AppProfile.vue'
 
 const configStore = useConfigStore()
-
-const display = useDisplay()
 
 // ==================== 个人资料 ====================
 // 组件引用
@@ -405,12 +398,6 @@ watch(tab, (newTab) => {
 
 .comment-item:last-child {
   border-bottom: none;
-}
-
-.mobile-tabs {
-  width: 100%;
-  min-width: 120px;
-  max-width: 140px;
 }
 
 :deep(.pagination-full-width .v-pagination__list) {
