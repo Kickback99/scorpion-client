@@ -27,7 +27,7 @@
       <v-row>
         <v-col cols="12" class="text-center">
           <div class="avatar-wrapper mb-4">
-            <v-avatar size="100" color="grey-lighten-2">
+            <v-avatar :size="display.mobile.value ? 65 : 100" color="grey-lighten-2">
               <!-- 使用预览URL或默认头像 -->
               <v-img v-if="avatarPreview || profileData.avatar" :src="avatarPreview || profileData.avatar"></v-img>
               <v-icon v-else size="60" color="grey">mdi-account-circle</v-icon>
@@ -211,6 +211,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { userUpdateInfoApi, userCancelApi, userChangePasswordApi } from '@/api/user'
@@ -221,6 +222,8 @@ import { useWebSocket } from '@/server/useWebSocket.js'
 const emit = defineEmits(['profile-saved'])
 
 const userStore = useUserStore()
+
+const display = useDisplay()
 
 // 关闭 WebSocket（修改密码/注销后断开连接，与 Header 的 handleLogout 保持一致）
 const { closeWebSocket } = useWebSocket()
