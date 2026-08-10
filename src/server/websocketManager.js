@@ -100,13 +100,14 @@ class WebSocketManager {
     // 正常关闭，不重连
     if (code === 1000) return false
     
-    // 1001：页面关闭，不重连
-    if (code === 1001) return false
-    
+    // 1001：服务端主动关闭（如 Spring Boot 优雅停机），应重连
+    // 注意：客户端 onclose 收到的 1001 来自服务端，表示"服务端要下线"，
+    // 与浏览器导航离开时客户端发出的 1001 是不同的方向，与 dashboard 端保持一致
+
     // 1008：策略违规，可能是权限问题，不重连
     if (code === 1008) return false
     
-    // 其他错误码，尝试重连
+    // 其他错误码（含 1006 连接异常断开），尝试重连
     return true
   }
 

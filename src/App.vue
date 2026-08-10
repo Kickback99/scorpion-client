@@ -38,7 +38,7 @@ onMounted(async() => {
   // 等待配置加载完成，再判断 websocket 开关（避免使用默认值 true）
   await loadClientConfig()
 
-  if(configStore.getWebsocketEnabled()){
+  if(configStore.getWebsocketEnabled() && configStore.getWebsocketBackendEnabled()){
     // 检查并处理强退用户点击刷新标记
     await websocketManager.checkAndHandleForceLogout()
 
