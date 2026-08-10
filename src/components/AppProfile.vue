@@ -217,11 +217,15 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { userUpdateInfoApi, userCancelApi, userChangePasswordApi } from '@/api/user'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
+import { useWebSocket } from '@/server/useWebSocket.js'
 
 // 定义事件
 const emit = defineEmits(['profile-saved'])
 
 const userStore = useUserStore()
+
+// 关闭 WebSocket（修改密码/注销后断开连接，与 Header 的 handleLogout 保持一致）
+const { closeWebSocket } = useWebSocket()
 
 // 个人资料数据
 const profileData = reactive({
@@ -338,6 +342,7 @@ const changePassword = async () => {
       confirmPassword: ''
     })
     // 后端已删除登录态，强制重新登录
+    closeWebSocket()
     userStore.clearUserStore()
     window.$snackbar?.success('密码修改成功，请重新登录')
     router.push('/')
@@ -376,6 +381,7 @@ const cancelAccount = async () => {
     await userCancelApi({ verifyCode: cancelData.verifyCode })
     showCancelDialog.value = false
     // 清空本地登录态并跳回首页
+    closeWebSocket()
     userStore.clearUserStore()
     router.push('/')
     window.$snackbar?.success('账号已注销，感谢使用')
