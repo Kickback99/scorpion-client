@@ -23,3 +23,10 @@ html, body {
   transform: translateX(30px);
   opacity: 0;
 }
+
+// 等宽代码字体回退链（!important 必要：覆盖 v-md-editor 主题 CSS 更高优先级的选择器）
+.v-md-editor-preview {
+  pre, code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', 'Consolas', 'Courier New', monospace !important;
+  }
+}
