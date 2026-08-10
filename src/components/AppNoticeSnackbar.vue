@@ -9,7 +9,7 @@
     multi-line
     position="fixed"
     class="notice-snackbar"
-    :style="{ '--snackbar-width': snackbarWidth }"
+    :style="{ '--snackbar-width': snackbarWidth, '--snackbar-scale': scale }"
   >
     <div>
       <!-- 标题栏：标题 + 关闭图标 -->
@@ -54,11 +54,13 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
 // ============================================================
 // 数据
 // ============================================================
 const display = useDisplay()
+const scale = useDialogFontScale()
 const visible = ref(false)
 
 const props = defineProps({
@@ -107,5 +109,30 @@ const handleAction = () => {
   width: var(--snackbar-width);
   min-width: 0 !important;
   max-width: none !important;
+}
+</style>
+
+<style scoped lang="scss">
+// ============================================================
+// 移动端字号缩放
+// ============================================================
+.notice-snackbar {
+  --snackbar-scale: 1;
+
+  .text-subtitle-1 {
+    font-size: calc(1rem * var(--snackbar-scale)) !important;
+  }
+
+  .text-body-2 {
+    font-size: calc(0.875rem * var(--snackbar-scale)) !important;
+  }
+
+  .text-caption {
+    font-size: calc(0.75rem * var(--snackbar-scale)) !important;
+  }
+
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--snackbar-scale)) !important;
+  }
 }
 </style>
