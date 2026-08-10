@@ -9,16 +9,16 @@
                     @click="goToLink(item.link)"
                 >
                     <v-img :src="item.img" cover />
-                    <!-- 轮播标题 -->
+                    <!-- 轮播标题遮罩 + 文字 -->
                     <v-overlay
                         absolute
                         class="d-flex align-center justify-center"
-                        style="background: linear-gradient(transparent, rgba(0,0,0,0.6));"
+                        style="background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.75));"
                     >
                     </v-overlay>
                         <v-card-title
                             class="text-white text-h6 font-weight-bold"
-                            style="position: absolute; bottom: 16px; left: 16px;"
+                            style="position: absolute; bottom: 16px; left: 16px; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"
                         >
                             {{ item.title }}
                         </v-card-title>
@@ -69,9 +69,16 @@ onMounted(() => {
     pointer-events: none;
 }
 
-/* 轮播图左右箭头始终使用深色主题色，任意背景都清晰 */
+/* 轮播图左右箭头始终使用深色主题色，任意背景都清晰，并缩小尺寸 */
 :deep(.v-window__left),
 :deep(.v-window__right) {
     color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    width: 35px;
+    height: 35px;
+}
+
+:deep(.v-window__left .v-icon),
+:deep(.v-window__right .v-icon) {
+    font-size: 20px;
 }
 </style>
