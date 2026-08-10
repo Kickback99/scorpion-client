@@ -12,6 +12,7 @@ export const AUTH_REQUIRED_PATHS = [
   '/user/logout',
   '/user/updateUserDetailInfo',
   '/user/cancel',
+  '/user/changePassword',
 
   // 订单相关
   /* '/order/',
