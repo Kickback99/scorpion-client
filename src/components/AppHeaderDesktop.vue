@@ -141,6 +141,7 @@ import { useUserStore } from '@/store/user'
 import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
 import { useWebSocket } from '@/server/useWebSocket.js'
+import { userLogoutApi } from '@/api/user'
 
 const { triggerSearch } = useSearch()
 const router = useRouter()
@@ -221,13 +222,20 @@ const handleProfile = () => {
   router.push('/profile')
 }
 
-const handleLogout = () => {
-  console.log('退出登录')
-  closeWebSocket()
-  userStore.clearUserStore()
+const handleLogout = async () => {
+  try {
+    // 调用后端退出接口（删除 Redis 登录态）
+    await userLogoutApi()
+  } catch (error) {
+    console.error('退出登录接口调用失败:', error)
+  } finally {
+    // 无论接口成败，本地状态都要清理
+    closeWebSocket()
+    userStore.clearUserStore()
 
-  if (router.currentRoute.value.path === '/profile') {
-    router.push('/')
+    if (router.currentRoute.value.path === '/profile') {
+      router.push('/')
+    }
   }
 }
 
