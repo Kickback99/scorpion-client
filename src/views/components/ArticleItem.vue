@@ -120,11 +120,12 @@ const themeStore = useThemeStore()
 .cover-container {
   position: relative;
   display: inline-block;
+  margin: 0 12px;
 }
 
 .default-cover{
   border-radius: 20px; 
-  padding: 0 12px;
+  padding: 0 5px;
 }
 
 .ribbon-window {
