@@ -1,7 +1,7 @@
 <template>
   <!-- ===== Dialog ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
-    <v-card :style="{ '--dialog-scale': scale }">
+    <v-card :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
@@ -36,6 +36,7 @@ import { createMarkdownPreview } from '@/utils/markdown-config'
 // ============================================================
 const display = useDisplay()
 const scale = useDialogFontScale()
+const headingScale = useDialogFontScale(0.55)
 const visible = ref(false)
 const configStore = useConfigStore()
 const themeStore = useThemeStore()
@@ -107,6 +108,7 @@ const handleClose = () => { visible.value = false }
 // ============================================================
 .v-card {
   --dialog-scale: 1;
+  --heading-scale: 1;
 
   :deep(.v-card-title) {
     font-size: calc(1rem * var(--dialog-scale)) !important;
@@ -114,6 +116,11 @@ const handleClose = () => { visible.value = false }
 
   :deep(.detail-panel) {
     font-size: calc(1rem * var(--dialog-scale));
+  }
+
+  // 移动端 h2 标题缩小至 h4 视觉层级
+  :deep(.detail-panel h2) {
+    font-size: calc(1.5rem * var(--heading-scale)) !important;
   }
 }
 </style>
