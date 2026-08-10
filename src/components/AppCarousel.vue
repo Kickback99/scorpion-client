@@ -2,7 +2,7 @@
     <v-container v-if="carouselItems.length > 0">
         <v-card>
             <v-carousel
-                height="250px" hide-delimiters show-arrows="hover" style="cursor: pointer;">
+                height="250px" hide-delimiters show-arrows theme="scorpion-dark" style="cursor: pointer;">
                 <v-carousel-item
                     v-for="(item, index) in carouselItems"
                     :key="index"
@@ -67,5 +67,11 @@ onMounted(() => {
 /* 轮播图标题样式 */
 .v-overlay {
     pointer-events: none;
+}
+
+/* 轮播图左右箭头始终使用深色主题色，任意背景都清晰 */
+:deep(.v-window__left),
+:deep(.v-window__right) {
+    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
 }
 </style>
