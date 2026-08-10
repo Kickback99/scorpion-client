@@ -125,7 +125,7 @@
 
     <!-- 修改密码弹窗 -->
     <v-dialog v-model="showChangePasswordDialog" max-width="500">
-      <v-card>
+      <v-card :style="{ '--dialog-scale': scale }">
         <v-card-title class="text-h6 d-flex align-center justify-space-between">
           修改密码
           <v-btn icon variant="text" @click="showChangePasswordDialog = false">
@@ -179,7 +179,7 @@
 
     <!-- 注销账号弹窗 -->
     <v-dialog v-model="showCancelDialog" max-width="500">
-      <v-card>
+      <v-card :style="{ '--dialog-scale': scale }">
         <v-card-title class="text-h6 d-flex align-center justify-space-between">
           注销账号
           <v-btn icon variant="text" @click="showCancelDialog = false">
@@ -212,6 +212,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { userUpdateInfoApi, userCancelApi, userChangePasswordApi } from '@/api/user'
@@ -224,6 +225,7 @@ const emit = defineEmits(['profile-saved'])
 const userStore = useUserStore()
 
 const display = useDisplay()
+const scale = useDialogFontScale()
 
 // 关闭 WebSocket（修改密码/注销后断开连接，与 Header 的 handleLogout 保持一致）
 const { closeWebSocket } = useWebSocket()
@@ -424,4 +426,31 @@ defineExpose({
   // background-color: white !important;
   // box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
+
+// ============================================================
+// 移动端弹窗字号缩放
+// ============================================================
+.v-card {
+  --dialog-scale: 1;
+
+  :deep(.text-h6) {
+    font-size: calc(1.25rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.v-field) {
+    font-size: calc(1rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.v-field .v-label) {
+    font-size: calc(1rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.v-alert) {
+    font-size: calc(0.875rem * var(--dialog-scale)) !important;
+  }
+}
 </style>

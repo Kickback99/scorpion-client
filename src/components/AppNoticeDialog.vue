@@ -1,7 +1,7 @@
 <template>
   <!-- ===== Dialog ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
-    <v-card>
+    <v-card :style="{ '--dialog-scale': scale }">
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
@@ -30,6 +30,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 import { createMarkdownPreview } from '@/utils/markdown-config'
 import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
@@ -38,6 +39,7 @@ import { useConfigStore } from '@/store/config'
 // 数据
 // ============================================================
 const display = useDisplay()
+const scale = useDialogFontScale()
 const visible = ref(false)
 const configStore = useConfigStore()
 const themeStore = useThemeStore()
@@ -158,6 +160,25 @@ const handleCopySuccess = () => {
   :deep(.github-markdown-body),
   :deep(.vuepress-markdown-body) {
     padding: 0 !important;
+  }
+}
+
+// ============================================================
+// 移动端字号缩放
+// ============================================================
+.v-card {
+  --dialog-scale: 1;
+
+  :deep(.v-card-title) {
+    font-size: calc(1rem * var(--dialog-scale)) !important;
+  }
+
+  .text-caption {
+    font-size: calc(0.75rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.detail-panel) {
+    font-size: calc(1rem * var(--dialog-scale));
   }
 }
 </style>
