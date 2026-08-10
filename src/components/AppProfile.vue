@@ -126,9 +126,8 @@
     <!-- 修改密码弹窗 -->
     <v-dialog v-model="showChangePasswordDialog" max-width="500">
       <v-card>
-        <v-card-title class="text-h6">
+        <v-card-title class="text-h6 d-flex align-center justify-space-between">
           修改密码
-          <v-spacer></v-spacer>
           <v-btn icon variant="text" @click="showChangePasswordDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -181,9 +180,8 @@
     <!-- 注销账号弹窗 -->
     <v-dialog v-model="showCancelDialog" max-width="500">
       <v-card>
-        <v-card-title class="text-h6">
+        <v-card-title class="text-h6 d-flex align-center justify-space-between">
           注销账号
-          <v-spacer></v-spacer>
           <v-btn icon variant="text" @click="showCancelDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
