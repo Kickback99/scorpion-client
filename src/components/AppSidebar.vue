@@ -56,7 +56,9 @@
         <v-list color="primary">
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact :to="{name:'detail',params:{id:item.id}}">
                 <template v-slot:prepend>
-                    <v-icon color="primary">mdi-numeric-{{index+1}}-box</v-icon>
+                    <span class="v-theme--scorpion-light">
+                        <v-icon color="primary">mdi-numeric-{{index+1}}-box</v-icon>
+                    </span>
                 </template>
 
                 <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>
