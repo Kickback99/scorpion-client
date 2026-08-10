@@ -1,5 +1,5 @@
 <template>
-  <v-container class="profile-center py-6">
+  <v-container class="profile-center py-6" :style="{ '--profile-center-scale': handleFontScale }">
       <div>
         <!-- 使用动态 direction 属性 -->
         <v-sheet>
@@ -246,6 +246,7 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { watch } from 'vue'
 import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
@@ -255,6 +256,11 @@ import { useConfigStore } from '@/store/config.js'
 import AppProfile from './AppProfile.vue'
 
 const configStore = useConfigStore()
+
+const display = useDisplay()
+
+// 移动端字号缩放系数（动态 rem 适配）
+const handleFontScale = computed(() => (display.mobile.value ? 0.8 : 1))
 
 // ==================== 个人资料 ====================
 // 组件引用
@@ -376,8 +382,41 @@ watch(tab, (newTab) => {
 
 <style scoped>
 .profile-center {
+  --profile-center-scale: 1;
   max-width: 75%;
   margin: 0 auto;
+
+  h2 {
+    font-size: calc(1.5rem * var(--profile-center-scale)) !important;
+  }
+
+  h3 {
+    font-size: calc(1.25rem * var(--profile-center-scale)) !important;
+  }
+
+  .text-caption {
+    font-size: calc(0.75rem * var(--profile-center-scale)) !important;
+  }
+
+  /* 表单整块缩放：input 经 font:inherit 继承、图标经 em 等比缩放 */
+  :deep(.v-field) {
+    font-size: calc(1rem * var(--profile-center-scale)) !important;
+  }
+
+  /* 浮动 label 固定 1rem，需单独命中（未聚焦时它看起来就是"占位符"） */
+  :deep(.v-field .v-label) {
+    font-size: calc(1rem * var(--profile-center-scale)) !important;
+  }
+
+  /* 按钮字号（Vuetify 经 --v-btn-size 控制） */
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--profile-center-scale)) !important;
+  }
+
+  /* tab 文字字号 */
+  :deep(.v-tab) {
+    font-size: calc(0.875rem * var(--profile-center-scale)) !important;
+  }
 }
 
 .avatar-wrapper {
