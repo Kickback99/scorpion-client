@@ -2,7 +2,7 @@
   <div class="breadcrumb-wrapper py-2" v-if="items.length > 1 || smAndDown">
     <div class="d-flex align-center">
       <v-breadcrumbs
-        v-if="items.length > 1"
+        v-if="items.length > 1 && !(smAndDown && route.path === '/profile')"
         :items="items"
         density="compact"
         class="pa-0 flex-grow-0"
@@ -24,7 +24,7 @@
 
       <!-- 移动端搜索 -->
       <v-text-field
-        v-if="smAndDown"
+        v-if="smAndDown && route.path === '/'"
         v-model="keyword"
         label="请输入标题/内容"
         variant="outlined"
