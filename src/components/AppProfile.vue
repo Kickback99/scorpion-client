@@ -215,7 +215,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
-import { userUpdateInfoApi, userCancelApi } from '@/api/user'
+import { userUpdateInfoApi, userCancelApi, userChangePasswordApi } from '@/api/user'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 
 // 定义事件
@@ -325,8 +325,11 @@ const changePassword = async () => {
   
   changingPassword.value = true
   try {
-    // TODO: 调用修改密码接口
-    console.log('修改密码:', passwordData)
+    await userChangePasswordApi({
+      oldPassword: passwordData.oldPassword,
+      newPassword: passwordData.newPassword,
+      confirmPassword: passwordData.confirmPassword
+    })
     showChangePasswordDialog.value = false
     // 重置表单
     Object.assign(passwordData, {
@@ -334,6 +337,10 @@ const changePassword = async () => {
       newPassword: '',
       confirmPassword: ''
     })
+    // 后端已删除登录态，强制重新登录
+    userStore.clearUserStore()
+    window.$snackbar?.success('密码修改成功，请重新登录')
+    router.push('/')
   } catch (error) {
     console.error('修改密码失败:', error)
   } finally {

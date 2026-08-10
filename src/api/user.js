@@ -24,6 +24,13 @@ export const userPasswordResetApi = (params) => http.post('/user/password/reset'
  */
 export const userCancelApi = (params) => http.post('/user/cancel',params)
 
+/**
+ * 修改密码
+ * @param {Object} params 请求参数，{ oldPassword, newPassword, confirmPassword }
+ * @returns {Promise}
+ */
+export const userChangePasswordApi = (params) => http.post('/user/changePassword',params)
+
 // 用户详情
 export const userInfoApi = () => http.get('/user/userDetailInfo')
 
