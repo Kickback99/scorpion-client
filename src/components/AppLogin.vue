@@ -518,19 +518,15 @@ const registerRules = {
 
 // 注册处理
 const handleRegister = async () => {
-    // if (!registerFormRef.value) return
 
-    await registerFormRef.value.validate()
-    
     registerLoading.value = true
     try {
         const { valid } = await registerFormRef.value.validate()
-        
+
         if (valid) {
             console.log('注册信息:', registerModel)
-            // 这里调用注册接口
             await userRegisterApi(registerModel)
-            // 注册成功后切换到成功页面
+            Object.assign(registerModel, { username: '', password: '', email: '', verifyCode: '' })
             step.value = 3
         }
     } catch (error) {

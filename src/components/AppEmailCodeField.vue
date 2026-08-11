@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useDisplay } from 'vuetify'
 import { emailCodeSendApi } from '@/api/email'
 
@@ -92,6 +92,15 @@ const emailFieldRef = ref(null)
 // 倒计时秒数 / 发送中标记
 const countdown = ref(0)  // 倒计时秒数
 const isSending = ref(false)  // 是否正在发送验证码
+let countdownTimer = null  // 倒计时定时器引用，onUnmounted 清理
+
+// 组件卸载时清理定时器，防止内存泄漏
+onUnmounted(() => {
+    if (countdownTimer) {
+        clearInterval(countdownTimer)
+        countdownTimer = null
+    }
+})
 
 // ============================================================
 // 表单校验
@@ -129,9 +138,10 @@ const handleSendCode = async () => {
 
         // 发送成功后启动倒计时
         countdown.value = 60
-        const timer = setInterval(() => {
+        countdownTimer = setInterval(() => {
             if (countdown.value <= 1) {
-                clearInterval(timer)
+                clearInterval(countdownTimer)
+                countdownTimer = null
                 countdown.value = 0
                 isSending.value = false
             } else {
