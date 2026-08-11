@@ -1,7 +1,16 @@
 <template>
     <v-container>
+          <!-- 骨架屏：首次加载 -->
+         <div v-if="isInitialLoading">
+           <ArticleItemSkeleton
+             v-for="n in 5"
+             :key="n"
+             :class="{ 'mt-5': n !== 1 }"
+           />
+         </div>
+
           <!-- 顶部进度条 -->
-          <div v-if="isLoading" class="loading-wrapper">
+          <div v-else-if="isLoading" class="loading-wrapper">
             <v-progress-linear
                 indeterminate
                 color="warning"
@@ -82,7 +91,7 @@
           </template>
 
             <!-- 空状态显示 -->
-             <v-card v-else-if="!isInitialLoading && articleList.length === 0">
+             <v-card v-else>
               <v-empty-state
                   icon="mdi-file-document-outline"
                   title="暂无文章"
@@ -96,6 +105,7 @@
 <script setup>
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
+import ArticleItemSkeleton from './components/ArticleItemSkeleton.vue';
 import { ref,onMounted,onUnmounted,watch, provide, computed } from 'vue'
 import { useDisplay } from 'vuetify';
 import { mdToPlainText } from '@/utils/useExtractText'
