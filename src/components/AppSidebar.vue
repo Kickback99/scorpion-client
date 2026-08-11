@@ -69,7 +69,23 @@
 
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
-        <v-list>
+        <!-- 骨架屏：加载中 -->
+        <v-list v-if="latestLoading && latestBlogs.length === 0">
+            <v-list-item v-for="n in 10" :key="n" class="sidebar-skeleton-item">
+                <template v-slot:prepend>
+                    <v-skeleton-loader type="image" width="90" height="45" class="sidebar-skeleton-img" />
+                </template>
+                <v-list-item-title>
+                    <v-skeleton-loader type="subtitle" />
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                    <v-skeleton-loader type="subtitle" class="sidebar-skeleton-date" />
+                </v-list-item-subtitle>
+            </v-list-item>
+        </v-list>
+
+        <!-- 真实内容 -->
+        <v-list v-else>
             <v-list-item
             v-for="(item, index) in latestBlogs"
             :key="item.id"
@@ -244,6 +260,7 @@ const user = ref({
 
 const hotBlogs = ref([])
 const latestBlogs = ref([])
+const latestLoading = ref(false)
 
 // 搜索功能
 const onSearch = (type,param) => {
@@ -283,9 +300,14 @@ const renderHotList = async() => {
 }
 
 const renderLatestList = async() => {
-    const res = await latestListApi()
-    titles.value.articles = '最新发布'
-    latestBlogs.value = res.data
+    latestLoading.value = true
+    try {
+        const res = await latestListApi()
+        titles.value.articles = '最新发布'
+        latestBlogs.value = res.data
+    } finally {
+        latestLoading.value = false
+    }
 }
 
 
@@ -497,6 +519,23 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+// == Sidebar skeleton: aggressive bone margin reset ==
+.sidebar-skeleton-item {
+  :deep(.v-skeleton-loader__image) {
+    margin: 0;
+    height: 100%; // fill explicit height from props (50px), override default 150px
+  }
+
+  :deep(.v-skeleton-loader__text) {
+    margin: 1px 0;
+  }
+}
+
+// Date subtitle narrower than title
+.sidebar-skeleton-date :deep(.v-skeleton-loader__text) {
+  max-width: 50%;
+}
+
 .hot-section {
     transition: none; // FLIP 自行管理动画，不靠 CSS transition
 }
