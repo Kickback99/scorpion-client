@@ -195,6 +195,7 @@
             <AppEmailCodeField
               v-model:email="cancelData.email"
               v-model:code="cancelData.verifyCode"
+              type="cancel"
               email-disabled
             />
           </v-form>

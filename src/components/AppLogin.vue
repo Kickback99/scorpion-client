@@ -159,7 +159,7 @@
                                     class="mb-2"
                                 >
                                 </v-text-field>
-                                <AppEmailCodeField v-model:email="registerModel.email" v-model:code="registerModel.verifyCode" />
+                                <AppEmailCodeField v-model:email="registerModel.email" v-model:code="registerModel.verifyCode" type="register" />
                                     <!-- 条款与协议 -->
                                 <v-checkbox
                                 color="primary"
