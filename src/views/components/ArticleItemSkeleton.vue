@@ -95,8 +95,13 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   min-width: 0;
 }
 
-// Second heading bone at 75% width (natural truncated second line)
-.skeleton-title :deep(.v-skeleton-loader__heading:last-child) {
+// Ensure skeleton loader fills title area
+.skeleton-title {
+  width: 100%;
+}
+
+// Only the second heading bone (PC 2-line title) constrained to 75%
+.skeleton-title :deep(.v-skeleton-loader__heading:nth-child(2)) {
   max-width: 75%;
 }
 
