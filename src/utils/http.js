@@ -59,17 +59,25 @@ instance.interceptors.response.use(
 
             }else window.$snackbar?.error(res.data.message)
 
-            // return Promise.reject(res.data.message)
-            // 关键：返回pending的Promise，阻止错误开始向上传递的后续执行
-             return new Promise(() => {})
+            // 返回 reject 让调用方的 catch/finally 正常执行，loading 状态能正确复位
+            return Promise.reject(res.data.message)
        }
 
         window.$snackbar?.error(res.data?.message || '服务异常')
         return Promise.reject(res.data.message)
     },
     err=>{
-        window.$snackbar?.error('服务异常')
-        return Promise.reject(err);//异步的状态转化成失败的状态
+        let message
+        if (err.code === 'ECONNABORTED') {
+            message = '请求超时，请检查网络连接'
+        } else if (['ERR_NETWORK', 'ERR_CONNECTION_REFUSED'].includes(err.code)
+                || err.message === 'Network Error') {
+            message = '网络连接失败，请检查网络'
+        } else {
+            message = '服务异常，请稍后重试'
+        }
+        window.$snackbar?.error(message)
+        return Promise.reject(err)
     }
 )
 
