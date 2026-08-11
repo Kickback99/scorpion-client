@@ -216,7 +216,7 @@
                             ref="forgotFormRef"
                             @submit.prevent="handleForgotNext"
                             >
-                                <AppEmailCodeField v-model:email="forgotModel.email" v-model:code="forgotModel.verifyCode" email-placeholder="请输入注册时使用的邮箱" />
+                                <AppEmailCodeField v-model:email="forgotModel.email" v-model:code="forgotModel.verifyCode" type="forgot" email-placeholder="请输入注册时使用的邮箱" />
                                 <v-btn
                                 block
                                 color="primary"

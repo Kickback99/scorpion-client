@@ -74,6 +74,11 @@ const props = defineProps({
     emailPlaceholder: {
         type: String,
         default: '请输入邮箱'
+    },
+    // 验证码类型：register-注册, forgot-忘记密码
+    type: {
+        type: String,
+        default: 'register'
     }
 })
 
@@ -120,7 +125,7 @@ const handleSendCode = async () => {
 
     try {
         // 调用发送验证码的接口
-        await emailCodeSendApi({ email: props.email })
+        await emailCodeSendApi({ email: props.email, type: props.type })
 
         // 发送成功后启动倒计时
         countdown.value = 60
