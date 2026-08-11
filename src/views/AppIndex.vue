@@ -1,23 +1,23 @@
 <template>
     <v-container>
-          <!-- 骨架屏：首次加载 -->
-         <div v-if="isInitialLoading">
-           <ArticleItemSkeleton
-             v-for="n in 5"
-             :key="n"
-             :class="{ 'mt-5': n !== 1 }"
-           />
-         </div>
-
-          <!-- 顶部进度条 -->
-          <div v-else-if="isLoading" class="loading-wrapper">
-            <v-progress-linear
-                indeterminate
-                color="warning"
-                height="2"
-                class="loading-bar"
-            ></v-progress-linear>
-         </div>
+          <!-- 加载中：进度条 + 骨架屏同时显示 -->
+         <template v-if="isLoading">
+           <div class="loading-wrapper">
+             <v-progress-linear
+                 indeterminate
+                 color="warning"
+                 height="2"
+                 class="loading-bar"
+             ></v-progress-linear>
+          </div>
+           <div>
+             <ArticleItemSkeleton
+               v-for="n in currentPageSize"
+               :key="n"
+               :class="{ 'mt-5': n !== 1 }"
+             />
+           </div>
+         </template>
 
           <!-- 正常文章列表 -->
           <template v-else-if="articleList.length > 0">
@@ -116,7 +116,6 @@ const configStore = useConfigStore()
 const {smAndUp} = useDisplay()
 
 
-const isInitialLoading = ref(true) // 标记是否首次加载中
 const isLoading = ref(false)
 const scrollLoading = ref(false) // 滚动加载状态
 
@@ -192,8 +191,7 @@ const renderArticleList = async() => {
     }finally {
       isLoading.value = false
       // 数据加载完成后，标记首次加载结束
-      isInitialLoading.value = false
-    }
+          }
 }
 
 // renderArticleList()
