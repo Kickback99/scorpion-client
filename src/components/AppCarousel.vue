@@ -1,5 +1,18 @@
 <template>
-    <v-container v-if="carouselItems.length > 0">
+    <!-- 骨架屏 -->
+    <v-container v-if="isLoading">
+        <v-card style="position: relative;">
+            <v-skeleton-loader type="image" height="250" class="carousel-skeleton" />
+            <v-skeleton-loader
+                type="heading"
+                class="carousel-skeleton-title"
+                style="position: absolute; bottom: 28px; left: 16px;"
+            />
+        </v-card>
+    </v-container>
+
+    <!-- 真实轮播 -->
+    <v-container v-else-if="carouselItems.length > 0">
         <v-card>
             <v-carousel
                 height="250px" hide-delimiters show-arrows theme="scorpion-dark" style="cursor: pointer;">
@@ -34,6 +47,7 @@ import { getCarouselListApi } from '@/api/carousel'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
+const isLoading = ref(true)
 const carouselItems = ref([])
 
 // 加载轮播图
@@ -43,6 +57,8 @@ const loadCarousel = async () => {
         carouselItems.value = res.data || []
     } catch (error) {
         console.error('加载轮播图失败:', error)
+    } finally {
+        isLoading.value = false
     }
 }
 
@@ -64,6 +80,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 骨架屏：image 填满 250px + 移除默认 margin + 透明背景 */
+.carousel-skeleton {
+  background: transparent !important;
+}
+
+.carousel-skeleton :deep(.v-skeleton-loader__image) {
+  margin: 0;
+  height: 100%;
+}
+
+/* 骨架屏标题：透明背景 + 重置 heading margin */
+.carousel-skeleton-title {
+  width: 240px;
+  background: transparent !important;
+}
+
+.carousel-skeleton-title :deep(.v-skeleton-loader__heading) {
+  margin: 0;
+}
+
 /* 轮播图标题样式 */
 .v-overlay {
     pointer-events: none;
