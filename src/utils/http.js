@@ -34,7 +34,6 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     res=>{
         if(res.data.code === 0 || res.data.code === 200){
-            console.log('哈哈')
             return res.data
         }
 
@@ -44,7 +43,7 @@ instance.interceptors.response.use(
               if(regex.test(res.data.code)) {
 
             if(res.data.code === 401){
-                console.log('响应拦截器执行...')
+                console.log('==================== 响应拦截器执行 ====================')
                 // 处理token过期或者篡改
                 const userStore = useUserStore()
                 // 清除 websocket 连接状态

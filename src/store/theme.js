@@ -119,7 +119,7 @@ export const useThemeStore = defineStore('theme', {
     initTheme(vuetifyTheme) {
       // 配置变化了，清除旧数据
       if (this.isConfigChanged()) {
-        console.log('主题配置已更新，重置缓存')
+        // console.log('主题配置已更新，重置缓存')
         this.configHash = getConfigHash()
         this.currentTheme = themeConfig.defaultTheme
       }

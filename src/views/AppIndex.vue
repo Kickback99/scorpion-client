@@ -182,7 +182,7 @@ const renderArticleList = async() => {
         searchData: searchData.value
       })
       // console.log('renderArticleList...')
-      console.log('res.data.items',res.data.items)
+      // console.log('res.data.items',res.data.items)
       articleList.value = res.data.items.map(item => ({
         ...item,
         displayDescription: handleAutoDescription(item)
@@ -248,7 +248,6 @@ const loadMoreArticles = async ({ done }) => {
             done('empty')
         }
     } catch (error) {
-        console.error('加载更多文章失败:', error)
         window.$snackbar?.error('加载更多文章失败')
         done('error')
     } finally {
@@ -274,7 +273,7 @@ initLoadArticles()
 onMounted(()=>{
   // emitter.on('search', receiveParam)
   emitter.on('reset-search', () => {
-    console.log('触发了reset-search')
+  // console.log('触发了reset-search')
   params.value.pageNum = 1
   searchData.value = {
     keyword: '',
@@ -291,7 +290,7 @@ onMounted(()=>{
   // 监听路由变化处理参数
   watch(() => route.query, (newQuery) => {
     if (newQuery.type && newQuery.param) {
-      console.log('query参数路由执行...')
+      // console.log('query参数路由执行...')
       updateSearchState({
         type: newQuery.type,
         param: newQuery.param
@@ -306,8 +305,7 @@ onMounted(()=>{
 })
 
 onUnmounted(()=>{
-    console.log("searchData.value.categoryId",searchData.value.categoryId)
-    console.log('卸载了...')
+    // console.log("searchData.value.categoryId",searchData.value.categoryId)
 })
 
 

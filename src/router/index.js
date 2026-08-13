@@ -66,9 +66,7 @@ const loadClientConfig = async (forceRefresh = false) => {
       await configStore.loadConfig()
       configLoaded = true
       lastLoadTime = now
-      console.log('客户端配置加载成功, 主题:', configStore.article_detail?.theme)
     } catch (error) {
-      console.error('加载客户端配置失败:', error)
       // 配置加载失败时，使用默认配置
       // configStore 中已经设置了默认值，所以不影响页面访问
     } finally {
@@ -82,7 +80,7 @@ const loadClientConfig = async (forceRefresh = false) => {
 // 添加路由守卫
 router.beforeEach(async(to, from, next) => {
 
-  console.log('--------------全局路由前置守卫......-----------------')
+  console.log('==================== 路由前置守卫执行 ====================')
 
   // 加载配置（非强制刷新）
   await loadClientConfig()
