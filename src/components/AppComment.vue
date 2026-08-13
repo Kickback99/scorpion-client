@@ -381,7 +381,8 @@ const isCommentTypeEnabled = () => {
 }
 
 const checkLogin = () => {
-  isLoggedIn.value = !!userStore.token && Object.keys(userStore.user).length > 0
+  // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+  isLoggedIn.value = userStore.isLoggedIn
 }
 
 // 判断是否显示操作按钮

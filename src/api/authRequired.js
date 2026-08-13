@@ -1,18 +1,18 @@
 // 定义需要携带 token 的路径列表（即"需要登录认证的接口"）
+// 与后端 ClientSecurityConfig 的 matchers 对齐（子路径接口用尾部斜杠做前缀匹配）
 export const AUTH_REQUIRED_PATHS = [
   '/test',
   '/user/userDetailInfo',
-  '/user/favorites',
-  '/user/content/article',
-  '/user/favorite/toggle',
-  '/user/msg/comment/byId',
-  '/user/msg/comment/reply',
-  '/user/comments/',
-  '/user/userComment',
   '/user/logout',
   '/user/updateUserDetailInfo',
   '/user/cancel',
   '/user/changePassword',
+  '/user/favorites/',         // GET 收藏列表 + DELETE 取消收藏（带子路径）
+  '/user/favorite/toggle/',   // POST 切换收藏
+  '/user/comments/',          // GET 我的评论列表
+  '/user/userComment/',       // DELETE 删除评论
+  '/user/msg/comment/reply',  // POST 发表评论/回复
+  '/user/msg/comment/byId/',  // DELETE 按 id 删评论
 
   // 订单相关
   /* '/order/',

@@ -3,9 +3,11 @@
 //导入axios  npm install axios
 import { useUserStore } from '@/store/user';
 import axios from 'axios';
+import { isCookieMode } from '@/utils/auth'
 //定义一个变量,记录公共的前缀  ,  baseURL
 const baseURL = import.meta.env.VITE_API;
-const instance = axios.create({baseURL,timeout:4000})
+// withCredentials：cookie 模式下跨域请求携带 HttpOnly Cookie（同源请求无影响）
+const instance = axios.create({baseURL,timeout:4000,withCredentials:true})
 import router from '@/router';
 
 import {isAuthRequired} from '@/api/authRequired'
@@ -18,8 +20,8 @@ const { closeWebSocket } = useWebSocket()
 instance.interceptors.request.use(
     config => {
         const userStore = useUserStore()
-        // 根据路径判断是否需要携带 token
-        if(userStore.token && isAuthRequired(config.url)){
+        // 根据路径判断是否需要携带 token（cookie 模式由浏览器自动携带 HttpOnly Cookie）
+        if(!isCookieMode() && userStore.token && isAuthRequired(config.url)){
             config.headers.authorization = userStore.token
         }
 
@@ -30,6 +32,20 @@ instance.interceptors.request.use(
 )
 
 
+// 认证失效统一清理：清用户状态 + 断开 WS + 提示 + 跳首页（业务码 401 与 HTTP 401 共用）
+const handleAuthExpired = (message) => {
+    const userStore = useUserStore()
+    // 清除 websocket 连接状态
+    closeWebSocket()
+    // 清空用户所有数据
+    userStore.clearUserStore()
+    // 提示用户重新登录
+    // emitter.emit('loginDialogVisible',true)
+    // 提示信息
+    window.$snackbar?.error(message || '登录已过期，请重新登录')
+    router.replace('/')
+}
+
 //添加响应拦截器
 instance.interceptors.response.use(
     res=>{
@@ -37,24 +53,15 @@ instance.interceptors.response.use(
             return res.data
         }
 
-        //匹配状态码为40开头的正则 
+        //匹配状态码为40开头的正则，以及认证失效码 215（token过期）/ 216（账号已退出）
        let regex = /^40[0-9]$/
 
-              if(regex.test(res.data.code)) {
+              if(regex.test(res.data.code) || res.data.code === 215 || res.data.code === 216) {
 
-            if(res.data.code === 401){
+            if(res.data.code === 401 || res.data.code === 215 || res.data.code === 216){
                 console.log('==================== 响应拦截器执行 ====================')
                 // 处理token过期或者篡改
-                const userStore = useUserStore()
-                // 清除 websocket 连接状态
-                closeWebSocket()
-                // 清空用户所有数据
-                userStore.clearUserStore()
-                // 提示用户重新登录
-                // emitter.emit('loginDialogVisible',true)
-                // 提示信息
-                window.$snackbar?.error(res.data?.message || '登录已过期，请重新登录')
-                router.replace('/')
+                handleAuthExpired(res.data?.message)
 
             }else window.$snackbar?.error(res.data.message)
 
@@ -66,6 +73,11 @@ instance.interceptors.response.use(
         return Promise.reject(res.data.message)
     },
     err=>{
+        // HTTP 401（cookie 模式未登录/过期的主路径）：与业务码 401 走同一清理逻辑
+        if(err.response && err.response.status === 401){
+            handleAuthExpired()
+            return Promise.reject(err)
+        }
         let message
         if (err.code === 'ECONNABORTED') {
             message = '请求超时，请检查网络连接'
