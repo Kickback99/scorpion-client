@@ -31,8 +31,8 @@ export const userCancelApi = (params) => http.post('/user/cancel',params)
  */
 export const userChangePasswordApi = (params) => http.post('/user/changePassword',params)
 
-// 用户详情
-export const userInfoApi = () => http.get('/user/userDetailInfo')
+// 用户详情（options 可传 axios config，如 { _quiet: true } 静默校验：401 时不弹窗不跳转）
+export const userInfoApi = (options = {}) => http.get('/user/userDetailInfo', options)
 
 // 用户注销
 export const userLogoutApi = () => http.get("/user/logout")
