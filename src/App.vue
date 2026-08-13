@@ -14,8 +14,10 @@ import AppDialog from './components/AppDialog.vue';
 import {useWebSocket} from '@/server/useWebSocket'
 import { onMounted, ref } from 'vue'
 import { useConfigStore } from './store/config.js';
+import { useUserStore } from './store/user.js'
 import { loadClientConfig } from './router'
 const configStore = useConfigStore()
+const userStore = useUserStore()
 
 const snackbarRef = ref(null)
 const dialogRef = ref(null)
@@ -37,6 +39,9 @@ onMounted(async() => {
 
   // 等待配置加载完成，再判断 websocket 开关（避免使用默认值 true）
   await loadClientConfig()
+
+  // cookie 模式：本地有 user 缓存时请求一次 userDetailInfo 校验登录态（未登录网友零请求）
+  await userStore.verifyLogin()
 
   if(configStore.getWebsocketEnabled() && configStore.getWebsocketBackendEnabled()){
     // 检查并处理强退用户点击刷新标记

@@ -72,10 +72,8 @@ import AppMobileRelated from '@/components/AppMobileRelated.vue'
 import AppArticleToc from '@/components/AppArticleToc.vue'
 const userStore = useUserStore()
 
-// 判断用户是否已登录
-const isLoggedIn = computed(() => {
-  return !!userStore.token && Object.keys(userStore.user).length > 0
-})
+// 判断用户是否已登录（统一走 store getter：cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+const isLoggedIn = computed(() => userStore.isLoggedIn)
 
 const preview = ref(null);
 const tocRef = ref(null);

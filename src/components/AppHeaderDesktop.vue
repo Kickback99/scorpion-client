@@ -160,9 +160,8 @@ const vuetifyTheme = useTheme()
 // ============================================================
 // 计算属性
 // ============================================================
-const isLoggedIn = computed(() => {
-  return !!userStore.token && Object.keys(userStore.user).length > 0
-})
+// 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+const isLoggedIn = computed(() => userStore.isLoggedIn)
 
 const userName = computed(() => {
   if (userStore.user && userStore.user.username) {

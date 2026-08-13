@@ -86,7 +86,8 @@ router.beforeEach(async(to, from, next) => {
   await loadClientConfig()
 
   const userStore = useUserStore()
-  const isLoggedIn = !!userStore.token && Object.keys(userStore.user).length > 0
+  // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+  const isLoggedIn = userStore.isLoggedIn
   
   // 如果需要登录才能访问的页面
   if (to.path === '/profile' && !isLoggedIn) {
