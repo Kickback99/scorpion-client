@@ -6,10 +6,16 @@ import { isCookieMode } from '@/utils/auth'
 // defineStore('仓库的唯一标识',()=>{...})
 
 // 仅持久化展示所需字段（email/phone 等 PII 不落 localStorage；内存中的 user 仍是完整 VO）
+// 注意：undefined 键虽然会被 JSON.stringify 丢弃（落盘为空对象），但 hydrate 时会重新生成
+// 导致 Object.keys(user).length > 0 误判"有缓存"，进而每次刷新都发校验请求，必须过滤掉
 const pickUserFields = (user) => {
   if (!user || typeof user !== 'object') return {}
-  const { id, username, nickname, avatar } = user
-  return { id, username, nickname, avatar }
+  const result = {}
+  if (user.id != null) result.id = user.id
+  if (user.username != null) result.username = user.username
+  if (user.nickname != null) result.nickname = user.nickname
+  if (user.avatar != null) result.avatar = user.avatar
+  return result
 }
 
 export const useUserStore = defineStore('user',{
@@ -47,10 +53,11 @@ export const useUserStore = defineStore('user',{
             this.loginVerified = true
             if (Object.keys(this.user).length === 0) return
             try {
-                const res = await userInfoApi()
+                // _quiet：后台静默校验，401 时拦截器只清状态、不弹窗不跳转（网友刷新页面不该被"登录已过期"打扰）
+                const res = await userInfoApi({ _quiet: true })
                 this.user = res.data   // 200：刷新展示缓存
             } catch (error) {
-                // 401 时 http.js 拦截器已 clearUserStore + 跳首页，这里静默
+                // 401 时 http.js 拦截器已静默清空缓存，这里不再处理
             }
         },
         setUser(user) {

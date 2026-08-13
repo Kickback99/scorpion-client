@@ -33,12 +33,17 @@ instance.interceptors.request.use(
 
 
 // 认证失效统一清理：清用户状态 + 断开 WS + 提示 + 跳首页（业务码 401 与 HTTP 401 共用）
-const handleAuthExpired = (message) => {
+// config._quiet 为 true 时（如 verifyLogin 后台校验）：只清状态，不弹窗不跳转（网友刷新页面不该被"登录已过期"打扰）
+const handleAuthExpired = (message, config) => {
     const userStore = useUserStore()
     // 清除 websocket 连接状态
     closeWebSocket()
     // 清空用户所有数据
     userStore.clearUserStore()
+    // 后台静默校验触发的失效：清状态即可，不打扰用户
+    if (config && config._quiet) {
+        return
+    }
     // 提示用户重新登录
     // emitter.emit('loginDialogVisible',true)
     // 提示信息
@@ -61,7 +66,7 @@ instance.interceptors.response.use(
             if(res.data.code === 401 || res.data.code === 215 || res.data.code === 216){
                 console.log('==================== 响应拦截器执行 ====================')
                 // 处理token过期或者篡改
-                handleAuthExpired(res.data?.message)
+                handleAuthExpired(res.data?.message, res.config)
 
             }else window.$snackbar?.error(res.data.message)
 
@@ -75,7 +80,7 @@ instance.interceptors.response.use(
     err=>{
         // HTTP 401（cookie 模式未登录/过期的主路径）：与业务码 401 走同一清理逻辑
         if(err.response && err.response.status === 401){
-            handleAuthExpired()
+            handleAuthExpired(undefined, err.config)
             return Promise.reject(err)
         }
         let message
