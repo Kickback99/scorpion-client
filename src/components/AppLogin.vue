@@ -91,11 +91,6 @@
                             </v-container>
                             <!-- 其他登录方式 -->
                             <v-container class="mt-auto pt-0" v-if="configStore.getUserOtherLoginEnabled()">
-                                <!-- <v-sheet class="d-flex align-center mb-3">
-                                    <v-divider class="flex-grow-1" />
-                                    <span class="text-caption mx-4 text-grey" style="flex-shrink: 0;">其他的登录方式</span>
-                                    <v-divider class="flex-grow-1" />
-                                </v-sheet> -->
                                 <v-sheet class="mb-4">
                                     <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">其他的登录方式</span></v-divider>
                                 </v-sheet>
@@ -390,28 +385,6 @@ watch(step,()=>{
         Object.assign(loginModel,{username:'',password:''})
     }
 })
-
-/* // 实时校验表单状态
-const validateForm = async () => {
-    if (!loginFormRef.value) return
-    
-    try {
-        const { valid } = await loginFormRef.value.validate()
-        isFormValid.value = valid
-    } catch (error) {
-        isFormValid.value = false
-    }
-}
-
-// 监听表单数据变化，实时校验
-watch(
-    () => [loginModel.username, loginModel.password, loginTerm.value],
-    () => {
-        validateForm()
-    },
-    { deep: true }
-) */
-
 
 // 登录表单校验规则（类似 Element Plus 风格）
 const loginRules = {

@@ -79,7 +79,7 @@ const showCarousel = computed(() => route.path === '/' && mdAndUp.value && confi
 
 
 
-console.log('route.path',route.path)
+// console.log('route.path',route.path)
 
 </script>
 
