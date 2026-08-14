@@ -71,7 +71,7 @@ renderCateList()
   sidebarVisible.value = to.path != '/about'
 },{immediate:true}) */
 
-const isBigScreen = computed(() => route.path === '/about' || route.path === '/profile' || route.path === '/friendLink')
+const isBigScreen = computed(() => route.path === '/about' || route.path === '/profile' || route.path === '/friendLink' || route.path === '/404')
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
 const showSidebar = computed(() => !isBigScreen.value)
 // 轮播图显示条件：首页 + 大屏 + 轮播图数量限制(>0)

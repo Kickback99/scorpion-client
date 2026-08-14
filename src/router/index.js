@@ -3,6 +3,7 @@ import AppBlog from '@/views/AppBlog.vue'
 import AppDetail from '@/views/AppDetail.vue'
 import AppIndex from '@/views/AppIndex.vue'
 import AppLayout from '@/views/AppLayout.vue'
+import AppNotFound from '@/views/AppNotFound.vue'
 import {createRouter, createWebHistory} from 'vue-router'
 import { useUserStore } from '@/store/user'
 import AppProfileCenter from '@/components/AppProfileCenter.vue'
@@ -18,6 +19,7 @@ const routes = [
         {path:"/blog",component:AppBlog},
         {path:"/friendLink",component:AppFriendLink},
         {path:"/about",component:AppAbout},
+        {path:"/404",name:'NotFound',component:AppNotFound},
         {
             path: '/profile',
             name: 'Profile',
@@ -25,8 +27,8 @@ const routes = [
         },
         {path:'/test',component:Test},
         {path:"/detail/:id",name:'detail',component:AppDetail,props:true},
+        {path:'/:pathMatch(.*)*',redirect:'/404'},
     ]}
-
 ]
 
 // 创建路由对象
