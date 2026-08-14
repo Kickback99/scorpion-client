@@ -30,3 +30,32 @@ html, body {
     font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', 'Consolas', 'Courier New', monospace !important;
   }
 }
+
+/* ========== 全局滚动条：跟随主题色（--scrollbar-thumb-color 由 theme store 同步） ========== */
+html, body {
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color, #999) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  --thumb-paint: color-mix(in srgb, var(--scrollbar-thumb-color, #999) 45%, transparent);
+  border-radius: 999px;
+  // 滑块随内容动态伸缩，但最长不超过视口 40%（背景层截短：Chrome 不支持 thumb 的 max-height）
+  background-image: linear-gradient(var(--thumb-paint), var(--thumb-paint));
+  background-size: 100% 40vh;
+  background-repeat: no-repeat;
+
+  &:hover {
+    --thumb-paint: color-mix(in srgb, var(--scrollbar-thumb-color, #999) 75%, transparent);
+  }
+}
