@@ -44,7 +44,7 @@
   <!-- 新增：评论组件 -->
   <div class="mt-5" v-if="configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
-    :articleId="props.id"
+    :articleId="article.id"
     :isComment="article.isComment"
     :totalCount="article.commentCount"
     @comment-deleted="handleCommentCountChange"
@@ -60,7 +60,7 @@
 <script setup>
 import { articleDetailApi, toggleFavoriteApi, updateViewCountApi } from '@/api/article';
 import { onMounted, ref, watch, nextTick, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
 import { useUserStore } from '@/store/user';
@@ -78,6 +78,7 @@ const isLoggedIn = computed(() => userStore.isLoggedIn)
 const preview = ref(null);
 const tocRef = ref(null);
 const route = useRoute();
+const router = useRouter();
 const props = defineProps(['id']);
 const article = ref({ title: '', content: '' });
 const cateArticles = ref([]);
@@ -88,18 +89,26 @@ const favoriteLoading = ref(false);
 const configStore = useConfigStore()
 
 const renderArticleItem = async() => {
-  const res = await articleDetailApi(props.id);
+  let res
+  try {
+    res = await articleDetailApi(props.id);
+  } catch (e) {
+    // 文章不存在（真实 id 被拒绝等）：提示并回首页
+    window.$snackbar?.error('文章不存在')
+    router.replace('/')
+    return
+  }
   article.value = res.data.articleItem;
   isFavorite.value = res.data.isFavorite || false;
   cateArticles.value = res.data.cateArticles;
   tags.value = res.data.tags;
   emitter.emit('detail-data', {
-    cateArticles: cateArticles.value, 
+    cateArticles: cateArticles.value,
     tags: tags.value
   });
 
-  // 更新文章浏览量到redis
-  updateViewCountApi(props.id).catch(err => window.$snackbar?.error(err))
+  // 更新文章浏览量到redis（article.id 值是对外 url_id，后端解析为真实 id）
+  updateViewCountApi(article.value.id).catch(err => window.$snackbar?.error(err))
   
   nextTick(() => {
     tocRef.value?.generateAnchors();
@@ -131,7 +140,7 @@ const handleFavoriteToggle = async () => {
   
   favoriteLoading.value = true;
   try {
-    const res = await toggleFavoriteApi(props.id);
+    const res = await toggleFavoriteApi(article.value.id);
     isFavorite.value = res.data.isFavorite;
       // 更新文章收藏数显示
       if (res.data.isFavorite) {
