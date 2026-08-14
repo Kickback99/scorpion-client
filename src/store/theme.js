@@ -82,6 +82,16 @@ export const useThemeStore = defineStore('theme', {
       const validTheme = this.getValidTheme(vuetifyTheme, themeName)
       vuetifyTheme.global.name.value = validTheme
       this.currentTheme = validTheme
+      this.syncScrollbarTheme(vuetifyTheme)
+    },
+
+    /**
+     * 同步当前主题色到 CSS 变量，供 main.scss 全局滚动条使用
+     * @param {Object} vuetifyTheme - useTheme() 返回的对象
+     */
+    syncScrollbarTheme(vuetifyTheme) {
+      const colors = vuetifyTheme.global.current.value.colors
+      document.documentElement.style.setProperty('--scrollbar-thumb-color', colors['primary'])
     },
     
     /**
@@ -110,6 +120,7 @@ export const useThemeStore = defineStore('theme', {
           this.currentTheme = fallbackTheme
         }
       }
+      this.syncScrollbarTheme(vuetifyTheme)
     },
     
     /**
