@@ -47,11 +47,13 @@ export const useUserStore = defineStore('user',{
                 return Promise.reject(error)
             }
         },
-        // 会话内校验登录态：仅 cookie 模式、且本地有 user 缓存时才请求一次服务端校验（未登录网友零请求）
+        // 会话内校验登录态：本地有登录态证据时才请求一次服务端校验（未登录网友零请求）
         async verifyLogin(){
-            if (!isCookieMode() || this.loginVerified) return
+            if (this.loginVerified) return
             this.loginVerified = true
-            if (Object.keys(this.user).length === 0) return
+            // 本地登录态证据：cookie 模式看 user 展示缓存，jwt 模式看 token
+            const hasLocalAuth = isCookieMode() ? Object.keys(this.user).length > 0 : !!this.token
+            if (!hasLocalAuth) return
             try {
                 // _quiet：后台静默校验，401 时拦截器只清状态、不弹窗不跳转（网友刷新页面不该被"登录已过期"打扰）
                 const res = await userInfoApi({ _quiet: true })
