@@ -73,7 +73,7 @@
         <v-list v-if="latestLoading && latestBlogs.length === 0">
             <v-list-item v-for="n in 10" :key="n" class="sidebar-skeleton-item">
                 <template v-slot:prepend>
-                    <v-skeleton-loader type="image" width="90" height="45" class="sidebar-skeleton-img" />
+                    <v-skeleton-loader type="image" width="90" height="50.625" class="sidebar-skeleton-img" />
                 </template>
                 <v-list-item-title>
                     <v-skeleton-loader type="subtitle" />
@@ -97,6 +97,8 @@
                     class="customImg"
                     :src="item.cover || coverRect"
                     width="90"
+                    height="50.625"
+                    cover
                     >
 
                     </v-img>
