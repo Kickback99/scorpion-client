@@ -290,7 +290,6 @@ class WebSocketManager {
     if (pendingLogout === 'true' || (userStore.user && userStore.user._k)) {
       StealthStorage.remove('force_logout_pending')
       await this.logoutAndRedirect()
-      StealthStorage.set('need_login_dialog', 'true') //这个标记是给 APPLogin 的 OnMounted使用
       return true
     }
     return false
