@@ -338,10 +338,12 @@ const handleDetailData = (data) => {
 }
 
 onMounted(()=>{
-    // 1. 获取当前公告列表
-    fetchCurrentNotices()
-    // 2. 建立 SSE 连接，接收实时推送
-    connectNoticeSSE(handleNoticeMessage)
+    if (configStore.getNoticeSseEnabled()) {
+      // 1. 获取当前公告列表
+      fetchCurrentNotices()
+      // 2. 建立 SSE 连接，接收实时推送
+      connectNoticeSSE(handleNoticeMessage)
+    }
 
     renderHotList()
     renderLatestList()

@@ -48,6 +48,7 @@ const _groupKeys = {
     'article_list.scroll_page_size',
     'article_list.pagination_page_size',
     'notice.enabled',
+    'notice.sse_enabled',
     'notice.dismissed_level'
   ],
 
@@ -153,6 +154,7 @@ export const useConfigStore = defineStore('config', {
       // 公告相关
       notice: {
         enabled: true,
+        sse_enabled: false,
         dismissed_level: 'session'
       }
     },
@@ -427,6 +429,13 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     * 获取公告 SSE 实时连接开关
+     */
+    getNoticeSseEnabled(){
+      return this.getValue('notice.sse_enabled') === true
+    },
+
+    /**
      * 获取公告不再提示级别
      */
     getNoticeDismissedLevel(){
@@ -460,6 +469,7 @@ export const useConfigStore = defineStore('config', {
     isWebsocketEnabled()      { return this.getValue('websocket.enabled') ?? true },
     isWebsocketBackendEnabled()      { return this.getValue('websocket.backend_enabled') === true },
     isNoticeEnabled()         { return this.getValue('notice.enabled') ?? true },
+    isNoticeSseEnabled()      { return this.getValue('notice.sse_enabled') === true },
     isNoticeDismissedLevel()  { return this.getValue('notice.dismissed_level') === 'session' ? 'session' : 'permanent' },
   }
 })
