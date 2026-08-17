@@ -178,13 +178,6 @@ const drawer = inject('drawer')
 // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 
-const userName = computed(() => {
-  if (userStore.user && userStore.user.username) {
-    return userStore.user.username
-  }
-  return '张三'
-})
-
 const userAvatar = computed(() => {
   if (userStore.user && userStore.user.avatar) {
     return userStore.user.avatar

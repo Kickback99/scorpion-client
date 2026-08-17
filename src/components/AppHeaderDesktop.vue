@@ -164,10 +164,10 @@ const vuetifyTheme = useTheme()
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 
 const userName = computed(() => {
-  if (userStore.user && userStore.user.username) {
-    return userStore.user.username
+  if (userStore.user) {
+    return userStore.user.nickname || userStore.user.username || null
   }
-  return '张三'
+  return null
 })
 
 const userAvatar = computed(() => {
