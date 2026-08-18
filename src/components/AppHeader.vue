@@ -8,9 +8,7 @@
     </v-container>
   </v-app-bar>
 
-  <!-- 移动端抽屉 Teleport 目标（DOM 层级提升到 v-app-bar 外部） -->
-  <div class="mobile-drawer-portal"></div>
-
+  <!-- 移动端抽屉 Teleport 目标已移至 index.html（Vue 挂载前就存在于文档中） -->
   <AppLogin></AppLogin>
 </template>
 
