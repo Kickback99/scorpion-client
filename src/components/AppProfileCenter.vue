@@ -14,7 +14,7 @@
             <v-icon left class="mr-2">mdi-account-circle</v-icon>
             个人资料
           </v-tab>
-          <v-tab value="feedback">
+          <v-tab v-if="configStore.isMyFeedbackEnabled" value="feedback">
             <v-icon left class="mr-2">mdi-message-text</v-icon>
             我的反馈
           </v-tab>
@@ -45,7 +45,7 @@
           </v-tabs-window-item>
 
           <!-- 我的反馈 Tab -->
-          <v-tabs-window-item value="feedback">
+          <v-tabs-window-item v-if="configStore.isMyFeedbackEnabled" value="feedback">
             <v-sheet class="pa-6">
               <v-data-table
                 :headers="feedbackHeaders"

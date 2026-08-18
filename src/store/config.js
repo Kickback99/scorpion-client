@@ -35,6 +35,7 @@ const _groupKeys = {
     'nav.friend_link_enabled',
     'user.login_enabled',
     'user.other_login_enabled',
+    'profile.my_feedback_enabled',
     'profile.my_publishes_enabled',
     'profile.my_comments_enabled',
     'profile.my_favorites_enabled',
@@ -129,6 +130,7 @@ export const useConfigStore = defineStore('config', {
 
       // 个人中心相关
       profile: {
+        my_feedback_enabled: false,
         my_publishes_enabled: false,
         my_comments_enabled: true,
         my_favorites_enabled: true
@@ -322,6 +324,13 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     *  获取我的反馈是否开启
+     */
+    getMyFeedbackEnabled(){
+      return this.getValue('profile.my_feedback_enabled') ?? true
+    },
+
+    /**
      *  获取我的发布是否开启
      */
     getPublishesEnabled(){
@@ -454,6 +463,7 @@ export const useConfigStore = defineStore('config', {
     childCommentLimit()       { return this.getValue('comment.child_comment_limit') ?? 3 },
     childPageSize()           { return this.getValue('comment.child_page_size') ?? 7 },
     parentPageSize()          { return this.getValue('comment.parent_page_size') ?? 10 },
+    isMyFeedbackEnabled()     { return this.getValue('profile.my_feedback_enabled') ?? true },
     isMyPublishesEnabled()    { return this.getValue('profile.my_publishes_enabled') ?? true },
     isMyCommentsEnabled()     { return this.getValue('profile.my_comments_enabled') ?? true },
     isMyFavoritesEnabled()    { return this.getValue('profile.my_favorites_enabled') ?? true },
