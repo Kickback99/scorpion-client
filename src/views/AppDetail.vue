@@ -229,6 +229,10 @@ watch(() => isLoggedIn.value, () => {
     background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
     color: rgb(var(--v-theme-on-primary)) !important;
   }
+
+  tr:nth-child(2n) {
+    background: transparent !important;
+  }
 }
 
 /* vuepress主题：文章详情页浅色背景下的颜色 */
@@ -236,8 +240,12 @@ watch(() => isLoggedIn.value, () => {
   background: var(--v-theme-surface);
   color: #000;
   code:not(pre code) {
-    background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
-    color: rgb(var(--v-theme-on-primary)) !important;
+    background-color: rgb(var(--v-theme-surface-variant),0.5) !important;
+    color: rgb(var(--v-theme-on-surface-variant)) !important;
+  }
+
+  tr:nth-child(2n) {
+    background: transparent !important;
   }
 }
 
@@ -246,6 +254,9 @@ watch(() => isLoggedIn.value, () => {
   code:not(pre code) {
     background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
     color: rgb(var(--v-theme-primary)) !important;
+  }
+  tr:nth-child(2n) {
+    background: white !important;
   }
 }
 
