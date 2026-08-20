@@ -24,7 +24,8 @@
 
       <!-- 移动端搜索 -->
       <v-text-field
-        v-if="smAndDown && route.path === '/'"
+        v-if="smAndDown"
+        :style="{ visibility: route.path === '/' ? 'visible' : 'hidden' }"
         v-model="keyword"
         label="请输入标题/内容"
         variant="outlined"
