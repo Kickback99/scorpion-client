@@ -28,6 +28,9 @@
                 </v-row>
             </v-container>
         </v-main>
+
+        <!-- 底部页脚 -->
+        <AppFooter></AppFooter>
     </v-app>
 </template>
 
@@ -37,6 +40,7 @@ import AppSidebar from '@/components/AppSidebar.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AppCarousel from '@/components/AppCarousel.vue';
 import AppHeader from '@/components/AppHeader.vue';
+import AppFooter from '@/components/AppFooter.vue';
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 // 全局总线
