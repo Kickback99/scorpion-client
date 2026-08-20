@@ -33,6 +33,7 @@ const _groupKeys = {
     'comment.child_page_size',
     'comment.parent_page_size',
     'nav.friend_link_enabled',
+    'nav.about_enabled',
     'user.login_enabled',
     'user.other_login_enabled',
     'profile.my_feedback_enabled',
@@ -118,6 +119,8 @@ export const useConfigStore = defineStore('config', {
       nav: {
         // 友链显示
         friend_link_enabled: false,
+        // 关于页面显示
+        about_enabled: false,
       },
 
       // 用户相关
@@ -237,6 +240,13 @@ export const useConfigStore = defineStore('config', {
      */
     getFriendLinkEnabled(){
       return this.getValue('nav.friend_link_enabled') === true
+    },
+
+    /**
+     * 获取关于页面是否启用
+     */
+    getAboutEnabled(){
+      return this.getValue('nav.about_enabled') === true
     },
 
     /**
@@ -456,6 +466,7 @@ export const useConfigStore = defineStore('config', {
   getters: {
     carouselLimit()          { return this.getValue('article.carousel_limit') ?? 3 },
     isNavFriendLinkEnabled()  { return this.getValue('nav.friend_link_enabled') === true },
+    isNavAboutEnabled()       { return this.getValue('nav.about_enabled') === true },
     isUserLoginEnabled()      { return this.getValue('user.login_enabled') === true },
     isUserOtherLoginEnabled() { return this.getValue('user.other_login_enabled') === true },
     isArticleCommentEnabled()    { return this.getValue('comment.article_comment_enabled') === true },
