@@ -2,7 +2,7 @@
   <div class="breadcrumb-wrapper py-2" v-if="items.length > 1 || smAndDown">
     <div class="d-flex align-center">
       <v-breadcrumbs
-        v-if="items.length > 1 && !(smAndDown && route.path === '/profile')"
+        v-if="items.length > 1 && !(smAndDown && route.path === '/profile') && !(route.path === '/about')"
         :items="items"
         density="compact"
         class="pa-0 flex-grow-0"

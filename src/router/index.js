@@ -88,6 +88,17 @@ router.beforeEach(async(to, from, next) => {
   await loadClientConfig()
 
   const userStore = useUserStore()
+  const configStore = useConfigStore()
+
+  // 友链、关于页面配置关闭时，统一拦截跳转 404
+  if (
+    (to.path === '/friendLink' && !configStore.getFriendLinkEnabled()) ||
+    (to.path === '/about' && !configStore.getAboutEnabled())
+  ) {
+    next('/404')
+    return
+  }
+
   // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
   const isLoggedIn = userStore.isLoggedIn
   
