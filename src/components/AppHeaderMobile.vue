@@ -135,6 +135,7 @@
         </v-list-item>
 
         <v-list-item
+          v-if="configStore.getAboutEnabled()"
           @click="handleNavClick('about')"
         >
           <v-list-item-title>关于</v-list-item-title>

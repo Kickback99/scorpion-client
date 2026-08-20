@@ -61,7 +61,9 @@
       @click="handleNavClick('friendLink')"
       class="text-none"
       >友链</v-btn>
-    <v-btn color="success"
+    <v-btn
+      v-if="configStore.getAboutEnabled()"
+      color="success"
       variant="text"
       @click="handleNavClick('about')"
       class="text-none"
