@@ -1,32 +1,17 @@
 <template>
-    <h4>当前断点是 {{ name }}</h4>
-    <h4>是否是移动设备 {{ mobile }}</h4>
-    <my-button>123</my-button>
-    <br>
-    <v-btn color="primary">primary</v-btn>
-    <v-btn color="error">error</v-btn>
-    <v-btn color="secondary">secondary</v-btn>
-    <v-btn color="customBlue">自定义颜色按钮</v-btn>
-    <v-btn>自定义颜色按钮</v-btn>
-    
-    <v-btn>按钮</v-btn>       <!-- 圆角变为8px -->
-    <v-text-field></v-text-field> <!-- 圆角变为4px -->
-
-    <v-container>
-        <v-card>
-    <v-card-title>标题</v-card-title> <!-- 字体变大加粗 -->
-    <v-card-text v-card-text>内容</v-card-text>   <!-- 内边距调整 -->
-    </v-card>
-    </v-container>
- 
-
-
-  </template>
+  <v-container class="about-page pa-0">
+        <v-card class="mx-auto mt-5" rounded="xm">
+          <v-card-title class="text-h5 font-weight-bold">蝎子编程</v-card-title>
+          <v-card-subtitle>你好，很高兴遇见你。</v-card-subtitle>
+          <v-divider></v-divider>
+          <v-card-text class="text-body-1">
+            这里是蝎子编程，一个分享编程知识和学习笔记的小站。欢迎有空常来看看，一起交流，一起进步。
+          </v-card-text>
+        </v-card>
+  </v-container>
+</template>
 
 <script setup>
-import { useDisplay} from 'vuetify'
-const { name, mobile, width } = useDisplay()
-
 
 </script>
 
