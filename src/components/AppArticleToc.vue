@@ -10,7 +10,7 @@
       @click.stop="handleToggleToc"
       class="toc-toggle-btn"
       :style="{
-        transform: `translateX(${translateXValue})`,
+        right: rightOffset,
         top: `${POSITION_CONFIG.TOP}px`
       }"
     >
@@ -23,7 +23,7 @@
       class="toc-card"
       elevation="4"
       :style="{
-        transform: `translateX(calc(${translateXValue} + ${POSITION_CONFIG.BUTTON_GAP}px))`,
+        right: rightOffset,
         top: `${POSITION_CONFIG.TOP + POSITION_CONFIG.VERTICAL_GAP}px`,
         '--toc-scale': tocFontScale
       }"
@@ -100,16 +100,14 @@ const tocAnchors = ref([])
 const selectedTocItem = ref([])
 const titleElements = ref([])
 const tooltipVisible = ref({})
-const translateXValue = ref('0px')
+const rightOffset = ref('0px')
 let isScrollingToTarget = false
 let scrollTimeout = null
 
 const POSITION_CONFIG = {
   TOP: 150,
-  HORIZONTAL_OFFSET: -18,
-  BUTTON_GAP: 18,
+  EDGE_GAP: 0,
   VERTICAL_GAP: 56,
-  CONTAINER_PS: 32,
   SCROLL_TOP_OFFSET: 80,
   ACTIVATION_OFFSET: 100
 }
@@ -191,13 +189,18 @@ const generateTocAnchors = () => {
   }
 }
 
-/** 计算 TOC 按钮/卡片的水平定位 */
+/**
+ * 计算 TOC 按钮/卡片的水平定位
+ * 二者均为 fixed 定位，各自以自身右边缘对齐文章内容区右边缘，宽度差异由浏览器处理，互不影响
+ * 注意：fixed 的包含块为不含滚动条的初始包含块，须用 clientWidth 而非 innerWidth
+ */
 const calculatePosition = () => {
-  const leftContent = document.querySelector('.v-col-md-9')
-  if (!leftContent) return
+  const articleContent = document.querySelector('.markdown-content')
+  if (!articleContent) return
 
-  const contentWidth = leftContent.offsetWidth
-  translateXValue.value = `calc(${contentWidth}px - 100% + ${POSITION_CONFIG.HORIZONTAL_OFFSET}px - ${POSITION_CONFIG.CONTAINER_PS}px)`
+  const contentRight = articleContent.getBoundingClientRect().right
+  const viewportWidth = document.documentElement.clientWidth
+  rightOffset.value = `${viewportWidth - contentRight + POSITION_CONFIG.EDGE_GAP}px`
 }
 
 /** 滚动时高亮对应的目录项 */
@@ -403,7 +406,7 @@ defineExpose({
   position: fixed;
   z-index: 999;
   max-width: 280px;
-  transition: transform 0.3s ease;
+  transition: right 0.3s ease;
 }
 
 .toc-card {
@@ -472,7 +475,6 @@ defineExpose({
 @media (max-width: 960px) {
   .toc-toggle-btn,
   .toc-card {
-    transform: none !important;
     right: 20px !important;
   }
   .toc-card {
