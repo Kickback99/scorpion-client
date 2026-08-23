@@ -11,9 +11,10 @@ export const getCurrentNoticeListApi = () => http.get('/client/notice/current/li
  * 建立 SSE 连接，接收实时公告推送（用户端）
  * @param {Function} onMessage 收到消息时的回调
  * @param {Function} onError 错误回调
+ * @param {Function} onOpen 连接建立回调（首次连接与自动重连均会触发）
  * @returns {SSEManager}
  */
-export const connectNoticeSSE = (onMessage, onError) => {
+export const connectNoticeSSE = (onMessage, onError, onOpen) => {
     // 获取 SSE 接口地址
     const baseUrl = import.meta.env.VITE_API || ''
     const sseUrl = `${baseUrl}/client/notice/sse`
@@ -33,6 +34,9 @@ export const connectNoticeSSE = (onMessage, onError) => {
         },
         onOpen: () => {
             console.log('公告 SSE 连接已建立')
+            if (onOpen) {
+                onOpen()
+            }
         }
     })
 }

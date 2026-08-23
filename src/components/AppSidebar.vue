@@ -222,6 +222,28 @@ const fetchCurrentNotices = async (options = {}) => {
     }
 }
 
+// SSE 连接标记：区分首次连接与自动重连（重连后补偿拉取断连期间错过的公告）
+const sseConnectedOnce = ref(false)
+
+/**
+ * SSE 连接建立回调：首次连接不动作（onMounted 已拉取列表）；
+ * 自动重连成功后先对齐后台 notice.sse_enabled 开关（关闭则断开），再补偿拉取公告列表
+ */
+const handleSseOpen = async () => {
+    if (!sseConnectedOnce.value) {
+        sseConnectedOnce.value = true
+        return
+    }
+    // 重新拉取配置，与后台开关对齐
+    await configStore.loadConfig()
+    if (!configStore.getNoticeSseEnabled()) {
+        // 后台已关闭公告 SSE：断开连接，不再补拉（页面重载前不再连接）
+        disconnectNoticeSSE()
+        return
+    }
+    fetchCurrentNotices()
+}
+
 /**
  * 处理收到的公告消息（SSE 推送）
  * dismissed_level=session（07a968e）：set 标记为 '1'，新公告弹出
@@ -342,7 +364,7 @@ onMounted(()=>{
       // 1. 获取当前公告列表
       fetchCurrentNotices()
       // 2. 建立 SSE 连接，接收实时推送
-      connectNoticeSSE(handleNoticeMessage)
+      connectNoticeSSE(handleNoticeMessage, null, handleSseOpen)
     }
 
     renderHotList()
