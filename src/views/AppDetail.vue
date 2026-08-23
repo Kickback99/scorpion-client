@@ -1,19 +1,36 @@
 <template>
   <v-container>
-  <v-card variant="flat">
+  <!-- 骨架屏：加载中 -->
+  <v-card v-if="isLoading" variant="flat">
+    <v-card-title>
+      <v-skeleton-loader type="heading" class="detail-skeleton-title" />
+    </v-card-title>
+
+    <div class="detail-skeleton-content">
+      <v-skeleton-loader
+        v-for="n in skeletonLineGroups"
+        :key="n"
+        type="sentences"
+        class="detail-skeleton-lines"
+      />
+    </div>
+  </v-card>
+
+  <!-- 真实内容 -->
+  <v-card v-else variant="flat">
     <v-card-title class="d-flex justify-space-between align-center">
       <span>{{ article.title }}</span>
     </v-card-title>
 
     <div class="markdown-content">
-       <component 
-        :is="MarkdownPreview" 
+       <component
+        :is="MarkdownPreview"
         :text="article.content"
         ref="preview"
         @copy-code-success="handleCopySuccess"
         :key="configStore.article_detail?.theme"
         :class="themeStore.isDark?'user-dark':'user-light'"
-        /> 
+        />
     </div>
   </v-card>
 
@@ -60,6 +77,7 @@
 <script setup>
 import { articleDetailApi, toggleFavoriteApi, updateViewCountApi } from '@/api/article';
 import { onMounted, ref, watch, nextTick, computed } from 'vue';
+import { useDisplay } from 'vuetify';
 import { useRoute, useRouter } from 'vue-router';
 import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
@@ -85,10 +103,16 @@ const cateArticles = ref([]);
 const tags = ref([]);
 const isFavorite = ref(false);
 const favoriteLoading = ref(false);
+// 骨架屏：加载状态
+const isLoading = ref(true);
+// 骨架屏内容行组数：移动端 4 组，PC 6 组
+const display = useDisplay();
+const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6));
 // 系统配置
 const configStore = useConfigStore()
 
 const renderArticleItem = async() => {
+  isLoading.value = true
   let res
   try {
     res = await articleDetailApi(props.id);
@@ -97,6 +121,8 @@ const renderArticleItem = async() => {
     window.$snackbar?.error('文章不存在')
     router.replace('/')
     return
+  } finally {
+    isLoading.value = false
   }
   article.value = res.data.articleItem;
   isFavorite.value = res.data.isFavorite || false;
@@ -215,6 +241,34 @@ watch(() => isLoggedIn.value, () => {
 </script>
 
 <style scoped>
+/* 骨架屏：标题骨 32px 匹配真实标题行高，全宽 */
+.detail-skeleton-title {
+  width: 100%;
+}
+
+.detail-skeleton-title :deep(.v-skeleton-loader__heading) {
+  margin: 0;
+  height: 32px;
+}
+
+/* 骨架屏：内容区 padding 对齐真实内容（左16卡片 + 右16卡片+20 markdown） */
+.detail-skeleton-content {
+  padding: 8px 36px 16px 16px;
+}
+
+/* ============ 骨架屏内容行宽度控制区 ============
+ * 每组 sentences 渲染 2 行 text 骨：
+ *   第1行 :first-child   → 默认 100%，可在此改 max-width
+ *   第2行 :nth-child(2)  → Vuetify 默认 max-width 50%
+ * 修改宽度就在下方规则里调整即可
+ */
+ .detail-skeleton-content :deep(.v-skeleton-loader__text:first-child) {
+  max-width: 70%;
+}
+.detail-skeleton-content :deep(.v-skeleton-loader__text) {
+  margin: 4px 0;
+}
+
 /* 主内容区域 */
 .markdown-content {
   width: 100%;
