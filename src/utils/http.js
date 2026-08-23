@@ -7,7 +7,7 @@ import { isCookieMode } from '@/utils/auth'
 //定义一个变量,记录公共的前缀  ,  baseURL
 const baseURL = import.meta.env.VITE_API;
 // withCredentials：cookie 模式下跨域请求携带 HttpOnly Cookie（同源请求无影响）
-const instance = axios.create({baseURL,timeout:4000,withCredentials:true})
+const instance = axios.create({baseURL,timeout:15000,withCredentials:true})
 import router from '@/router';
 
 import {isAuthRequired} from '@/api/authRequired'
