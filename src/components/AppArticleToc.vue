@@ -1,6 +1,6 @@
 <template>
   <!-- ===== TOC 容器 ===== -->
-  <v-sheet>
+  <v-sheet class="toc-container">
     <!-- TOC 切换按钮 -->
     <v-btn
       v-if="hasToc"
@@ -401,6 +401,11 @@ defineExpose({
 // ============================================================
 // 定位
 // ============================================================
+// 容器脱离文档流：不生成盒子、不占位，内部按钮/卡片仍各自 fixed 相对视口定位
+.toc-container {
+  display: contents;
+}
+
 .toc-toggle-btn,
 .toc-card {
   position: fixed;

@@ -272,7 +272,6 @@ watch(() => isLoggedIn.value, () => {
 /* 主内容区域 */
 .markdown-content {
   width: 100%;
-  padding-right: 20px;
 }
 
 /* vuepress主题：文章详情页深色背景下的颜色 */
