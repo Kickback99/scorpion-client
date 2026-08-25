@@ -27,6 +27,10 @@ const scale = useDialogFontScale(0.8)
   // 取消 v-footer 默认 padding，由内部 v-container 统一控制边距，保证与主内容对齐
   padding: 0;
 
+  // 覆盖 v-footer 默认的 flex: 1 1 auto：页脚不应参与纵向拉伸，
+  // 否则内容不足一屏时（如刷新瞬间骨架屏）页脚被撑高、文字垂直居中，出现大量留白
+  flex: 0 0 auto;
+
   // 桌面 15px，移动端缩小至 12px（0.9375rem * 0.8）
   .footer-text {
     font-size: calc(0.9375rem * var(--footer-scale));
