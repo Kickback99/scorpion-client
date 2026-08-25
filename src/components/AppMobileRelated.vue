@@ -1,21 +1,5 @@
 <template>
   <div v-if="smAndDown && (tagList.length > 0 || articleList.length > 0)" class="mt-5">
-    <!-- 相关标签 — 完全复用 AppSidebar 样式 -->
-    <AppBlogBox :title="titles.tags">
-      <v-chip-group column class="pa-2" mandatory>
-        <v-chip
-          label
-          v-for="item in tagList"
-          :key="item.id"
-          density="comfortable"
-          size="small"
-          :value="item.id"
-          base-color="primary"
-          @click="onSearch('tag', item.id)"
-        >{{ item.name }}</v-chip>
-      </v-chip-group>
-    </AppBlogBox>
-
     <!-- 相关文章 — 完全复用 AppSidebar 样式 -->
     <AppBlogBox :title="titles.articles">
       <v-list>
@@ -36,6 +20,22 @@
           <v-list-item-subtitle class="text-caption">{{ item.createTime }}</v-list-item-subtitle>
         </v-list-item>
       </v-list>
+    </AppBlogBox>
+
+    <!-- 相关标签 — 完全复用 AppSidebar 样式 -->
+    <AppBlogBox :title="titles.tags">
+      <v-chip-group column class="pa-2" mandatory>
+        <v-chip
+          label
+          v-for="item in tagList"
+          :key="item.id"
+          density="comfortable"
+          size="small"
+          :value="item.id"
+          base-color="primary"
+          @click="onSearch('tag', item.id)"
+        >{{ item.name }}</v-chip>
+      </v-chip-group>
     </AppBlogBox>
   </div>
 </template>
