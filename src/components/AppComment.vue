@@ -1,6 +1,6 @@
 <!-- components/AppComment.vue -->
 <template>
-  <v-card class="comment-container" variant="flat">
+  <v-card class="comment-container" variant="flat" :style="{ '--comment-scale': scale }">
     <v-card-title class="text-h6">
       <v-icon start>mdi-chat-outline</v-icon>
       评论区
@@ -328,6 +328,7 @@ import emitter from '@/utils/event-bus.js'
 
 import { getCommentsApi, addCommentApi, getChildCommentsApi, deleteCommentApi, getFriendLinkCommentApi } from '@/api/comment'
 import AppReplyInput from './AppReplyInput.vue'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
 const props = defineProps({
   articleId: {
@@ -352,6 +353,7 @@ const emit = defineEmits(['comment-deleted'])
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
+const scale = useDialogFontScale()
 
 // 子评论显示限制数量（默认3条）
 const childCommentLimit = ref(3)
@@ -931,5 +933,54 @@ onMounted(() => {
 
 :deep(.v-list-item__prepend) {
   align-self: start !important;
+}
+</style>
+
+<style scoped lang="scss">
+// ============================================================
+// 移动端字号缩放
+// ============================================================
+.comment-container {
+  --comment-scale: 1;
+
+  // 标题：评论区
+  :deep(.v-card-title) {
+    font-size: calc(1.25rem * var(--comment-scale)) !important;
+  }
+
+  // 辅助说明文字：条数 / 时间 / @回复对象 / 加载提示等
+  .text-caption {
+    font-size: calc(0.75rem * var(--comment-scale)) !important;
+  }
+
+  // 评论输入框文字与占位符
+  :deep(.v-field),
+  :deep(.v-field .v-label) {
+    font-size: calc(1rem * var(--comment-scale)) !important;
+  }
+
+  // 按钮：发表评论 / 登录后参与评论 / 查看更多 / 收起等
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--comment-scale)) !important;
+  }
+
+  // 空状态文字：暂无评论，快来抢沙发吧~
+  :deep(.v-card-text.text-grey) {
+    font-size: calc(0.875rem * var(--comment-scale)) !important;
+  }
+
+  // 根评论正文与用户名（body-1 = 1rem）
+  .comment-item {
+    :deep(.v-list-item-title) {
+      font-size: calc(1rem * var(--comment-scale)) !important;
+    }
+  }
+
+  // 子评论正文与用户名（text-body-2 = 0.875rem）
+  .child-comment-item {
+    :deep(.v-list-item-title) {
+      font-size: calc(0.875rem * var(--comment-scale)) !important;
+    }
+  }
 }
 </style>
