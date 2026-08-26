@@ -7,7 +7,7 @@
             type="image"
             :width="coverWidth"
             :height="coverHeight"
-            class="skeleton-cover rounded-lg"
+            class="skeleton-cover"
           />
         </div>
       </template>
@@ -56,7 +56,11 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 <style scoped lang="scss">
 // == Container matching ArticleItem ==
 .skeleton-cover-wrap {
-  margin: 0 12px;
+  margin: 0 20px 0 12px;
+}
+
+.skeleton-cover {
+  border-radius: var(--article-cover-radius);
 }
 
 // == Aggressive bone margin reset ==

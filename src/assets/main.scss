@@ -59,3 +59,8 @@ html, body {
     --thumb-paint: color-mix(in srgb, var(--scrollbar-thumb-color, #999) 75%, transparent);
   }
 }
+
+/* ========== 文章封面图 & 骨架屏 统一圆角（组件内通过 var() 引用，改这里即可全局生效） ========== */
+:root {
+  --article-cover-radius: 2px;
+}
