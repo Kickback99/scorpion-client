@@ -1,5 +1,5 @@
 <template>
-  <div v-if="smAndDown && (tagList.length > 0 || articleList.length > 0)" class="mt-5">
+  <div v-if="smAndDown && (tagList.length > 0 || articleList.length > 0)" class="mt-5" :style="{ '--related-scale': scale }">
     <!-- 相关文章 — 完全复用 AppSidebar 样式 -->
     <AppBlogBox :title="titles.articles">
       <v-list>
@@ -45,9 +45,11 @@ import { ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue'
 import { useSearch } from '@/utils/useSearch'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 import coverRect from '@/assets/images/cover-rect.png'
 
 const { smAndDown } = useDisplay()
+const scale = useDialogFontScale()
 const { triggerSearch } = useSearch()
 
 const props = defineProps({
@@ -93,5 +95,12 @@ watch(() => props.articles, (val) => {
 
 :deep(.customImg + .v-list-item__spacer) {
   width: 10px !important;
+}
+
+// ============================================================
+// 移动端标题字号缩放（与 AppComment 评论区标题保持一致）
+// ============================================================
+:deep(.v-card-title) {
+  font-size: calc(1.25rem * var(--related-scale)) !important;
 }
 </style>
