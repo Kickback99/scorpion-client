@@ -6,7 +6,7 @@
                 <v-img
                   :src="cover || coverRect"
                   :alt="title"
-                  class="cover-image rounded-lg"
+                  class="cover-image"
                   :class="{ 'default-cover': !cover }"
                   :width="display.smAndDown.value ? 150 : 250"
                   :aspect-ratio="16/9"
@@ -16,7 +16,8 @@
                 <!-- 桌面端置顶徽章 -->
                   <v-sheet :class="[
                     'ribbon-window',
-                    themeStore.isDark ? 'bg-secondary-darken-1' : 'bg-secondary-lighten-1'
+                    themeStore.isDark ? 'bg-secondary-darken-1' : 'bg-secondary-lighten-1',
+                    { 'ribbon-default': !cover }  // 当没有 cover 时添加
                   ]" v-if="isTop === '1' && !display.smAndDown.value">
                     <span>
                         置顶
@@ -124,7 +125,7 @@ const themeStore = useThemeStore()
 }
 
 .default-cover{
-  border-radius: 20px; 
+  border-radius: 8px; 
   padding: 0 5px;
 }
 
@@ -146,6 +147,10 @@ const themeStore = useThemeStore()
     border-top: 4px solid rgb(var(--v-theme-primary));
     border-right: 4px solid transparent;
   }
+}
+
+.ribbon-default {
+  right: 1px !important;
 }
 
 /* 移动端置顶图标按钮样式 */
@@ -231,7 +236,7 @@ const themeStore = useThemeStore()
   padding-bottom: 10px !important;
   padding-top: 10px !important;
   .v-img__img.v-img__img--contain {
-      border-radius: 20px; 
+      border-radius: 8px; 
   }
 }
 
