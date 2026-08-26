@@ -9,6 +9,7 @@
     :rounded="config.rounded"
     multi-line
     position="fixed"
+    :style="{ '--snackbar-scale': scale }"
   >
     <slot>
       <!-- 默认行内布局 -->
@@ -50,11 +51,13 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
 // ============================================================
 // 数据
 // ============================================================
 const visible = ref(false)
+const scale = useDialogFontScale()
 let actionCallback = null
 
 const config = reactive({
@@ -219,3 +222,20 @@ defineExpose({
   info
 })
 </script>
+
+<style scoped lang="scss">
+// ============================================================
+// 移动端字号缩放
+// ============================================================
+.v-snackbar {
+  --snackbar-scale: 1;
+
+  .text-body-2 {
+    font-size: calc(0.875rem * var(--snackbar-scale)) !important;
+  }
+
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--snackbar-scale)) !important;
+  }
+}
+</style>
