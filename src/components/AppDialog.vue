@@ -6,7 +6,7 @@
     :class="config.dialogClass"
     @update:model-value="handleDialogClose"
   >
-    <v-card>
+    <v-card :style="{ '--dialog-scale': scale }">
       <!-- 标题区域 -->
       <v-card-title class="d-flex align-center">
         <v-icon v-if="config.icon" :icon="config.icon" :color="config.iconColor" class="mr-2" />
@@ -53,8 +53,10 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
 const visible = ref(false)
+const scale = useDialogFontScale()
 
 const config = reactive({
   title: '提示',
@@ -168,3 +170,24 @@ defineExpose({
   confirm
 })
 </script>
+
+<style scoped lang="scss">
+// ============================================================
+// 移动端字号缩放
+// ============================================================
+.v-card {
+  --dialog-scale: 1;
+
+  :deep(.v-card-title) {
+    font-size: calc(1.25rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.v-card-text) {
+    font-size: calc(0.875rem * var(--dialog-scale)) !important;
+  }
+
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--dialog-scale)) !important;
+  }
+}
+</style>
