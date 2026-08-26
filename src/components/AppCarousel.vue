@@ -21,7 +21,7 @@
                     :key="index"
                     @click="goToLink(item.link)"
                 >
-                    <v-img :src="item.img" cover />
+                    <v-img :src="item.img" :lazy-src="coverRect" cover class="lazy-img" />
                     <!-- 轮播标题遮罩 + 文字 -->
                     <v-overlay
                         absolute
@@ -45,6 +45,7 @@
 import { ref, onMounted } from 'vue'
 import { getCarouselListApi } from '@/api/carousel'
 import { useRouter } from 'vue-router'
+import coverRect from '@/assets/images/cover-rect.png'
 const router = useRouter()
 
 const isLoading = ref(true)
