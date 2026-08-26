@@ -97,6 +97,10 @@ watch(() => props.articles, (val) => {
   width: 10px !important;
 }
 
+.customImg {
+  border-radius: var(--article-cover-radius);
+}
+
 // ============================================================
 // 移动端标题字号缩放（与 AppComment 评论区标题保持一致）
 // ============================================================

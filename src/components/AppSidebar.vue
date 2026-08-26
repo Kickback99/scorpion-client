@@ -562,6 +562,15 @@ onUnmounted(() => {
   max-width: 50%;
 }
 
+// 最新文章封面图 & 骨架屏统一圆角
+.customImg {
+  border-radius: var(--article-cover-radius);
+}
+
+.sidebar-skeleton-img {
+  border-radius: var(--article-cover-radius);
+}
+
 .hot-section {
     transition: none; // FLIP 自行管理动画，不靠 CSS transition
 }

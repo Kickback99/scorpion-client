@@ -123,7 +123,7 @@ const themeStore = useThemeStore()
 }
 
 .cover-image {
-  border-radius: 2px;
+  border-radius: var(--article-cover-radius);
   overflow: hidden;
 }
 
