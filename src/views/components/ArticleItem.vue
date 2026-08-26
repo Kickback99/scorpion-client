@@ -7,17 +7,15 @@
                   :src="cover || coverRect"
                   :alt="title"
                   class="cover-image"
-                  :class="{ 'default-cover': !cover }"
                   :width="display.smAndDown.value ? 150 : 250"
                   :aspect-ratio="16/9"
-                  contain
+                  cover
                 />
-                
+
                 <!-- 桌面端置顶徽章 -->
                   <v-sheet :class="[
                     'ribbon-window',
-                    themeStore.isDark ? 'bg-secondary-darken-1' : 'bg-secondary-lighten-1',
-                    { 'ribbon-default': !cover }  // 当没有 cover 时添加
+                    themeStore.isDark ? 'bg-secondary-darken-1' : 'bg-secondary-lighten-1'
                   ]" v-if="isTop === '1' && !display.smAndDown.value">
                     <span>
                         置顶
@@ -121,18 +119,18 @@ const themeStore = useThemeStore()
 .cover-container {
   position: relative;
   display: inline-block;
-  margin: 0 12px;
+  margin: 0 20px 0 12px;
 }
 
-.default-cover{
-  border-radius: 8px; 
-  padding: 0 5px;
+.cover-image {
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .ribbon-window {
   position: absolute;
   top: 10%;
-  right: 11px;
+  right: -4px;
   padding: 2px 10px;
   /* background-color: #57DD43; */
   font-size: 12px;
@@ -149,15 +147,11 @@ const themeStore = useThemeStore()
   }
 }
 
-.ribbon-default {
-  right: 1px !important;
-}
-
 /* 移动端置顶图标按钮样式 */
 .top-btn-mobile {
   position: absolute;
   top: 9px;
-  right: 7px;
+  right: 5px;
   min-width: 24px;
   width: 24px;
   height: 24px;
@@ -235,9 +229,6 @@ const themeStore = useThemeStore()
 :deep(.v-list-item){
   padding-bottom: 10px !important;
   padding-top: 10px !important;
-  .v-img__img.v-img__img--contain {
-      border-radius: 8px; 
-  }
 }
 
 /* .title-category h4 {
