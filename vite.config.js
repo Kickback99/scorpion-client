@@ -21,6 +21,17 @@ export default defineConfig(({ mode }) => {
           drop_debugger: isProd,
         },
       },
+      // 手动拆包：把稳定第三方库拆成独立 chunk，配合 nginx immutable 缓存，发版后回访只重下变化的 app 包
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vue: ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
+            vuetify: ['vuetify'],
+            editor: ['@kangc/v-md-editor', 'marked', 'prismjs', 'markdown-it', 'highlight.js'],
+            utils: ['axios', 'mitt'],
+          },
+        },
+      },
     },
     optimizeDeps: {
       exclude: ['markdown-it-toc-done-right'] // 明确排除这个包
