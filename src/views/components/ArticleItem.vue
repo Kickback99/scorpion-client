@@ -5,8 +5,9 @@
               <div class="cover-container">
                 <v-img
                   :src="cover || coverRect"
+                  :lazy-src="coverRect"
                   :alt="title"
-                  class="cover-image"
+                  class="cover-image lazy-img"
                   :width="display.smAndDown.value ? 150 : 250"
                   :aspect-ratio="16/9"
                   cover

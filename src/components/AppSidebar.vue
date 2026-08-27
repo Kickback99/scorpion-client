@@ -94,13 +94,13 @@
             >
                 <template v-slot:prepend>
                     <v-img
-                    class="customImg"
+                    class="customImg lazy-img"
                     :src="item.cover || coverRect"
+                    :lazy-src="coverRect"
                     width="90"
                     height="50.625"
                     cover
                     >
-
                     </v-img>
                 </template>
                 <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>
@@ -367,9 +367,18 @@ onMounted(()=>{
       connectNoticeSSE(handleNoticeMessage, null, handleSseOpen)
     }
 
-    renderHotList()
-    renderLatestList()
-    renderTagList()
+    // 次要数据（热门/最新/标签）延后到浏览器空闲时加载，避免与首屏关键请求（分类+文章）抢带宽
+    const loadSecondary = () => {
+      renderHotList()
+      renderLatestList()
+      renderTagList()
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadSecondary)
+    } else {
+      setTimeout(loadSecondary, 0)
+    }
+
     emitter.on('detail-data',handleDetailData)
 })
 

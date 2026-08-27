@@ -15,6 +15,21 @@ export default defineConfig(({ mode }) => {
       exclude: ['markdown-it-toc-done-right'] // 明确排除这个包
     },
     plugins: [
+      // 生产环境预连接后端域名，本地/test 环境不注入（避免误连生产域名）
+      {
+        name: 'inject-preconnect',
+        transformIndexHtml(html) {
+          if (isProd && env.VITE_HOST) {
+            return {
+              html,
+              tags: [
+                { tag: 'link', attrs: { rel: 'preconnect', href: env.VITE_HOST }, injectTo: 'head-prepend' },
+              ],
+            }
+          }
+          return html
+        },
+      },
       vue(),
       vuetify({
         autoImport: true,  // 必须启用自动导入
