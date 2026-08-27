@@ -42,12 +42,12 @@
 
 <script setup>
 // 依赖导入
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
-import { tagListApi } from '@/api/article'
 import { useSearch } from '@/utils/useSearch'
 import emitter from '@/utils/event-bus.js'
+import { useTagStore } from '@/store/tag'
 
 // ============================================================
 // 数据
@@ -83,10 +83,10 @@ const props = defineProps({
   }
 })
 
-const tags = ref([])
+const tagStore = useTagStore()
 const tagMap = computed(() => {
   const map = {}
-  tags.value.forEach(t => { map[t.id] = t.name })
+  tagStore.list.forEach(t => { map[t.id] = t.name })
   return map
 })
 
@@ -205,20 +205,6 @@ const handleItemClick = (item) => {
   router.push(item.to)
 }
 
-// ============================================================
-// 初始加载
-// ============================================================
-
-onMounted(async () => {
-  try {
-    const res = await tagListApi()
-    if (res.code === 200 && res.data) {
-      tags.value = res.data
-    }
-  } catch {
-    // 标签加载失败不影响面包屑主体功能
-  }
-})
 </script>
 
 <style scoped lang="scss">

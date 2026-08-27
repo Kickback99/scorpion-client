@@ -267,7 +267,10 @@ const initLoadArticles = async () => {
     }
 }
 
-initLoadArticles()
+// 仅当无筛选 query 时才做默认加载；带 query 时交由 onMounted 里的 watch(immediate) 统一处理，避免重复请求
+if (!route.query.type || !route.query.param) {
+    initLoadArticles()
+}
 
 // 绑定总线事件
 onMounted(()=>{

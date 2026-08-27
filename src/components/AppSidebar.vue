@@ -40,7 +40,7 @@
 
     <AppBlogBox :title="titles.tags">
         <v-chip-group column class="pa-2" mandatory>
-        <v-chip label v-for="item in tagList" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id" 
+        <v-chip label v-for="item in tagStore.list" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id"
         base-color="primary"
         >{{ item.name }}</v-chip>
         </v-chip-group>
@@ -151,8 +151,10 @@ const {triggerSearch} = useSearch()
 import { getCurrentNoticeListApi, connectNoticeSSE, disconnectNoticeSSE } from '@/api/notice'
 import { StealthStorage } from '@/utils/stealthStorage'
 import { useConfigStore } from '@/store/config'
+import { useTagStore } from '@/store/tag'
 
 const configStore = useConfigStore()
+const tagStore = useTagStore()
 const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 富文本消息对象 { id, title, content, type }
 const hasLongTextNotice = ref(false)
@@ -336,12 +338,10 @@ const renderLatestList = async() => {
 
 
 
-const tagList = ref([])
-
 const renderTagList = async() =>{
     const res = await tagListApi()
     titles.value.tags = '文章标签'
-    tagList.value = res.data
+    tagStore.list = res.data
 }
 
 
@@ -355,7 +355,7 @@ const handleDetailData = (data) => {
     // 如果有标签数据，更新标签数据
     if (data.tags && data.tags.length > 0) {
         titles.value.tags = '标签'
-        tagList.value = data.tags
+        tagStore.list = data.tags
     }
 }
 
