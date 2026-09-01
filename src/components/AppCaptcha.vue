@@ -33,7 +33,6 @@
         <!-- ===== 点选验证码 ===== -->
         <template v-else-if="isClickType">
             <div class="captcha-click-box">
-                <img v-if="vo.templateImage" :src="vo.templateImage" class="captcha-tip-img" alt="点选提示">
                 <div ref="boxRef" class="captcha-click-bg">
                     <img
                         v-if="vo.backgroundImage"
@@ -50,6 +49,7 @@
                         :style="{ left: p.x * scale + 'px', top: p.y * scale + 'px' }"
                     >{{ i + 1 }}</span>
                 </div>
+                <img v-if="vo.templateImage" :src="vo.templateImage" class="captcha-tip-img" alt="点选提示">
                 <v-btn icon variant="text" size="x-small" color="primary" class="captcha-click-refresh" @click="generate">
                     <v-icon>mdi-refresh</v-icon>
                 </v-btn>
@@ -363,8 +363,8 @@ const handleClickVerify = async () => {
 
         .captcha-tip-img {
             display: block;
-            height: 40px;
-            margin-bottom: 4px;
+            height: 28px;
+            margin-top: 4px;
         }
 
         .captcha-click-bg {
@@ -402,6 +402,7 @@ const handleClickVerify = async () => {
 
         .captcha-click-hint {
             margin-top: 4px;
+            font-size: 11px;
         }
     }
 
