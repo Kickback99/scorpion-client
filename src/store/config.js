@@ -56,6 +56,9 @@ const _groupKeys = {
 
   admin: [
     'article.carousel_limit',
+    'captcha.client_enabled',
+    'captcha.client_register_type',
+    'captcha.client_login_type',
   ],
 }
 
@@ -169,6 +172,14 @@ export const useConfigStore = defineStore('config', {
       article: {
         // 轮播数量
         carousel_limit: 3,
+      },
+      captcha: {
+        // 用户端验证码总开关
+        client_enabled: true,
+        // 用户端注册验证码类型
+        client_register_type: 'default',
+        // 用户端登录验证码类型（账号锁定后出现）
+        client_login_type: 'slider',
       }
     },
   }),
@@ -233,6 +244,22 @@ export const useConfigStore = defineStore('config', {
      */
     getCarouselLimit(){
       return this.getValue('article.carousel_limit') ?? 3
+    },
+
+    /**
+     * 获取用户端验证码总开关
+     */
+    getClientCaptchaEnabled(){
+      return this.getValue('captcha.client_enabled') === true
+    },
+
+    /**
+     * 获取用户端验证码类型
+     * @param {String} scenario 场景：'register' 注册 / 'login' 登录
+     */
+    getCaptchaType(scenario){
+      const key = scenario === 'register' ? 'captcha.client_register_type' : 'captcha.client_login_type'
+      return this.getValue(key) || (scenario === 'register' ? 'default' : 'slider')
     },
 
     /**

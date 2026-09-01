@@ -58,6 +58,11 @@ instance.interceptors.response.use(
             return res.data
         }
 
+        // 验证码必填（232）：静默 reject 完整响应体，交由业务方（登录）内联弹出验证码，不弹通用 snackbar
+        if(res.data.code === 232){
+            return Promise.reject(res.data)
+        }
+
         //匹配状态码为40开头的正则，以及认证失效码 215（token过期）/ 216（账号已退出）
        let regex = /^40[0-9]$/
 

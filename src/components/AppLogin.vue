@@ -59,6 +59,9 @@
                                     >
                                 </v-text-field>
 
+                                <!-- 验证码（账号锁定后出现） -->
+                                <AppCaptcha v-if="showLoginCaptcha" :type="loginCaptchaType" class="mb-2" @success="loginModel.captchaVerifyToken = $event" />
+
                                 <!-- 条款与协议 -->
                                 <!-- <v-checkbox
                                 color="primary"
@@ -155,6 +158,7 @@
                                 >
                                 </v-text-field>
                                 <AppEmailCodeField v-model:email="registerModel.email" v-model:code="registerModel.verifyCode" type="register" />
+                                <AppCaptcha v-if="configStore.getClientCaptchaEnabled()" :type="registerCaptchaType" class="mb-2" @success="registerModel.captchaVerifyToken = $event" />
                                     <!-- 条款与协议 -->
                                 <v-checkbox
                                 color="primary"
@@ -292,11 +296,19 @@ import { useDisplay } from 'vuetify'
 import { useConfigStore } from '@/store/config';
 import AppTermsDialog from '@/components/AppTermsDialog.vue'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
+import { loadCaptchaComponent } from '@/utils/loadCaptcha'
 import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
 
 const display = useDisplay()
 
 const configStore = useConfigStore()
+
+// 验证码组件（懒加载，用到才加载其 chunk）
+const AppCaptcha = loadCaptchaComponent()
+// 用户端登录验证码：账号锁定后显示
+const showLoginCaptcha = ref(false)
+const loginCaptchaType = computed(() => configStore.getCaptchaType('login'))
+const registerCaptchaType = computed(() => configStore.getCaptchaType('register'))
 
 const dialogVisible = ref(false)
 
@@ -328,6 +340,7 @@ const handleIconSize = computed(() => (display.mobile.value ? 54 : 70))
 emitter.on('loginDialogVisible',param => {
     if(dialogVisible.value && param === true) return
     dialogVisible.value = param
+    showLoginCaptcha.value = false
     if(step.value != 1){
         step.value = 1
     }
@@ -433,6 +446,10 @@ const handleLogin = async () => {
         }
     } catch (error) {
         console.error('登录失败:', error)
+        // 账号锁定 → 需要验证码：内联弹出验证码组件，用户解完后重新提交
+        if (error && error.code === 232) {
+            showLoginCaptcha.value = true
+        }
     } finally {
         loading.value = false
     }
