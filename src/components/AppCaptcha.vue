@@ -25,7 +25,7 @@
                 :rules="answerRules"
                 :maxlength="answerMaxLength"
                 prepend-inner-icon="mdi-shield-check"
-                class="mb-2"
+                class="mb-2 mt-4"
                 :loading="verifying"
                 :disabled="verified"
             ></v-text-field>
@@ -489,7 +489,7 @@ const handleClickVerify = async () => {
                 text-align: center;
                 font-size: 12px;
                 color: #fff;
-                background: #f56c6c;
+                background: rgb(var(--v-theme-primary));
                 border-radius: 50%;
                 pointer-events: none;
             }
