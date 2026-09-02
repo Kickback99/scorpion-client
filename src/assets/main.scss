@@ -83,7 +83,8 @@ html, body {
 }
 
 /* ========== 小图标按钮：缩小悬浮高亮与点击波纹（40px 按钮内只亮 28px 圆，贴近图标） ========== */
-.app-icon-btn {
+/* 验证码刷新按钮为 x-small（32px）且自带定位，排除以免 6px 偏移错位其悬浮圆 */
+.app-icon-btn:not(.captcha-refresh):not(.captcha-click-refresh) {
   .v-btn__overlay,
   .v-ripple__container {
     width: 28px;
