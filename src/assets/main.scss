@@ -81,3 +81,14 @@ html, body {
 .lazy-img .v-img__img--preload {
   opacity: 0;
 }
+
+/* ========== 小图标按钮：缩小悬浮高亮与点击波纹（40px 按钮内只亮 28px 圆，贴近图标） ========== */
+.app-icon-btn {
+  .v-btn__overlay,
+  .v-ripple__container {
+    width: 28px;
+    height: 28px;
+    top: 6px;
+    left: 6px;
+  }
+}
