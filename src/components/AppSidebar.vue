@@ -15,20 +15,22 @@
         </v-card-text>
     </v-card> -->
 
-    <AppBlogBox title="文章搜索">
-        <v-text-field
-        v-model="keyword"
-        full-width
-        label="请输入标题/内容" 
-        variant="outlined" 
-        density="compact" 
-        append-inner-icon="mdi-magnify"
-        @click:append-inner="onSearch('keyword',keyword)"
-        @keyup.enter="onSearch('keyword',keyword)"
-        class="px-2"
-        >
-        </v-text-field>
-    </AppBlogBox>
+    <div class="sidebar-search-offset">
+        <AppBlogBox title="文章搜索">
+            <v-text-field
+            v-model="keyword"
+            full-width
+            label="请输入标题/内容"
+            variant="outlined"
+            density="compact"
+            append-inner-icon="mdi-magnify"
+            @click:append-inner="onSearch('keyword',keyword)"
+            @keyup.enter="onSearch('keyword',keyword)"
+            class="px-2"
+            >
+            </v-text-field>
+        </AppBlogBox>
+    </div>
 
     <AppBlogBox title="公告消息" v-if="configStore.getNoticeEnabled()">
         <v-card-text>
@@ -554,6 +556,13 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+// 让「文章搜索」与左侧轮播图/文章内容区垂直对齐（而非与面包屑对齐）
+// 偏移量 = 面包屑高度(py-2 16px + 紧凑面包屑 25.6px) + 下方 v-row/v-container 产生的 4px 间距
+// 注意：偏移加在侧边栏内容上而非 v-col 上，这样「热门文章」fixed 时测量 v-col 不会带上该偏移
+.sidebar-search-offset {
+    margin-top: 45.6px;
+}
+
 // == Sidebar skeleton: aggressive bone margin reset ==
 .sidebar-skeleton-item {
   :deep(.v-skeleton-loader__image) {
