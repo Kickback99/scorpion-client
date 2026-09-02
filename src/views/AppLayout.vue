@@ -7,7 +7,7 @@
             <v-container>
                 <v-row>
                     <!-- 左侧内容：面包屑、轮播图和文章列表 -->
-                    <v-col :md="leftColMd" cols="12">
+                    <v-col :md="leftColMd" cols="12" :style="contentColStyle">
                         <!-- 面包屑导航 -->
                         <AppBreadcrumb :categories="categories" />
 
@@ -20,6 +20,9 @@
                             <router-view></router-view>
                         </v-row>
                     </v-col>
+
+                    <!-- TOC 图标占位列：outer 模式下给 TOC/回到顶部图标让出 (9 - CONTENT_PARTS) 份 -->
+                    <v-col :style="tocSpaceStyle" v-show="showTocSpace"></v-col>
 
                     <!-- 右侧侧边栏 -->
                     <v-col md="3" v-show="showSidebar && mdAndUp">
@@ -78,6 +81,20 @@ renderCateList()
 const isBigScreen = computed(() => route.path === '/about' || route.path === '/profile' || route.path === '/friendLink' || route.path === '/404')
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
 const showSidebar = computed(() => !isBigScreen.value)
+// TOC 图标占位列：桌面端 + 非大屏页 + outer 模式时显示
+const showTocSpace = computed(() => mdAndUp.value && showSidebar.value && configStore.currentTocPosition !== 'inner')
+// outer 模式下内容列份数（可微调：留 (9 - CONTENT_PARTS) 份给 TOC 图标占位，如 8.7 + 0.3 = 9 份）
+const CONTENT_PARTS = 8.7
+const contentColStyle = computed(() => {
+  if (!showTocSpace.value) return {}
+  const pct = (CONTENT_PARTS / 12) * 100
+  return { flex: `0 0 ${pct}%`, maxWidth: `${pct}%` }
+})
+const tocSpaceStyle = computed(() => {
+  if (!showTocSpace.value) return {}
+  const pct = ((9 - CONTENT_PARTS) / 12) * 100
+  return { flex: `0 0 ${pct}%`, maxWidth: `${pct}%` }
+})
 // 轮播图显示条件：首页 + 大屏 + 轮播图数量限制(>0)
 const showCarousel = computed(() => route.path === '/' && mdAndUp.value && configStore.getCarouselLimit)
 
