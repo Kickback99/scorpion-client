@@ -22,6 +22,7 @@
                 v-model="answer"
                 label="请输入验证码"
                 :rules="answerRules"
+                :maxlength="answerMaxLength"
                 prepend-inner-icon="mdi-shield-check"
                 class="mb-2"
                 :loading="verifying"
@@ -109,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useEventListener, useElementSize } from '@vueuse/core'
 import { captchaGenerateApi, captchaVerifyApi } from '@/api/captcha'
 
@@ -253,15 +254,47 @@ onMounted(() => {
 // 校验
 // ============================================================
 
-// 文本验证码：输入答案后回车校验
+// 文本验证码：输入答案后自动校验（无需手动按回车）
 const answer = ref('')
-const answerRules = [(v) => !!v || '请输入验证码']
+// 算术类型答案长度可变（如 8 / -6 / 15），其余文本类型固定 4 位
+const isArithmeticType = computed(() => props.type === 'default')
+const answerMaxLength = computed(() => (isArithmeticType.value ? 3 : 4))
+
+// 校验规则：必填 +（非算术）4 位
+const answerRules = computed(() => {
+    const rules = [(v) => !!v || '请输入验证码']
+    if (!isArithmeticType.value) {
+        rules.push((v) => (v && v.length === 4) || '验证码必须是 4 个字符')
+    }
+    return rules
+})
+
+let verifyTimer = null
+// 输入自动校验：字符类满 4 位立即校验；算术类防抖 800ms 校验
+watch(answer, (val) => {
+    if (verified.value || verifying.value) return
+    const v = (val || '').trim()
+    if (!v) return
+    if (isArithmeticType.value) {
+        clearTimeout(verifyTimer)
+        verifyTimer = setTimeout(() => handleTextVerify(), 800)
+    } else if (v.length === 4) {
+        handleTextVerify()
+    }
+})
+
+onUnmounted(() => {
+    if (verifyTimer) clearTimeout(verifyTimer)
+})
 
 const handleTextVerify = async () => {
-    if (!answer.value || verified.value) return
+    if (verified.value || verifying.value) return
+    const v = (answer.value || '').trim()
+    if (!v) return
+    if (!isArithmeticType.value && v.length !== 4) return
     verifying.value = true
     try {
-        const res = await captchaVerifyApi({ id: vo.id, type: props.type, answer: answer.value })
+        const res = await captchaVerifyApi({ id: vo.id, type: props.type, answer: v })
         if (res.code === 200 && res.data) {
             verified.value = true
             emit('success', res.data)
