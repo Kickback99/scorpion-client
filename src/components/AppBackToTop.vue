@@ -7,7 +7,7 @@
     variant="text"
     aria-label="回到顶部"
     class="back-to-top-btn app-icon-btn"
-    :style="{ right: rightOffset, top: topOffset }"
+    :style="{ left: leftOffset, top: topOffset }"
     @click="handleBackToTop"
   >
     <v-icon>mdi-chevron-up</v-icon>
@@ -17,6 +17,11 @@
 <script setup>
 // 依赖导入
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useDisplay } from 'vuetify'
+import { useConfigStore } from '@/store/config'
+
+const display = useDisplay()
+const configStore = useConfigStore()
 
 // ============================================================
 // 数据
@@ -27,12 +32,14 @@ const props = defineProps({
 })
 
 const showBackToTop = ref(false)
-const rightOffset = ref('0px')
+const leftOffset = ref('0px')
 
 // 定位配置：TOP 与 TOC 按钮一致，VERTICAL_GAP 为有 TOC 时相对 TOC 按钮的垂直偏移
 const POSITION_CONFIG = {
   TOP: 165,
   EDGE_GAP: 0,
+  // 图标按钮宽度（size=small 图标按钮），inner 模式下图标右边缘对齐内容区右边缘时回退一个按钮宽
+  BUTTON_WIDTH: 40,
   // 有 TOC 时相对 TOC 按钮的垂直偏移：按钮高 40 + 间距 6
   VERTICAL_GAP: 46,
   SHOW_THRESHOLD: 300
@@ -56,8 +63,9 @@ const calculatePosition = () => {
   if (!articleContent) return
 
   const contentRight = articleContent.getBoundingClientRect().right
-  const viewportWidth = document.documentElement.clientWidth
-  rightOffset.value = `${viewportWidth - contentRight + POSITION_CONFIG.EDGE_GAP}px`
+  // outer（桌面端）：左边缘对齐内容区右边缘（外置），inner 或移动端：右边缘对齐（内置）
+  const isInner = configStore.currentTocPosition === 'inner' || display.mobile.value
+  leftOffset.value = `${contentRight - (isInner ? POSITION_CONFIG.BUTTON_WIDTH : 0)}px`
 }
 
 // ============================================================
@@ -109,15 +117,6 @@ defineExpose({
 .back-to-top-btn {
   position: fixed;
   z-index: 999;
-  transition: right 0.3s ease;
-}
-
-// ============================================================
-// 移动端适配
-// ============================================================
-@media (max-width: 960px) {
-  .back-to-top-btn {
-    right: 20px !important;
-  }
+  transition: left 0.3s ease;
 }
 </style>

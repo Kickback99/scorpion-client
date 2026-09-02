@@ -43,6 +43,7 @@ const _groupKeys = {
     'article_detail.theme',
     'article_detail.anchor_enabled',
     'article_detail.favorite_count_enabled',
+    'article_detail.toc_position',
     'article_list.view_enabled',
     'article_list.favorite_enabled',
     'article_list.comment_enabled',
@@ -146,7 +147,8 @@ export const useConfigStore = defineStore('config', {
       article_detail: {
         theme: 0, // 前端主题（0：github主题，1：vuepress主题）
         anchor_enabled: true, // 锚点显示（true开启，false禁用）
-        favorite_count_enabled: true
+        favorite_count_enabled: true,
+        toc_position: 'outer' // TOC/回到顶部图标位置（outer：左栏右边缘，inner：内容区右边缘）
       },
 
       // 文章列表相关
@@ -410,6 +412,14 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     * 获取 TOC/回到顶部图标位置
+     * @returns {'inner'|'outer'} inner：内容区右边缘，outer：左栏右边缘
+     */
+    getTocPosition(){
+      return this.getValue('article_detail.toc_position') || 'outer'
+    },
+
+    /**
      * 获取文章列表浏览是否启用
      */
     getListViewEnabled(){
@@ -508,6 +518,7 @@ export const useConfigStore = defineStore('config', {
     currentArticleTheme()     { return this.getValue('article_detail.theme') === 0 ? 'github' : 'vuepress' },
     isAnchorEnabled()         { return this.getValue('article_detail.anchor_enabled') ?? true },
     isFavoriteCountEnabled()  { return this.getValue('article_detail.favorite_count_enabled') ?? true },
+    currentTocPosition()      { return this.getValue('article_detail.toc_position') || 'outer' },
     isListViewEnabled()       { return this.getValue('article_list.view_enabled') ?? true },
     isListFavoriteEnabled()   { return this.getValue('article_list.favorite_enabled') ?? true },
     isListCommentEnabled()    { return this.getValue('article_list.comment_enabled') ?? true },

@@ -10,7 +10,7 @@
       @click.stop="handleToggleToc"
       class="toc-toggle-btn app-icon-btn"
       :style="{
-        right: rightOffset,
+        left: iconLeftOffset,
         top: `${POSITION_CONFIG.TOP}px`
       }"
     >
@@ -23,7 +23,7 @@
       class="toc-card"
       elevation="4"
       :style="{
-        right: rightOffset,
+        right: cardRightOffset,
         top: `${POSITION_CONFIG.TOP + POSITION_CONFIG.VERTICAL_GAP}px`,
         '--toc-scale': tocFontScale
       }"
@@ -100,13 +100,16 @@ const tocAnchors = ref([])
 const selectedTocItem = ref([])
 const titleElements = ref([])
 const tooltipVisible = ref({})
-const rightOffset = ref('0px')
+const iconLeftOffset = ref('0px')
+const cardRightOffset = ref('0px')
 let isScrollingToTarget = false
 let scrollTimeout = null
 
 const POSITION_CONFIG = {
   TOP: 180,
   EDGE_GAP: 0,
+  // 图标按钮宽度（size=small 图标按钮），inner 模式下图标右边缘对齐内容区右边缘时回退一个按钮宽
+  BUTTON_WIDTH: 40,
   // 目录卡相对 TOC 按钮的垂直偏移：按钮高 40 + 间距 6 + 按钮高 40 + 间距 14
   VERTICAL_GAP: 95,
   SCROLL_TOP_OFFSET: 80,
@@ -192,7 +195,7 @@ const generateTocAnchors = () => {
 
 /**
  * 计算 TOC 按钮/卡片的水平定位
- * 二者均为 fixed 定位，各自以自身右边缘对齐文章内容区右边缘，宽度差异由浏览器处理，互不影响
+ * 卡片固定以右边缘对齐内容区右边缘；图标 outer 时左边缘对齐内容区右边缘（外置），inner 时右边缘对齐（内置）
  * 注意：fixed 的包含块为不含滚动条的初始包含块，须用 clientWidth 而非 innerWidth
  */
 const calculatePosition = () => {
@@ -201,7 +204,13 @@ const calculatePosition = () => {
 
   const contentRight = articleContent.getBoundingClientRect().right
   const viewportWidth = document.documentElement.clientWidth
-  rightOffset.value = `${viewportWidth - contentRight + POSITION_CONFIG.EDGE_GAP}px`
+
+  // 卡片：右边缘对齐内容区右边缘（不变）
+  cardRightOffset.value = `${viewportWidth - contentRight + POSITION_CONFIG.EDGE_GAP}px`
+
+  // 图标：outer（桌面端）左边缘对齐内容区右边缘（外置），inner 或移动端右边缘对齐（内置）
+  const isInner = configStore.currentTocPosition === 'inner' || display.mobile.value
+  iconLeftOffset.value = `${contentRight - (isInner ? POSITION_CONFIG.BUTTON_WIDTH : 0)}px`
 }
 
 /** 滚动时高亮对应的目录项 */
@@ -418,6 +427,13 @@ defineExpose({
   position: fixed;
   z-index: 999;
   max-width: 280px;
+}
+
+.toc-toggle-btn {
+  transition: left 0.3s ease;
+}
+
+.toc-card {
   transition: right 0.3s ease;
 }
 
@@ -485,10 +501,6 @@ defineExpose({
 // 移动端适配
 // ============================================================
 @media (max-width: 960px) {
-  .toc-toggle-btn,
-  .toc-card {
-    right: 20px !important;
-  }
   .toc-card {
     width: 50%;
   }
