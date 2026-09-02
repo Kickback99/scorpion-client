@@ -93,6 +93,23 @@ function deepSet(obj, path, value) {
   cur[path[path.length - 1]] = value
 }
 
+/**
+ * 深合并：将 src 的键递归合并进 target，target 中 src 没有的键保留
+ * 用于 loadConfig 时保留后端未下发的默认值（如新增的 toc_position）
+ */
+function deepMerge(target, src) {
+  for (const key of Object.keys(src)) {
+    const sv = src[key]
+    const tv = target[key]
+    if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv)) {
+      deepMerge(tv, sv)
+    } else {
+      target[key] = sv
+    }
+  }
+  return target
+}
+
 export const useConfigStore = defineStore('config', {
   state: () => ({
     // 加载状态
@@ -228,7 +245,7 @@ export const useConfigStore = defineStore('config', {
           // res.data = { client:{...}, admin:{...}, user:{...} }
           for (const gk of Object.keys(res.data)) {
             if (gk in this.$state) {
-              this.$state[gk] = res.data[gk]
+              deepMerge(this.$state[gk], res.data[gk])
             }
           }
         }
