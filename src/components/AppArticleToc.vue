@@ -208,8 +208,8 @@ const calculatePosition = () => {
   // 卡片：右边缘对齐内容区右边缘（不变）
   cardRightOffset.value = `${viewportWidth - contentRight + POSITION_CONFIG.EDGE_GAP}px`
 
-  // 图标：outer（桌面端）左边缘对齐内容区右边缘（外置），inner 或移动端右边缘对齐（内置）
-  const isInner = configStore.currentTocPosition === 'inner' || display.mobile.value
+  // 图标：outer（lg 及以上）左边缘对齐内容区右边缘（外置），inner 或 lg 以下右边缘对齐（内置）
+  const isInner = configStore.currentTocPosition === 'inner' || !display.lgAndUp.value
   iconLeftOffset.value = `${contentRight - (isInner ? POSITION_CONFIG.BUTTON_WIDTH : 0)}px`
 }
 

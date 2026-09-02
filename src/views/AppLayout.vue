@@ -51,7 +51,7 @@ import emitter from '@/utils/event-bus.js'
 import { useDisplay } from 'vuetify';
 import { useConfigStore } from '@/store/config';
 
-const {mdAndUp} = useDisplay()
+const {mdAndUp, lgAndUp} = useDisplay()
 
 const configStore = useConfigStore()
 
@@ -82,7 +82,7 @@ const isBigScreen = computed(() => route.path === '/about' || route.path === '/p
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
 const showSidebar = computed(() => !isBigScreen.value)
 // TOC 图标占位列：桌面端 + 非大屏页 + outer 模式时显示
-const showTocSpace = computed(() => mdAndUp.value && showSidebar.value && configStore.currentTocPosition !== 'inner')
+const showTocSpace = computed(() => lgAndUp.value && showSidebar.value && configStore.currentTocPosition !== 'inner')
 // outer 模式下内容列份数（可微调：留 (9 - CONTENT_PARTS) 份给 TOC 图标占位，如 8.7 + 0.3 = 9 份）
 const CONTENT_PARTS = 8.7
 const contentColStyle = computed(() => {
