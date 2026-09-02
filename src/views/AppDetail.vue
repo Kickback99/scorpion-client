@@ -313,6 +313,17 @@ watch(() => isLoggedIn.value, () => {
   }
 }
 
+/* github主题：文章详情页深色背景下的表格文字（表格背景固定白色，文字用深色避免反色） */
+:deep(.v-md-editor-preview.user-dark .github-markdown-body){
+  table {
+    color: #1A1A2E;
+    code:not(pre code) {
+      background-color: rgb(var(--v-theme-surface-variant),0.9) !important;
+      color: rgb(var(--v-theme-on-surface-variant)) !important;
+    }
+  }
+}
+
 :deep(.v-md-copy-code-btn){
   background-color: rgb(var(--v-theme-primary),.7) !important;
 }
