@@ -11,7 +11,7 @@
                     title="点击刷新"
                     @click="generate"
                 >
-                <v-btn icon variant="text" size="small" color="primary" :disabled="verified" @click="generate">
+                <v-btn icon variant="text" size="small" color="primary" class="app-icon-btn" :disabled="verified" @click="generate">
                     <v-icon>mdi-refresh</v-icon>
                 </v-btn>
             </div>
@@ -51,7 +51,7 @@
                     >{{ i + 1 }}</span>
                 </div>
                 <img v-if="vo.templateImage" :src="vo.templateImage" class="captcha-tip-img" alt="点选提示">
-                <v-btn icon variant="text" size="x-small" color="primary" class="captcha-click-refresh" @click="generate">
+                <v-btn icon variant="text" size="x-small" color="primary" :class="['captcha-click-refresh', 'app-icon-btn']" @click="generate">
                     <v-icon>mdi-refresh</v-icon>
                 </v-btn>
                 <div class="captcha-click-hint text-caption text-grey">请在图中依次点击提示文字（{{ clickPoints.length }}/{{ CLICK_COUNT }}）</div>
@@ -81,7 +81,7 @@
                     variant="text"
                     size="x-small"
                     color="primary"
-                    class="captcha-refresh"
+                    :class="['captcha-refresh', 'app-icon-btn']"
                     @click="generate"
                 >
                     <v-icon>mdi-refresh</v-icon>
