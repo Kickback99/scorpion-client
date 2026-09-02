@@ -6,7 +6,7 @@
     size="small"
     variant="text"
     aria-label="回到顶部"
-    class="back-to-top-btn"
+    class="back-to-top-btn app-icon-btn"
     :style="{ right: rightOffset, top: topOffset }"
     @click="handleBackToTop"
   >
@@ -31,9 +31,10 @@ const rightOffset = ref('0px')
 
 // 定位配置：TOP 与 TOC 按钮一致，VERTICAL_GAP 为有 TOC 时相对 TOC 按钮的垂直偏移
 const POSITION_CONFIG = {
-  TOP: 150,
+  TOP: 165,
   EDGE_GAP: 0,
-  VERTICAL_GAP: 56,
+  // 有 TOC 时相对 TOC 按钮的垂直偏移：按钮高 40 + 间距 6
+  VERTICAL_GAP: 46,
   SHOW_THRESHOLD: 300
 }
 

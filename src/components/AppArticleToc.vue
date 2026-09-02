@@ -8,7 +8,7 @@
       size="small"
       variant="text"
       @click.stop="handleToggleToc"
-      class="toc-toggle-btn"
+      class="toc-toggle-btn app-icon-btn"
       :style="{
         right: rightOffset,
         top: `${POSITION_CONFIG.TOP}px`
@@ -32,7 +32,7 @@
       <div class="toc-header-fixed">
         <v-card-title class="py-2 text-caption d-flex justify-space-between alien-item-center bg-surface">
           <span style="align-self: center;">文章目录</span>
-          <v-btn icon variant="text" size="small" @click.stop="handleToggleToc">
+          <v-btn icon variant="text" size="small" class="app-icon-btn" @click.stop="handleToggleToc">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -107,8 +107,8 @@ let scrollTimeout = null
 const POSITION_CONFIG = {
   TOP: 180,
   EDGE_GAP: 0,
-  // 目录卡相对 TOC 按钮的垂直偏移：需避开下方回到顶部按钮，故为两倍按钮间距
-  VERTICAL_GAP: 60,
+  // 目录卡相对 TOC 按钮的垂直偏移：按钮高 40 + 间距 6 + 按钮高 40 + 间距 14
+  VERTICAL_GAP: 95,
   SCROLL_TOP_OFFSET: 80,
   ACTIVATION_OFFSET: 100
 }
