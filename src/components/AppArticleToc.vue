@@ -105,9 +105,10 @@ let isScrollingToTarget = false
 let scrollTimeout = null
 
 const POSITION_CONFIG = {
-  TOP: 150,
+  TOP: 180,
   EDGE_GAP: 0,
-  VERTICAL_GAP: 56,
+  // 目录卡相对 TOC 按钮的垂直偏移：需避开下方回到顶部按钮，故为两倍按钮间距
+  VERTICAL_GAP: 60,
   SCROLL_TOP_OFFSET: 80,
   ACTIVATION_OFFSET: 100
 }
@@ -393,6 +394,12 @@ defineExpose({
   generateAnchors() {
     generateTocAnchors()
     calculatePosition()
+  },
+  /**
+   * 当前是否显示 TOC 切换按钮（供外部判断回到顶部按钮的占位位置）
+   */
+  getHasToc() {
+    return hasToc.value
   }
 })
 </script>

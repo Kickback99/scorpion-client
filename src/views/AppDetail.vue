@@ -71,6 +71,9 @@
 
   <!-- TOC 文章目录 -->
   <AppArticleToc ref="tocRef" :preview="preview" />
+
+  <!-- 回到顶部 -->
+  <AppBackToTop ref="backToTopRef" :hasToc="hasToc" />
   </v-container>
 </template>
 
@@ -88,6 +91,7 @@ import { useConfigStore } from '@/store/config';
 import AppComment from '@/components/AppComment.vue'
 import AppMobileRelated from '@/components/AppMobileRelated.vue'
 import AppArticleToc from '@/components/AppArticleToc.vue'
+import AppBackToTop from '@/components/AppBackToTop.vue'
 const userStore = useUserStore()
 
 // 判断用户是否已登录（统一走 store getter：cookie 模式看 user 展示缓存，jwt 模式看 token+user）
@@ -95,6 +99,8 @@ const isLoggedIn = computed(() => userStore.isLoggedIn)
 
 const preview = ref(null);
 const tocRef = ref(null);
+const backToTopRef = ref(null);
+const hasToc = ref(false);
 const route = useRoute();
 const router = useRouter();
 const props = defineProps(['id']);
@@ -138,6 +144,8 @@ const renderArticleItem = async() => {
   
   nextTick(() => {
     tocRef.value?.generateAnchors();
+    hasToc.value = tocRef.value?.getHasToc() ?? false;
+    backToTopRef.value?.recalculatePosition();
   });
 };
 
