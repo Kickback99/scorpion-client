@@ -80,7 +80,7 @@ export const useThemeStore = defineStore('theme', {
      */
     applyTheme(vuetifyTheme, themeName) {
       const validTheme = this.getValidTheme(vuetifyTheme, themeName)
-      vuetifyTheme.global.name.value = validTheme
+      vuetifyTheme.change(validTheme)
       this.currentTheme = validTheme
       this.syncScrollbarTheme(vuetifyTheme)
     },
@@ -110,13 +110,13 @@ export const useThemeStore = defineStore('theme', {
       
       // 检查目标主题是否存在
       if (availableThemes.includes(targetTheme)) {
-        vuetifyTheme.global.name.value = targetTheme
+        vuetifyTheme.change(targetTheme)
         this.currentTheme = targetTheme
       } else {
         // 兜底：切换到 default 的对应模式
         const fallbackTheme = `default-${targetSuffix}`
         if (availableThemes.includes(fallbackTheme)) {
-          vuetifyTheme.global.name.value = fallbackTheme
+          vuetifyTheme.change(fallbackTheme)
           this.currentTheme = fallbackTheme
         }
       }
