@@ -31,6 +31,7 @@
                 placeholder="请输入验证码"
                 :rules="codeRules"
                 prepend-inner-icon="mdi-email"
+                class="mb-4"
                 name="verifyCode"
                 >
                 </v-text-field>

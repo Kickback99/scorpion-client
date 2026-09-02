@@ -47,7 +47,7 @@
                                     color="primary"
                                     variant="outlined"
                                     density="compact"
-                                    class="mb-4"
+                                    :class="showLoginCaptcha ? 'mb-2':'mb-4'"
                                     v-model="loginModel.password"
                                     :append-inner-icon="loginShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
                                     @click:append-inner="eyeLoginPwd"
@@ -60,7 +60,7 @@
                                 </v-text-field>
 
                                 <!-- 验证码（账号锁定后出现） -->
-                                <AppCaptcha v-if="showLoginCaptcha" ref="loginCaptchaRef" :type="loginCaptchaType" class="mb-2" />
+                                <AppCaptcha v-if="showLoginCaptcha" ref="loginCaptchaRef" :type="loginCaptchaType" class="mb-8" />
 
                                 <!-- 条款与协议 -->
                                 <!-- <v-checkbox
