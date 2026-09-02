@@ -60,7 +60,7 @@
                                 </v-text-field>
 
                                 <!-- 验证码（账号锁定后出现） -->
-                                <AppCaptcha v-if="showLoginCaptcha" :type="loginCaptchaType" class="mb-2" @success="loginModel.captchaVerifyToken = $event" />
+                                <AppCaptcha v-if="showLoginCaptcha" ref="loginCaptchaRef" :type="loginCaptchaType" class="mb-2" />
 
                                 <!-- 条款与协议 -->
                                 <!-- <v-checkbox
@@ -158,7 +158,7 @@
                                 >
                                 </v-text-field>
                                 <AppEmailCodeField v-model:email="registerModel.email" v-model:code="registerModel.verifyCode" type="register" />
-                                <AppCaptcha v-if="configStore.getClientCaptchaEnabled()" :type="registerCaptchaType" class="mb-2" @success="registerModel.captchaVerifyToken = $event" />
+                                <AppCaptcha v-if="configStore.getClientCaptchaEnabled()" ref="registerCaptchaRef" :type="registerCaptchaType" class="mb-2" />
                                     <!-- 条款与协议 -->
                                 <v-checkbox
                                 color="primary"
@@ -309,6 +309,8 @@ const AppCaptcha = loadCaptchaComponent()
 const showLoginCaptcha = ref(false)
 const loginCaptchaType = computed(() => configStore.getCaptchaType('login'))
 const registerCaptchaType = computed(() => configStore.getCaptchaType('register'))
+const loginCaptchaRef = ref(null)
+const registerCaptchaRef = ref(null)
 
 const dialogVisible = ref(false)
 
@@ -428,7 +430,11 @@ const handleLogin = async () => {
             // 这里调用登录接口
             console.log('登录信息:', loginModel)
             console.log('是否同意条款:', loginTerm.value)
-            
+
+            // 验证码（账号锁定后出现）：提交前统一校验 + 后端验证
+            if (showLoginCaptcha.value) {
+                loginModel.captchaVerifyToken = await loginCaptchaRef.value.verify()
+            }
             // 登录请求
             const res = await userLoginApi(loginModel)
 
@@ -497,6 +503,10 @@ const handleRegister = async () => {
         const { valid } = await registerFormRef.value.validate()
 
         if (valid) {
+            // 验证码（client_enabled 开启时）：提交前统一校验 + 后端验证
+            if (configStore.getClientCaptchaEnabled()) {
+                registerModel.captchaVerifyToken = await registerCaptchaRef.value.verify()
+            }
             console.log('注册信息:', registerModel)
             await userRegisterApi(registerModel)
             Object.assign(registerModel, { username: '', password: '', email: '', verifyCode: '' })
