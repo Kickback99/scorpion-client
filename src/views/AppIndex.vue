@@ -258,10 +258,8 @@ if (!route.query.type || !route.query.param) {
     initLoadArticles()
 }
 
-// 绑定总线事件
-onMounted(()=>{
-  // emitter.on('search', receiveParam)
-  emitter.on('reset-search', () => {
+// 绑定总线事件：reset-search 重置筛选并重新加载
+const handleResetSearch = () => {
   params.value.pageNum = 1
   searchData.value = {
     keyword: '',
@@ -273,8 +271,11 @@ onMounted(()=>{
       resetScrollState()
   }
   renderArticleList()
-})
-  
+}
+
+onMounted(()=>{
+  emitter.on('reset-search', handleResetSearch)
+
   // 监听路由变化处理参数
   watch(() => route.query, (newQuery) => {
     if (newQuery.type && newQuery.param) {
@@ -293,7 +294,7 @@ onMounted(()=>{
 })
 
 onUnmounted(()=>{
-    // console.log("searchData.value.categoryId",searchData.value.categoryId)
+    emitter.off('reset-search', handleResetSearch)
 })
 
 
