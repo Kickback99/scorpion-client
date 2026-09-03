@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, defineAsyncComponent } from 'vue'
 import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
 import { useDisplay } from 'vuetify'
@@ -58,7 +58,7 @@ const dialogMaxWidth = computed(() => display.mobile.value ? '92%' : 600)
 // Markdown 预览组件（跟随主题）
 const MarkdownPreview = computed(() => {
   const currentThem = configStore.getArticleTheme()
-  return createMarkdownPreview(currentThem)
+  return defineAsyncComponent(() => createMarkdownPreview(currentThem))
 })
 
 // v-model 双向同步

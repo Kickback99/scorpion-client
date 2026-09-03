@@ -1,41 +1,49 @@
-import VMdPreview from '@kangc/v-md-editor/lib/preview';
-import '@kangc/v-md-editor/lib/style/preview.css';
-import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
-import '@kangc/v-md-editor/lib/theme/style/github.css';
-import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
-import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
-import 'prismjs/themes/prism-tomorrow.css'; // Prism主题
+// 全部动态导入：markdown-config 被 AppSidebar（首页）静态引用，
+// 若在顶层 import 编辑器组件会把编辑器 chunk 拖回首屏，这里全部改为按需加载
+export async function createMarkdownPreview(theme = 'github') {
+  // 基础预览组件 + 插件（与主题无关）
+  const [
+    { default: VMdPreview },
+    { default: createLineNumbertPlugin },
+    { default: createCopyCodePlugin },
+    { default: createHighlightLinesPlugin },
+  ] = await Promise.all([
+    import('@kangc/v-md-editor/lib/preview'),
+    import('@kangc/v-md-editor/lib/plugins/line-number/index'),
+    import('@kangc/v-md-editor/lib/plugins/copy-code/index'),
+    import('@kangc/v-md-editor/lib/plugins/highlight-lines/index'),
+  ]);
 
-import hljs from 'highlight.js';
-import Prism from 'prismjs';
+  await Promise.all([
+    import('@kangc/v-md-editor/lib/style/preview.css'),
+    import('@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css'),
+    import('@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css'),
+  ]);
 
-// 代码行号
-import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
-
-// 复制代码块
-import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index';
-import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
-
-// 高亮代码行
-import createHighlightLinesPlugin from '@kangc/v-md-editor/lib/plugins/highlight-lines/index';
-import '@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css';
-
-// 创建不同主题的预览器
-export function createMarkdownPreview(theme = 'github') {
   const preview = VMdPreview;
-  
-  if (theme === 'github') {
-    preview.use(githubTheme, { Hljs: hljs });
-  } else if (theme === 'vuepress') {
+
+  // 按主题懒加载对应的高亮库与样式（github → highlight.js，vuepress → prismjs），避免两者同时打包
+  if (theme === 'vuepress') {
+    const [{ default: vuepressTheme }, { default: Prism }] = await Promise.all([
+      import('@kangc/v-md-editor/lib/theme/vuepress.js'),
+      import('prismjs'),
+    ]);
+    await Promise.all([
+      import('@kangc/v-md-editor/lib/theme/style/vuepress.css'),
+      import('prismjs/themes/prism-tomorrow.css'), // Prism主题
+    ]);
     preview.use(vuepressTheme, { Prism });
+  } else {
+    const [{ default: githubTheme }, { default: hljs }] = await Promise.all([
+      import('@kangc/v-md-editor/lib/theme/github.js'),
+      import('highlight.js'),
+    ]);
+    await import('@kangc/v-md-editor/lib/theme/style/github.css');
+    preview.use(githubTheme, { Hljs: hljs });
   }
-  
+
   return preview
     .use(createLineNumbertPlugin())
     .use(createCopyCodePlugin())
     .use(createHighlightLinesPlugin());
 }
-
-
-// 默认导出 github 主题的预览器
-export default createMarkdownPreview('github');

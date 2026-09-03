@@ -27,7 +27,8 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             vue: ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
             vuetify: ['vuetify'],
-            editor: ['@kangc/v-md-editor', 'marked', 'prismjs', 'markdown-it', 'highlight.js'],
+            // marked 是首页摘要提取（useExtractText）的依赖，若并入 editor 会把编辑器 chunk 拖回首屏
+            editor: ['@kangc/v-md-editor', 'prismjs', 'markdown-it', 'highlight.js'],
             utils: ['axios', 'mitt'],
           },
         },
