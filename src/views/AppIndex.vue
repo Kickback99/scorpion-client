@@ -172,8 +172,6 @@ const resetScrollState = () => {
 
 
 const renderArticleList = async() => {
-    // console.log('renderArticleList函数执行...')
-    // console.log('searchData.value',searchData.value)
     isLoading.value = true
     try {
       const res = await articleListApi({
@@ -181,27 +179,15 @@ const renderArticleList = async() => {
         pageSize: currentPageSize.value,
         searchData: searchData.value
       })
-      // console.log('renderArticleList...')
-      // console.log('res.data.items',res.data.items)
       articleList.value = res.data.items.map(item => ({
         ...item,
         displayDescription: handleAutoDescription(item)
       }))
       total.value = res.data.total
     }finally {
-      isLoading.value = false
       // 数据加载完成后，标记首次加载结束
-          }
-}
-
-// renderArticleList()
-
-// 处理状态
-const isProcessing = ref(false) // 全局标志位
-const history = {
-    keyword:'',
-    categoryId: null,
-    tagId: null
+      isLoading.value = false
+    }
 }
 
 // 加载更多（无限滚动）- 仿照评论组件
@@ -276,7 +262,6 @@ if (!route.query.type || !route.query.param) {
 onMounted(()=>{
   // emitter.on('search', receiveParam)
   emitter.on('reset-search', () => {
-  // console.log('触发了reset-search')
   params.value.pageNum = 1
   searchData.value = {
     keyword: '',
@@ -340,19 +325,6 @@ const handleAutoDescription = (item) => {
       return item.description;
   }
 }
-
-// 监听加载模式或分页大小变化，重新加载
-/* watch(() => configStore.getListLoadMode(), () => {
-    if (isScrollMode.value) {
-        resetScrollState()
-    }
-    initLoadArticles()
-})
-
-watch(() => currentPageSize.value, () => {
-    initLoadArticles()
-}) */
-
 </script>
 
 <style scoped lang="scss">

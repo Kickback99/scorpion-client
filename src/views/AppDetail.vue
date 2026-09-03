@@ -362,10 +362,4 @@ watch(() => isLoggedIn.value, () => {
   transform: translate(-50%, -50%) rotate(45deg);
   border-radius: 1px;
 }
-
-</style>
-
-<style>
-
-
 </style>

@@ -13,15 +13,6 @@ export const AUTH_REQUIRED_PATHS = [
   '/user/userComment/',       // DELETE 删除评论
   '/user/msg/comment/reply',  // POST 发表评论/回复
   '/user/msg/comment/byId/',  // DELETE 按 id 删评论
-
-  // 订单相关
-  /* '/order/',
-  '/payment/', */
-  // 购物车相关
-  // '/cart/',
-  // 用户信息相关（除了登录注册）
-  /* '/user/profile',
-  '/user/update' */
 ];
 
 // 导出匹配函数

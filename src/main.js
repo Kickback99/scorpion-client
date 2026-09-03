@@ -1,5 +1,3 @@
-//main.js
-// Vuetify
 import 'vuetify/styles'
 import './assets/main.scss'
 import { StealthStorage } from '@/utils/stealthStorage'
@@ -26,7 +24,6 @@ StealthStorage
   // localStorage：关闭标签页后强退标记仍存活，保证"刷新/关闭重开"都只弹一次登录框
   .init('localStorage', 'force_logout_pending', '__vite_check_hmr', 'salt1')
   .init('localStorage', 'show_long_text_snackbar', '__analytics_session_id', 'salt4')
-//   .init('localStorage', 'draftContent', '__cache_draft_1', 'salt3');
 
 const app = createApp(App)
 app.use(vuetify) // 只需注册一次
