@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@kangc/v-md-editor": "^2.3.18",
+    "@mdi/js": "^7.4.47",
     "@vueuse/core": "^10.11.1",
     "axios": "^1.6.5",
     "marked": "^15.0.12",
@@ -26,7 +27,6 @@
     "vuetify": "^3.12.5"
   },
   "devDependencies": {
-    "@mdi/font": "^7.4.47",
     "@vitejs/plugin-vue": "^4.5.2",
     "sass": "^1.70.0",
     "terser": "^5.50.0",
