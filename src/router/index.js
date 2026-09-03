@@ -1,15 +1,18 @@
-import AppAbout from '@/views/AppAbout.vue'
-import AppBlog from '@/views/AppBlog.vue'
-import AppDetail from '@/views/AppDetail.vue'
 import AppIndex from '@/views/AppIndex.vue'
 import AppLayout from '@/views/AppLayout.vue'
-import AppNotFound from '@/views/AppNotFound.vue'
 import {createRouter, createWebHistory} from 'vue-router'
 import { useUserStore } from '@/store/user'
-import AppProfileCenter from '@/components/AppProfileCenter.vue'
-import Test from '@/views/Test.vue'
 import { useConfigStore } from '@/store/config'
-import AppFriendLink from '@/views/AppFriendLink.vue'
+
+// 非首屏路由懒加载：详情页引用的 Markdown 编辑器（v-md-editor + highlight.js + prismjs 等重型依赖）
+// 只有访问到对应页面时才下载对应 chunk，避免拖慢首页首屏
+const AppDetail = () => import('@/views/AppDetail.vue')
+const AppBlog = () => import('@/views/AppBlog.vue')
+const AppAbout = () => import('@/views/AppAbout.vue')
+const AppFriendLink = () => import('@/views/AppFriendLink.vue')
+const AppProfileCenter = () => import('@/components/AppProfileCenter.vue')
+const AppNotFound = () => import('@/views/AppNotFound.vue')
+const Test = () => import('@/views/Test.vue')
 
 
 // 路由规则
