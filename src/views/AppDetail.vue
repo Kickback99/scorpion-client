@@ -148,6 +148,17 @@ const renderArticleItem = async() => {
   });
 };
 
+// 异步 Markdown 组件（defineAsyncComponent）挂载完成后重建目录与定位：
+// renderArticleItem 里的 nextTick 执行时异步组件可能尚未加载，preview 仍为 null
+watch(preview, (val) => {
+  if (!val) return;
+  nextTick(() => {
+    tocRef.value?.generateAnchors();
+    hasToc.value = tocRef.value?.getHasToc() ?? false;
+    backToTopRef.value?.recalculatePosition();
+  });
+});
+
 const updateFavoriteIcon  = async() => {
   const res = await articleDetailApi(props.id);
   isFavorite.value = res.data.isFavorite || false;
