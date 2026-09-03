@@ -1,20 +1,4 @@
 <template>
-    <!-- 个人信息卡片 -->
-    <!-- <v-card class="mb-4">
-        <v-card-title>个人信息</v-card-title>
-        <v-card-text>
-            <p>用户名: {{ user.username }}</p>
-            <p>邮箱: {{ user.email }}</p>
-        </v-card-text>
-    </v-card> -->
-
-    <!-- <v-card class="mb-4">
-        <v-card-title>公告消息</v-card-title>
-        <v-card-text>
-            {{ noticeContent }}
-        </v-card-text>
-    </v-card> -->
-
     <div class="sidebar-search-offset">
         <AppBlogBox title="文章搜索">
             <v-text-field
@@ -47,11 +31,6 @@
         >{{ item.name }}</v-chip>
         </v-chip-group>
     </AppBlogBox>
-
-    <!-- <AppBlogBox title="个人信息">
-        <p>用户名: {{ user.username }}</p>
-        <p>邮箱: {{ user.email }}</p>
-    </AppBlogBox> -->
 
     <div ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
@@ -302,19 +281,6 @@ const onSearch = (type,param) => {
     triggerSearch(type,param)
     keyword.value = ''
 }
-
-/* const hotBlogs =[
-    {id:1,text: '考前50分-四六级必考词汇预测'},
-    {id:2,text: '魔导国东征记-世界守护突破(622~624)三更·0VERLORD'},
-    {id:3,text: 'FGo国服《妖精圆桌领域阿瓦隆·勒·菲星辰诞生之刻》2.6前篇主线根'},
-    {id:4,text: '1999元的miniLEDHDR1000显示器HKCPG271Q简评'},
-    {id:5,text: '22年四六级翻译预测--共青团'},
-    {id:6,text: '四六级翻译预测--冬奥会'},
-    {id:7,text: '兵装榜2全面推荐泛用兵装，斩击实战检验后'},
-    {id:8,text: '为了实现游戏里的二段跳，人类到底能多拼命？'},
-    {id:9,text: '2022上半年四级真题--提案，给学校图书馆，学校医院，学生会'},
-    {id:10,text: '关于2022年高考数学试题的一点点想法'}
-] */
 
 // 动态标题状态
 const titles = ref({

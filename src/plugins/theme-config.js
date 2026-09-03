@@ -1,4 +1,3 @@
-// src/plugins/theme-config.js
 import defaultThemes from './default-theme'
 
 // 集中管理所有主题配置

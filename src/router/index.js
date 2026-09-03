@@ -7,19 +7,16 @@ import { useConfigStore } from '@/store/config'
 // 非首屏路由懒加载：详情页引用的 Markdown 编辑器（v-md-editor + highlight.js + prismjs 等重型依赖）
 // 只有访问到对应页面时才下载对应 chunk，避免拖慢首页首屏
 const AppDetail = () => import('@/views/AppDetail.vue')
-const AppBlog = () => import('@/views/AppBlog.vue')
 const AppAbout = () => import('@/views/AppAbout.vue')
 const AppFriendLink = () => import('@/views/AppFriendLink.vue')
 const AppProfileCenter = () => import('@/components/AppProfileCenter.vue')
 const AppNotFound = () => import('@/views/AppNotFound.vue')
-const Test = () => import('@/views/Test.vue')
 
 
 // 路由规则
 const routes = [
     {path:"/",component :AppLayout,children:[
         {path:"",component:AppIndex},
-        {path:"/blog",component:AppBlog},
         {path:"/friendLink",component:AppFriendLink},
         {path:"/about",component:AppAbout},
         {path:"/404",name:'NotFound',component:AppNotFound},
@@ -28,7 +25,6 @@ const routes = [
             name: 'Profile',
             component: AppProfileCenter
         },
-        {path:'/test',component:Test},
         {path:"/detail/:id",name:'detail',component:AppDetail,props:true},
         {path:'/:pathMatch(.*)*',redirect:'/404'},
     ]}

@@ -359,49 +359,49 @@ export const useConfigStore = defineStore('config', {
 
 
     /**
-     * 🎯 获取子评论默认显示数量
+     * 获取子评论默认显示数量
      */
     getChildCommentLimit() {
       return this.getValue('comment.child_comment_limit') ?? 3
     },
 
     /**
-     * 🎯 获取子评论分页大小
+     * 获取子评论分页大小
      */
     getChildPageSize() {
       return this.getValue('comment.child_page_size') ?? 7
     },
 
     /**
-     *  获取父评论分页大小
+     * 获取父评论分页大小
      */
     getParentPageSize(){
       return this.getValue('comment.parent_page_size') ?? 10
     },
 
     /**
-     *  获取我的反馈是否开启
+     * 获取我的反馈是否开启
      */
     getMyFeedbackEnabled(){
       return this.getValue('profile.my_feedback_enabled') ?? true
     },
 
     /**
-     *  获取我的发布是否开启
+     * 获取我的发布是否开启
      */
     getPublishesEnabled(){
       return this.getValue('profile.my_publishes_enabled') ?? true
     },
 
     /**
-     *  获取我的评论是否开启
+     * 获取我的评论是否开启
      */
     getMyCommentsEnabled(){
       return this.getValue('profile.my_comments_enabled') ?? true
     },
 
     /**
-     *  获取我的收藏是否开启
+     * 获取我的收藏是否开启
      */
     getMyFavoritesEnabled(){
       return this.getValue('profile.my_favorites_enabled') ?? true

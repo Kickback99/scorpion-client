@@ -1,6 +1,5 @@
 //定制请求的实例
 
-//导入axios  npm install axios
 import { useUserStore } from '@/store/user';
 import axios from 'axios';
 import { isCookieMode } from '@/utils/auth'

@@ -1,4 +1,3 @@
-// src/store/theme.js
 import { defineStore } from 'pinia'
 import { themeConfig } from '@/plugins/theme-config'
 

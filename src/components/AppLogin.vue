@@ -159,7 +159,7 @@
                                 </v-text-field>
                                 <AppEmailCodeField v-model:email="registerModel.email" v-model:code="registerModel.verifyCode" type="register" />
                                 <AppCaptcha v-if="configStore.getClientCaptchaEnabled()" ref="registerCaptchaRef" :type="registerCaptchaType" class="mb-2" />
-                                    <!-- 条款与协议 -->
+                                <!-- 条款与协议 -->
                                 <v-checkbox
                                 color="primary"
                                 density="compact"
@@ -299,6 +299,9 @@ import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 import { loadCaptchaComponent } from '@/utils/loadCaptcha'
 import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
 
+// ============================================================
+// 数据相关
+// ============================================================
 const display = useDisplay()
 
 const configStore = useConfigStore()
@@ -319,8 +322,6 @@ const step = ref(1)
 import emitter from '@/utils/event-bus.js'
 
 
-// ------------------------ 响应式 ------------------------
-
 const handleWidth = computed(()=>{
     if(display.smAndDown.value){
         return '320'
@@ -337,8 +338,9 @@ const handleFontScale = computed(() => (display.mobile.value ? 0.8 : 1))
 // 移动端成功页图标大小
 const handleIconSize = computed(() => (display.mobile.value ? 54 : 70))
 
-// ------------------------ 全局总线 ------------------------ 
-
+// ============================================================
+// 全局总线
+// ============================================================
 emitter.on('loginDialogVisible',param => {
     if(dialogVisible.value && param === true) return
     dialogVisible.value = param
@@ -356,8 +358,9 @@ onUnmounted(() => {
     emitter.off('loginDialogVisible')
 })
 
-// ------------------------ 登录相关 ------------------------ 
-
+// ============================================================
+// 登录相关
+// ============================================================
 const loginModel = reactive({})
 
 const loginShowPassword = ref(false)
@@ -461,8 +464,9 @@ const handleLogin = async () => {
     }
 }
 
-// ------------------------ 注册相关 ------------------------ 
-
+// ============================================================
+// 注册相关
+// ============================================================
 const registerModel = reactive({})
 
 const registerShowPassword = ref(false)
@@ -519,8 +523,9 @@ const handleRegister = async () => {
     }
 }
 
-// ------------------------ 忘记密码相关 ------------------------
-
+// ============================================================
+// 忘记密码相关
+// ============================================================
 const forgotModel = reactive({})
 
 const forgotFormRef = ref(null)
@@ -541,8 +546,9 @@ const handleForgotNext = async () => {
     }
 }
 
-// ------------------------ 重置密码相关 ------------------------
-
+// ============================================================
+// 重置密码相关
+// ============================================================
 const resetModel = reactive({})
 
 const resetFormRef = ref(null)
@@ -586,8 +592,9 @@ const handlePasswordReset = async () => {
     }
 }
 
-// ------------------------ 条款弹窗相关 ------------------------ 
-
+// ============================================================
+// 条款弹窗相关
+// ============================================================
 const termsVisible = ref(false)
 const termsTitle = ref('')
 const termsContent = ref('')
@@ -598,8 +605,9 @@ const handleOpenTerms = (type) => {
     termsVisible.value = true
 }
 
-// ------------------------ 切换步骤时重置表单 ------------------------ 
-
+// ============================================================
+// 切换步骤时重置表单
+// ============================================================
 const switchToRegister = () => {
     step.value = 2
     // 重置登录表单
