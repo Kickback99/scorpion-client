@@ -13,9 +13,6 @@ import {createPinia} from 'pinia'
 // 导入持久化插件
 import persist from 'pinia-plugin-persistedstate'
 
-// 全局导入mdi图标
-import '@mdi/font/css/materialdesignicons.css'
-
 // Vuetify 自动导入实例（来自 vite-plugin-vuetify）
 import { createVuetify as autoImportVuetify } from 'vuetify'
 

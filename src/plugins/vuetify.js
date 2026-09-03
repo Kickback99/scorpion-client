@@ -1,8 +1,10 @@
 // src/plugins/vuetify.js
 import { VBtn } from 'vuetify/components/VBtn'
 import { themeConfig } from './theme-config'
+import iconsConfig from './icons'
 export default {
     theme: themeConfig,
+    icons: iconsConfig,
     defaults: {
       VBtn: { variant: 'outlined'},
       MyButton: { variant: 'tonal',color:'primary'},

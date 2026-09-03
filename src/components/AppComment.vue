@@ -763,7 +763,7 @@ const getAvatarIcon = (userId) => {
     'mdi-account-star',
     'mdi-account-music',
     'mdi-account-badge',
-    'mdi-account-crown'
+    'mdi-crown-outline'
   ]
   const index = (userId || 1) % icons.length
   return icons[index]
