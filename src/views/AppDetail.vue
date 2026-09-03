@@ -79,10 +79,9 @@
 
 <script setup>
 import { articleDetailApi, toggleFavoriteApi, updateViewCountApi } from '@/api/article';
-import { onMounted, ref, watch, nextTick, computed } from 'vue';
+import { onMounted, ref, watch, nextTick, computed, defineAsyncComponent } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useRoute, useRouter } from 'vue-router';
-import MarkdownIt from 'markdown-it';
 import emitter from '@/utils/event-bus.js'
 import { useUserStore } from '@/store/user';
 import { useThemeStore } from '@/store/theme';
@@ -215,7 +214,7 @@ const themeStore = useThemeStore()
 const MarkdownPreview = computed(() => {
   console.log('创建主题:', themeStore.isDark?"vuepress":"github")
   const currentThem = configStore.getArticleTheme()
-  return createMarkdownPreview(currentThem)
+  return defineAsyncComponent(() => createMarkdownPreview(currentThem))
 })
 
 

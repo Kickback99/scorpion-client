@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, defineAsyncComponent } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 import { createMarkdownPreview } from '@/utils/markdown-config'
@@ -63,7 +63,7 @@ const dialogMaxWidth = computed(() => display.mobile.value ? '85%' : 600)
 // ============================================================
 const MarkdownPreview = computed(() => {
   const currentThem = configStore.getArticleTheme()
-  return createMarkdownPreview(currentThem)
+  return defineAsyncComponent(() => createMarkdownPreview(currentThem))
 })
 
 // ============================================================
