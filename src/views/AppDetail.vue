@@ -35,10 +35,10 @@
   </v-card>
 
   <!-- 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） -->
-  <AppMobileRelated :tags="tags" :articles="cateArticles" />
+  <AppMobileRelated v-if="isArticleLoaded" :tags="tags" :articles="cateArticles" />
 
   <!-- 底部操作栏 -->
-  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && article.title" class="mt-5 d-flex justify-center py-4">
+  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && isArticleLoaded" class="mt-5 d-flex justify-center py-4">
     <v-btn
       variant="text"
       :color="isFavorite ? 'red' : 'grey'"
@@ -59,7 +59,7 @@
   </div>
   
   <!-- 新增：评论组件 -->
-  <div class="mt-5" v-if="configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
+  <div class="mt-5" v-if="isArticleLoaded && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
     :articleId="article.id"
     :isComment="article.isComment"
@@ -113,6 +113,8 @@ const isLoading = ref(true);
 // 骨架屏内容行组数：移动端 4 组，PC 6 组
 const display = useDisplay();
 const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6));
+// 文章详情是否真正加载完毕：isLoading=false 且已拿到文章数据（覆盖路由切换中 / 文章不存在等路径）
+const isArticleLoaded = computed(() => !isLoading.value && !!article.value.id);
 // 系统配置
 const configStore = useConfigStore()
 
