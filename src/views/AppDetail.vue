@@ -294,6 +294,11 @@ watch(() => isLoggedIn.value, () => {
   width: 100%;
 }
 
+/* 行内代码字号：与正文一致（库默认 85% 偏小，移动端尤甚） */
+:deep(.markdown-content code:not(pre code)) {
+  font-size: 1em !important;
+}
+
 /* vuepress主题：文章详情页深色背景下的颜色 */
 :deep(.v-md-editor-preview.user-dark .vuepress-markdown-body){
   background: var(--v-theme-surface);
