@@ -315,15 +315,19 @@ const renderTagList = async() =>{
 
 // 处理详情页数据
 const handleDetailData = (data) => {
-    // 如果有分类文章数据，更新分类文章
+    // 如果有分类文章数据，更新分类文章；无相关文章则回退全局「最新发布」
     if (data.cateArticles && data.cateArticles.length > 0) {
         titles.value.articles = '相关文章'
         latestBlogs.value = data.cateArticles
-    } 
-    // 如果有标签数据，更新标签数据
+    } else {
+        renderLatestList()
+    }
+    // 如果有标签数据，更新标签数据；无标签则回退全局「文章标签」
     if (data.tags && data.tags.length > 0) {
         titles.value.tags = '标签'
         tagStore.list = data.tags
+    } else {
+        renderTagList()
     }
 }
 

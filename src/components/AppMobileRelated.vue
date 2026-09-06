@@ -1,7 +1,7 @@
 <template>
   <div v-if="smAndDown && (tagList.length > 0 || articleList.length > 0)" class="mt-5" :style="{ '--related-scale': scale }">
     <!-- 相关文章 — 完全复用 AppSidebar 样式 -->
-    <AppBlogBox :title="titles.articles">
+    <AppBlogBox v-if="articleList.length > 0" :title="titles.articles">
       <v-list>
         <v-list-item
           v-for="(item, index) in articleList"
@@ -23,7 +23,7 @@
     </AppBlogBox>
 
     <!-- 相关标签 — 完全复用 AppSidebar 样式 -->
-    <AppBlogBox :title="titles.tags">
+    <AppBlogBox v-if="tagList.length > 0" :title="titles.tags">
       <v-chip-group column class="pa-2" mandatory>
         <v-chip
           label
@@ -64,7 +64,7 @@ const onSearch = (type, param) => {
 
 // 复用 AppSidebar 的动态标题
 const titles = ref({
-  tags: '相关标签',
+  tags: '标签',
   articles: '相关文章'
 })
 
