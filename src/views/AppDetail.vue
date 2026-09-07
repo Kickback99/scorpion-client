@@ -1,7 +1,7 @@
 <template>
   <v-container>
   <!-- 骨架屏：加载中 -->
-  <v-card v-if="isLoading" variant="flat">
+  <v-card v-if="isLoading || !markdownReady" variant="flat">
     <v-card-title>
       <v-skeleton-loader type="heading" class="detail-skeleton-title" />
     </v-card-title>
@@ -24,21 +24,21 @@
 
     <div class="markdown-content">
        <component
-        :is="MarkdownPreview"
+        v-if="MarkdownPreviewComponent"
+        :is="MarkdownPreviewComponent"
         :text="article.content"
         ref="preview"
         @copy-code-success="handleCopySuccess"
-        :key="configStore.article_detail?.theme"
         :class="themeStore.isDark?'user-dark':'user-light'"
         />
     </div>
   </v-card>
 
   <!-- 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） -->
-  <AppMobileRelated v-if="isArticleLoaded && markdownLoaded" :tags="tags" :articles="cateArticles" />
+  <AppMobileRelated v-if="isArticleLoaded && markdownReady" :tags="tags" :articles="cateArticles" />
 
   <!-- 底部操作栏 -->
-  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && isArticleLoaded && markdownLoaded" class="mt-5 d-flex justify-center py-4">
+  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && isArticleLoaded && markdownReady" class="mt-5 d-flex justify-center py-4">
     <v-btn
       variant="text"
       :color="isFavorite ? 'red' : 'grey'"
@@ -59,7 +59,7 @@
   </div>
   
   <!-- 新增：评论组件 -->
-  <div class="mt-5" v-if="isArticleLoaded && markdownLoaded && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
+  <div class="mt-5" v-if="isArticleLoaded && markdownReady && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
     :articleId="article.id"
     :isComment="article.isComment"
@@ -79,7 +79,7 @@
 
 <script setup>
 import { articleDetailApi, toggleFavoriteApi, updateViewCountApi } from '@/api/article';
-import { onMounted, ref, watch, nextTick, computed, defineAsyncComponent } from 'vue';
+import { onMounted, ref, shallowRef, watch, nextTick, computed } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useRoute, useRouter } from 'vue-router';
 import emitter from '@/utils/event-bus.js'
@@ -115,11 +115,30 @@ const display = useDisplay();
 const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6));
 // 文章详情是否真正加载完毕：isLoading=false 且已拿到文章数据（覆盖路由切换中 / 文章不存在等路径）
 const isArticleLoaded = computed(() => !isLoading.value && !!article.value.id);
-// 正文是否渲染完成：preview 是异步 Markdown 组件，挂载后才被赋值；
-// 相关文章/标签需与正文同步出现，否则会在正文（异步加载）前闪现
-const markdownLoaded = computed(() => !!preview.value);
+// 正文是否加载完成：手动预加载 Markdown（异步），完成后置 true；
+// 骨架屏持续到此时，标题与正文一起出现，相关文章/标签/收藏也随之同步
+const markdownReady = ref(false);
 // 系统配置
 const configStore = useConfigStore()
+
+// 手动预加载 Markdown 组件（异步），完成后存组件并置 markdownReady：
+// 不用 defineAsyncComponent，因为那只有在正文组件挂载后才赋 preview，
+// 无法在骨架屏阶段提前感知「正文就绪」，也就没法让标题与正文一起出现
+const MarkdownPreviewComponent = shallowRef(null);
+
+const loadMarkdown = async (force = false) => {
+  // 已加载则跳过，避免路由切换时重复加载导致骨架屏闪烁
+  if (!force && MarkdownPreviewComponent.value) return;
+  markdownReady.value = false;
+  try {
+    MarkdownPreviewComponent.value = await createMarkdownPreview(configStore.getArticleTheme());
+  } catch (e) {
+    console.error('Markdown 加载失败', e);
+    MarkdownPreviewComponent.value = null;
+  } finally {
+    markdownReady.value = true;
+  }
+};
 
 const renderArticleItem = async() => {
   isLoading.value = true
@@ -145,7 +164,10 @@ const renderArticleItem = async() => {
 
   // 更新文章浏览量到redis（article.id 值是对外 url_id，后端解析为真实 id）
   updateViewCountApi(article.value.id).catch(err => window.$snackbar?.error(err))
-  
+
+  // 异步预加载正文 Markdown（markdownReady 驱动骨架屏 → 标题与正文一起出现）
+  loadMarkdown();
+
   nextTick(() => {
     tocRef.value?.generateAnchors();
     hasToc.value = tocRef.value?.getHasToc() ?? false;
@@ -153,8 +175,8 @@ const renderArticleItem = async() => {
   });
 };
 
-// 异步 Markdown 组件（defineAsyncComponent）挂载完成后重建目录与定位：
-// renderArticleItem 里的 nextTick 执行时异步组件可能尚未加载，preview 仍为 null
+// 异步 Markdown 组件挂载完成后重建目录与定位：
+// renderArticleItem 里的 nextTick 执行时 Markdown 可能尚未加载完成，preview 仍为 null
 watch(preview, (val) => {
   if (!val) return;
   nextTick(() => {
@@ -226,12 +248,10 @@ const handleCopySuccess = () => {
 
 const themeStore = useThemeStore()
 
-// 使用 computed 每次重新创建组件
-const MarkdownPreview = computed(() => {
-  console.log('创建主题:', themeStore.isDark?"vuepress":"github")
-  const currentThem = configStore.getArticleTheme()
-  return defineAsyncComponent(() => createMarkdownPreview(currentThem))
-})
+// 配置的编辑器主题变化（github↔vuepress）时强制重新加载 Markdown
+watch(() => configStore.getArticleTheme(), () => {
+  if (isArticleLoaded.value) loadMarkdown(true);
+});
 
 
 onMounted(() => {
