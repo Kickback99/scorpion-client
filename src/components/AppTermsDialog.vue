@@ -129,11 +129,14 @@ const handleClose = () => { visible.value = false }
 // ============================================================
 // 骨架屏：内容行宽度控制（对齐真实 markdown 内容布局）
 // 每组 sentences 渲染 2 行 text 骨：
-//   第1行 :first-child   → 默认 100%，可在此改 max-width
-//   第2行 :nth-child(2)  → Vuetify 默认 max-width 50%
+//   第1行（上）→ 短的 70%
+//   第2行（下）→ 长的 100% 全宽
 // ============================================================
 .terms-skeleton :deep(.v-skeleton-loader__text:first-child) {
   max-width: 70%;
+}
+.terms-skeleton :deep(.v-skeleton-loader__text + .v-skeleton-loader__text) {
+  max-width: 100%;
 }
 .terms-skeleton :deep(.v-skeleton-loader__text) {
   margin: 4px 0;
