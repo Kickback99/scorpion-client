@@ -10,9 +10,20 @@
 
       <!-- 内容：Markdown 渲染 -->
       <v-card-text class="terms-content">
-        <div class="detail-panel">
+        <!-- 骨架屏：Markdown 加载中 -->
+        <div v-if="!markdownReady" class="terms-skeleton">
+          <v-skeleton-loader
+            v-for="n in skeletonLineGroups"
+            :key="n"
+            type="sentences"
+            class="terms-skeleton-lines"
+          />
+        </div>
+
+        <!-- 真实内容：Markdown 渲染 -->
+        <div v-else class="detail-panel">
           <component
-            :is="MarkdownPreview"
+            :is="MarkdownPreviewComponent"
             :text="content"
             :key="configStore.article_detail?.theme"
             :class="themeStore.isDark ? 'user-dark' : 'user-light'"
@@ -24,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, defineAsyncComponent } from 'vue'
+import { ref, watch, computed, shallowRef } from 'vue'
 import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
 import { useDisplay } from 'vuetify'
@@ -55,15 +66,40 @@ const emit = defineEmits(['update:modelValue'])
 // 响应式 max-width
 const dialogMaxWidth = computed(() => display.mobile.value ? '92%' : 600)
 
-// Markdown 预览组件（跟随主题）
-const MarkdownPreview = computed(() => {
-  const currentThem = configStore.getArticleTheme()
-  return defineAsyncComponent(() => createMarkdownPreview(currentThem))
+// 骨架屏：Markdown 是否加载完成
+const markdownReady = ref(false)
+// 骨架屏内容行组数：移动端 4 组，PC 6 组
+const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6))
+
+// Markdown 预览组件（手动预加载，加载完成后才渲染正文，避免弹窗内空白闪烁）
+const MarkdownPreviewComponent = shallowRef(null)
+
+const loadMarkdown = async (force = false) => {
+  // 已加载则跳过，避免重复加载导致骨架屏闪烁
+  if (!force && MarkdownPreviewComponent.value) return
+  markdownReady.value = false
+  try {
+    MarkdownPreviewComponent.value = await createMarkdownPreview(configStore.getArticleTheme())
+  } catch (e) {
+    console.error('Markdown 加载失败', e)
+    MarkdownPreviewComponent.value = null
+  } finally {
+    markdownReady.value = true
+  }
+}
+
+// 配置的编辑器主题变化（github↔vuepress）时强制重新加载 Markdown
+watch(() => configStore.getArticleTheme(), () => {
+  if (visible.value) loadMarkdown(true)
 })
 
 // v-model 双向同步
 watch(() => props.modelValue, (val) => { visible.value = val })
-watch(visible, (val) => { emit('update:modelValue', val) })
+watch(visible, (val) => {
+  emit('update:modelValue', val)
+  // 打开弹窗时预加载 Markdown，加载期间展示骨架屏
+  if (val) loadMarkdown()
+})
 
 // ============================================================
 // 事件处理
@@ -77,7 +113,23 @@ const handleClose = () => { visible.value = false }
 // ============================================================
 .terms-content {
   max-height: 60vh;
+  // 与 max-height 同值：加载中(骨架)与加载后(内容)容器同高，
+  // 避免骨架屏切换为真实内容时因高度不一致导致上下跳动
+  min-height: 60vh;
   overflow-y: auto;
+}
+
+// ============================================================
+// 骨架屏：内容行宽度控制（对齐真实 markdown 内容布局）
+// 每组 sentences 渲染 2 行 text 骨：
+//   第1行 :first-child   → 默认 100%，可在此改 max-width
+//   第2行 :nth-child(2)  → Vuetify 默认 max-width 50%
+// ============================================================
+.terms-skeleton :deep(.v-skeleton-loader__text:first-child) {
+  max-width: 70%;
+}
+.terms-skeleton :deep(.v-skeleton-loader__text) {
+  margin: 4px 0;
 }
 
 // ============================================================
