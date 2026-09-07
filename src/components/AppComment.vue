@@ -361,7 +361,8 @@ const childCommentLimit = ref(3)
 // 子评论分页大小（默认10条）
 const childPageSize = ref(10)
 
-const isLoggedIn = ref(false)
+// 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+const isLoggedIn = computed(() => userStore.isLoggedIn)
 const loading = ref(false)
 const scrollLoading = ref(false)
 const commentList = ref([])
@@ -380,11 +381,6 @@ const replyLoading = ref(false)
 // 根据评论类型动态获取评论是否启用（使用 configStore 的方法）
 const isCommentTypeEnabled = () => {
   return configStore.isCommentTypeEnabledWithExtra(props.commentType, props.isComment)
-}
-
-const checkLogin = () => {
-  // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
-  isLoggedIn.value = userStore.isLoggedIn
 }
 
 // 判断是否显示操作按钮
@@ -820,11 +816,6 @@ const confirmDelete = async () => {
   }
 }
 
-// 监听用户登录状态变化
-watch(() => userStore.token, () => {
-  checkLogin()
-})
-
 watch(() => props.articleId, () => {
   if (isCommentTypeEnabled()) {
     loadComments()
@@ -860,7 +851,6 @@ watch(() => props.articleId, () => {
 }) */
 
 onMounted(() => {
-  checkLogin()
   initConfig()
   if (isCommentTypeEnabled() && (props.commentType === 'friendLink' || props.articleId)) {
     loadComments()
