@@ -70,16 +70,23 @@ const dialogMaxWidth = computed(() => display.mobile.value ? '92%' : 600)
 const markdownReady = ref(false)
 // 骨架屏内容行组数：移动端 4 组，PC 6 组
 const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6))
+// 骨架屏额外停留时长候选（秒）：条款/协议为本地常量、加载较快，
+// 内容就绪后随机取一个元素作为停留时长，让骨架屏展示时长略有变化、不显呆板
+const SKELETON_DELAY_SECONDS = [1, 1.5, 2]
 
 // Markdown 预览组件（手动预加载，加载完成后才渲染正文，避免弹窗内空白闪烁）
 const MarkdownPreviewComponent = shallowRef(null)
 
 const loadMarkdown = async (force = false) => {
-  // 已加载则跳过，避免重复加载导致骨架屏闪烁
-  if (!force && MarkdownPreviewComponent.value) return
   markdownReady.value = false
   try {
-    MarkdownPreviewComponent.value = await createMarkdownPreview(configStore.getArticleTheme())
+    // 组件已加载则复用，否则（或主题切换强制刷新）重新创建
+    if (!MarkdownPreviewComponent.value || force) {
+      MarkdownPreviewComponent.value = await createMarkdownPreview(configStore.getArticleTheme())
+    }
+    // 内容就绪后随机停留一段时间再展示正文
+    const seconds = SKELETON_DELAY_SECONDS[Math.floor(Math.random() * SKELETON_DELAY_SECONDS.length)]
+    await new Promise((resolve) => setTimeout(resolve, seconds * 1000))
   } catch (e) {
     console.error('Markdown 加载失败', e)
     MarkdownPreviewComponent.value = null
