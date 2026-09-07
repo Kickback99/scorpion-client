@@ -35,10 +35,10 @@
   </v-card>
 
   <!-- 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） -->
-  <AppMobileRelated v-if="isArticleLoaded" :tags="tags" :articles="cateArticles" />
+  <AppMobileRelated v-if="isArticleLoaded && markdownLoaded" :tags="tags" :articles="cateArticles" />
 
   <!-- 底部操作栏 -->
-  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && isArticleLoaded" class="mt-5 d-flex justify-center py-4">
+  <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && isArticleLoaded && markdownLoaded" class="mt-5 d-flex justify-center py-4">
     <v-btn
       variant="text"
       :color="isFavorite ? 'red' : 'grey'"
@@ -59,7 +59,7 @@
   </div>
   
   <!-- 新增：评论组件 -->
-  <div class="mt-5" v-if="isArticleLoaded && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
+  <div class="mt-5" v-if="isArticleLoaded && markdownLoaded && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
     :articleId="article.id"
     :isComment="article.isComment"
@@ -115,6 +115,9 @@ const display = useDisplay();
 const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6));
 // 文章详情是否真正加载完毕：isLoading=false 且已拿到文章数据（覆盖路由切换中 / 文章不存在等路径）
 const isArticleLoaded = computed(() => !isLoading.value && !!article.value.id);
+// 正文是否渲染完成：preview 是异步 Markdown 组件，挂载后才被赋值；
+// 相关文章/标签需与正文同步出现，否则会在正文（异步加载）前闪现
+const markdownLoaded = computed(() => !!preview.value);
 // 系统配置
 const configStore = useConfigStore()
 
