@@ -18,7 +18,7 @@
 
   <!-- 真实内容 -->
   <v-card v-else variant="flat">
-    <v-card-title class="d-flex justify-space-between align-center">
+    <v-card-title class="detail-title">
       <span>{{ article.title }}</span>
     </v-card-title>
 
@@ -284,6 +284,17 @@ watch(() => isLoggedIn.value, () => {
 </script>
 
 <style scoped>
+/* 文章标题：Vuetify 的 v-card-title 默认 white-space:nowrap + text-overflow:ellipsis 会把长标题截断成单行；
+ * 这里用 line-clamp 限制为最多 2 行，超出的部分省略号显示 */
+.detail-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+}
+
 /* 骨架屏：标题骨 32px 匹配真实标题行高，全宽 */
 .detail-skeleton-title {
   width: 100%;
