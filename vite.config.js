@@ -5,6 +5,26 @@ import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import prismjs from 'vite-plugin-prismjs';
 
+// 主题配置（单一数据源：从 theme-config.js 提取背景色注入 index.html，改主题颜色自动同步）
+import { themeConfig } from './src/plugins/theme-config.js'
+
+// 各主题名 → 背景色映射（来自 theme-config.js，改主题颜色此处自动更新）
+const themeBgMap = Object.fromEntries(
+  Object.entries(themeConfig.themes).map(([name, theme]) => [name, theme.colors.background])
+)
+
+// 注入 index.html 的内联脚本：JS 加载前按持久化主题给 <html> 上背景色，消除深色模式刷新闪白
+const themeBgScript = `;(function () {
+  try {
+    var t = JSON.parse(localStorage.getItem('theme') || '{}')
+    var name = t.currentTheme || '${themeConfig.defaultTheme}'
+    var bgMap = ${JSON.stringify(themeBgMap)}
+    var bg = bgMap[name] || bgMap['${themeConfig.defaultTheme}']
+    document.documentElement.style.backgroundColor = bg
+    document.documentElement.style.colorScheme = name.slice(-5) === '-dark' ? 'dark' : 'normal'
+  } catch (e) {}
+})()`
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // 获取各种环境下的对应的变量
@@ -56,6 +76,17 @@ export default defineConfig(({ mode }) => {
             }
           }
           return html
+        },
+      },
+      // 深色模式防刷新闪白：把主题背景色内联脚本注入 <head>（颜色来自 theme-config.js）
+      {
+        name: 'inject-theme-bg',
+        transformIndexHtml() {
+          return {
+            tags: [
+              { tag: 'script', children: themeBgScript, injectTo: 'head' },
+            ],
+          }
         },
       },
       vue(),
