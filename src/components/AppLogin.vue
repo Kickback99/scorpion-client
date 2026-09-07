@@ -353,6 +353,7 @@ emitter.on('loginDialogVisible',param => {
 import { onUnmounted } from 'vue'
 import { userLoginApi, userRegisterApi, userPasswordResetApi } from '@/api/user';
 import { useUserStore } from '@/store/user';
+import { isCookieMode } from '@/utils/auth';
 
 onUnmounted(() => {
     emitter.off('loginDialogVisible')
@@ -440,6 +441,18 @@ const handleLogin = async () => {
             }
             // 登录请求
             const res = await userLoginApi(loginModel)
+
+            // jwt 模式下响应缺少 token 说明前后端认证模式不一致（cookie 模式的错配由 401 链路暴露）
+            if (!isCookieMode() && !res.data.token) {
+                window.$snackbar?.error('登录响应缺少令牌，请检查前后端认证模式是否一致')
+                return
+            }
+
+            // cookie 模式返回 token 说明前后端认证模式不一致（jwt 模式的错配由 401 链路暴露）
+            if (isCookieMode() && res.data.token) {
+                window.$snackbar?.error('登录响应出现令牌，请检查前后端认证模式是否一致')
+                return
+            }
 
             userStore.setToken(res.data.token)
 
