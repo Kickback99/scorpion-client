@@ -454,12 +454,12 @@ defineExpose({
 // ============================================================
 // 缩进层级
 // ============================================================
-.toc-level-0 { padding-left: 8px !important; }
-.toc-level-1 { padding-left: 16px !important; }
-.toc-level-2 { padding-left: 24px !important; }
-.toc-level-3 { padding-left: 32px !important; }
-.toc-level-4 { padding-left: 40px !important; }
-.toc-level-5 { padding-left: 48px !important; }
+.toc-level-0 { padding-left: 16px !important; }
+.toc-level-1 { padding-left: 24px !important; }
+.toc-level-2 { padding-left: 32px !important; }
+.toc-level-3 { padding-left: 40px !important; }
+.toc-level-4 { padding-left: 48px !important; }
+.toc-level-5 { padding-left: 56px !important; }
 
 // ============================================================
 // 交互
