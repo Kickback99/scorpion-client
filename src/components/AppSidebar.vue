@@ -34,12 +34,10 @@
 
     <div ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
-        <v-list color="primary">
+        <v-list>
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact :to="{name:'detail',params:{id:item.id}}">
                 <template v-slot:prepend>
-                    <span class="v-theme--scorpion-light">
-                        <v-icon color="primary">mdi-numeric-{{index+1}}-box</v-icon>
-                    </span>
+                    <span class="hot-rank">{{ index + 1 }}</span>
                 </template>
 
                 <v-list-item-title class="text-caption">{{ item.title }}</v-list-item-title>
@@ -563,6 +561,21 @@ onUnmounted(() => {
 // 在暗色 surface 上对比度不足；改用主题 on-surface 动态变量（深色模式浅色 / 亮色模式深色）保证可读性
 :deep(.v-chip__content) {
   color: rgb(var(--v-theme-on-surface));
+}
+
+// 热门文章排名序号：实心主色方块 + 白色数字，背景/文字色随主题深浅自动适配
+.hot-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgb(var(--v-theme-primary));   // 方块（背景）
+  color: rgb(var(--v-theme-on-primary));      // 数字（文字）
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .hot-section {
