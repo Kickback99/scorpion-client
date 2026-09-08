@@ -101,6 +101,11 @@ watch(() => props.articles, (val) => {
   border-radius: var(--article-cover-radius);
 }
 
+// 相关标签 chip：同 AppSidebar，深色模式下文本改用主题 on-surface 保证可读性
+:deep(.v-chip__content) {
+  color: rgb(var(--v-theme-on-surface));
+}
+
 // ============================================================
 // 移动端标题字号缩放（与 AppComment 评论区标题保持一致）
 // ============================================================
