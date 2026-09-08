@@ -199,8 +199,8 @@ const handleCommentCountChange = async () => {
 
 // 处理收藏切换
 const handleFavoriteToggle = async () => {
-  // 检查是否登录
-  if (!userStore.token) {
+  // 检查是否登录（统一走 store getter：cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+  if (!isLoggedIn.value) {
     // 未登录，触发登录弹窗
     // 提示信息
     // t_question：不显示提示消息
