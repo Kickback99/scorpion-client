@@ -14,8 +14,6 @@ import {
   mdiLockReset, mdiLogin, mdiLogout, mdiMagnify, mdiMagnifyRemoveOutline, mdiMenu, mdiMenuDown,
   mdiMessageText, mdiMessageTextOutline, mdiPin, mdiQqchat, mdiRefresh, mdiReply, mdiShieldCheck,
   mdiText, mdiWeatherNight, mdiWechat, mdiWhiteBalanceSunny,
-  mdiNumeric1Box, mdiNumeric2Box, mdiNumeric3Box, mdiNumeric4Box, mdiNumeric5Box,
-  mdiNumeric6Box, mdiNumeric7Box, mdiNumeric8Box, mdiNumeric9Box, mdiNumeric10Box,
 } from '@mdi/js'
 
 // 白名单：kebab-case 图标名 → SVG path
@@ -80,17 +78,6 @@ const whitelist = {
   'mdi-weather-night': mdiWeatherNight,
   'mdi-wechat': mdiWechat,
   'mdi-white-balance-sunny': mdiWhiteBalanceSunny,
-  // 热门文章序号（mdi-numeric-1-box ~ mdi-numeric-10-box）
-  'mdi-numeric-1-box': mdiNumeric1Box,
-  'mdi-numeric-2-box': mdiNumeric2Box,
-  'mdi-numeric-3-box': mdiNumeric3Box,
-  'mdi-numeric-4-box': mdiNumeric4Box,
-  'mdi-numeric-5-box': mdiNumeric5Box,
-  'mdi-numeric-6-box': mdiNumeric6Box,
-  'mdi-numeric-7-box': mdiNumeric7Box,
-  'mdi-numeric-8-box': mdiNumeric8Box,
-  'mdi-numeric-9-box': mdiNumeric9Box,
-  'mdi-numeric-10-box': mdiNumeric10Box,
 }
 
 // 图标集组件：'mdi-xxx' → 查白名单；'svg:...'（Vuetify 内部别名）→ 剥离前缀
