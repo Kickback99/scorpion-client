@@ -166,52 +166,44 @@ const handleCopySuccess = () => {
     color: rgb(var(--v-theme-on-surface-variant)) !important;
   }
 
-  // hljs 语法高亮：浅色 github 配色 → 主题深色配色
+  // 语法高亮：深色下改用 github-dark 亮色配色，关键词保持正文色不额外高亮
   .hljs {
     color: rgb(var(--v-theme-on-surface));
-  }
-  .hljs-comment, .hljs-quote {
-    color: rgb(var(--v-theme-on-surface-variant));
   }
   .hljs-keyword, .hljs-selector-tag, .hljs-subst {
     color: rgb(var(--v-theme-on-surface));
     font-weight: 700;
   }
-  .hljs-literal, .hljs-number, .hljs-tag .hljs-attr, .hljs-template-variable, .hljs-variable {
-    color: rgb(var(--v-theme-warning));
+  .hljs-comment, .hljs-quote, .hljs-meta {
+    color: #8b949e;
   }
   .hljs-doctag, .hljs-string {
-    color: rgb(var(--v-theme-success));
+    color: #a5d6ff;
   }
-  .hljs-section, .hljs-selector-id, .hljs-title {
-    color: rgb(var(--v-theme-accent));
+  .hljs-title, .hljs-section, .hljs-selector-id, .hljs-class .hljs-title, .hljs-type {
+    color: #d2a8ff;
     font-weight: 700;
   }
-  .hljs-class .hljs-title, .hljs-type {
-    color: rgb(var(--v-theme-accent));
-    font-weight: 700;
+  .hljs-literal, .hljs-number, .hljs-variable, .hljs-template-variable {
+    color: #79c0ff;
   }
   .hljs-attribute, .hljs-name, .hljs-tag {
-    color: rgb(var(--v-theme-info));
+    color: #7ee787;
   }
   .hljs-link, .hljs-regexp {
-    color: rgb(var(--v-theme-success));
+    color: #a5d6ff;
   }
   .hljs-bullet, .hljs-symbol {
-    color: rgb(var(--v-theme-accent));
+    color: #f2cc60;
   }
   .hljs-built_in, .hljs-builtin-name {
-    color: rgb(var(--v-theme-info));
-  }
-  .hljs-meta {
-    color: rgb(var(--v-theme-on-surface-variant));
-    font-weight: 700;
+    color: #ffa657;
   }
   .hljs-deletion {
-    background: rgb(var(--v-theme-error), 0.25);
+    background: rgba(255, 123, 114, 0.2);
   }
   .hljs-addition {
-    background: rgb(var(--v-theme-success), 0.25);
+    background: rgba(126, 231, 135, 0.2);
   }
 }
 
