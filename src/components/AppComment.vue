@@ -652,13 +652,8 @@ const submitComment = async () => {
       // await loadComments()
     }
   } catch (error) {
+    // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
     console.error('发表评论失败:', error)
-    if (error.response?.status === 401) {
-      window.$snackbar?.error('请先登录')
-      emitter.emit('loginDialogVisible', true)
-    } else {
-      window.$snackbar?.error('发表评论失败')
-    }
   } finally {
     submitLoading.value = false
   }
@@ -713,13 +708,8 @@ const submitReply = async () => {
       await loadComments()
     }
   } catch (error) {
+    // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
     console.error('回复失败:', error)
-    if (error.response?.status === 401) {
-      window.$snackbar?.error('请先登录')
-      emitter.emit('loginDialogVisible', true)
-    } else {
-      window.$snackbar?.error('回复失败')
-    }
   } finally {
     replyLoading.value = false
   }
@@ -802,13 +792,8 @@ const confirmDelete = async () => {
     await loadComments() // 刷新评论列表
     emit('comment-deleted')
   } catch (error) {
+    // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
     console.error('删除评论失败:', error)
-    if (error.response?.status === 401) {
-      window.$snackbar?.error('请先登录')
-      emitter.emit('loginDialogVisible', true)
-    } else {
-      window.$snackbar?.error(error.response?.data?.message || '删除失败')
-    }
   } finally {
     isDeleting.value = false
     deletingCommentId.value = null

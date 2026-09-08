@@ -220,10 +220,8 @@ const handleFavoriteToggle = async () => {
         article.value.favoriteCount = Math.max(0, (article.value.favoriteCount || 0) - 1);
       }
   } catch (error) {
+    // 401（业务码/HTTP）已由 http.js 拦截器统一清理并提示，此处仅记录，不做重复处理
     console.error('收藏操作失败', error);
-    if (error.response?.status === 401) {
-      emitter.emit('loginDialogVisible', true);
-    }
   } finally {
     favoriteLoading.value = false;
   }
