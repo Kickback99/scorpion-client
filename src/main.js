@@ -1,5 +1,6 @@
 import 'vuetify/styles'
 import './assets/main.scss'
+import './assets/styles/markdown-preview.scss'
 import { StealthStorage } from '@/utils/stealthStorage'
 
 import { createApp } from 'vue'
