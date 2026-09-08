@@ -62,6 +62,11 @@ instance.interceptors.response.use(
             return Promise.reject(res.data)
         }
 
+        // 资源不存在（405，如文章 detail/1 无对应记录）：静默 reject 完整响应体，交由业务方跳 404，不弹 snackbar
+        if(res.data.code === 405){
+            return Promise.reject(res.data)
+        }
+
         //匹配状态码为40开头的正则，以及认证失效码 215（token过期）/ 216（账号已退出）
        let regex = /^40[0-9]$/
 
