@@ -201,10 +201,7 @@ const handleCommentCountChange = async () => {
 const handleFavoriteToggle = async () => {
   // 检查是否登录（统一走 store getter：cookie 模式看 user 展示缓存，jwt 模式看 token+user）
   if (!isLoggedIn.value) {
-    // 未登录，触发登录弹窗
-    // 提示信息
-    // t_question：不显示提示消息
-    window.$snackbar?.error('请登录','')
+    // 未登录，直接触发登录弹窗（不弹 snackbar，与「登录后参与评论」入口保持一致）
     emitter.emit('loginDialogVisible', true);
     return;
   }
