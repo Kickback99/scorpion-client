@@ -336,10 +336,6 @@ watch(() => isLoggedIn.value, () => {
     background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
     color: rgb(var(--v-theme-on-primary)) !important;
   }
-
-  tr:nth-child(2n) {
-    background: transparent !important;
-  }
 }
 
 /* vuepress主题：文章详情页浅色背景下的颜色 */
@@ -350,31 +346,103 @@ watch(() => isLoggedIn.value, () => {
     background-color: rgb(var(--v-theme-surface-variant),0.5) !important;
     color: rgb(var(--v-theme-on-surface-variant)) !important;
   }
-
-  tr:nth-child(2n) {
-    background: transparent !important;
-  }
 }
 
 /* github主题：文章详情页浅色背景下的颜色 */
-:deep(.v-md-editor-preview .github-markdown-body){
+:deep(.v-md-editor-preview.user-light .github-markdown-body){
   code:not(pre code) {
     background-color: rgb(var(--v-theme-surface-variant),0.7) !important;
     color: rgb(var(--v-theme-primary)) !important;
   }
-  tr:nth-child(2n) {
-    background: white !important;
-  }
 }
 
-/* github主题：文章详情页深色背景下的表格文字（表格背景固定白色，文字用深色避免反色） */
+/* github主题：文章详情页深色背景下的适配（代码块/行号/表格/行内代码/语法高亮） */
 :deep(.v-md-editor-preview.user-dark .github-markdown-body){
+  /* 行内代码 `xxx` */
+  code:not(pre code) {
+    background-color: rgb(var(--v-theme-surface-variant)) !important;
+    color: rgb(var(--v-theme-on-surface-variant)) !important;
+  }
+
+  /* 表格：背景、文字、边框 */
   table {
-    color: #1A1A2E;
-    code:not(pre code) {
-      background-color: rgb(var(--v-theme-surface-variant),0.9) !important;
-      color: rgb(var(--v-theme-on-surface-variant)) !important;
+    tr {
+      background-color: rgb(var(--v-theme-surface)) !important;
+      color: rgb(var(--v-theme-on-surface));
+      border-top-color: rgb(var(--v-theme-on-surface), 0.15);
     }
+    tr:nth-child(2n) {
+      background-color: rgb(var(--v-theme-surface-variant)) !important;
+    }
+    th, td {
+      border-color: rgb(var(--v-theme-on-surface), 0.15);
+    }
+  }
+
+  /* 代码块：容器背景 */
+  div[class*=v-md-pre-wrapper-] {
+    background-color: rgb(var(--v-theme-surface-variant)) !important;
+  }
+  /* 代码块：普通文字 */
+  pre code {
+    color: rgb(var(--v-theme-on-surface)) !important;
+  }
+
+  /* 行号：背景 + 文字 */
+  div[class*=v-md-pre-wrapper-].line-numbers-mode:after {
+    background-color: rgb(var(--v-theme-surface)) !important;
+    border-right-color: rgb(var(--v-theme-on-surface), 0.15);
+  }
+  div[class*=v-md-pre-wrapper-].line-numbers-mode .line-numbers-wrapper {
+    color: rgb(var(--v-theme-on-surface-variant)) !important;
+  }
+
+  /* hljs 语法高亮：浅色 github 配色 → 主题深色配色 */
+  .hljs {
+    color: rgb(var(--v-theme-on-surface));
+  }
+  .hljs-comment, .hljs-quote {
+    color: rgb(var(--v-theme-on-surface-variant));
+  }
+  .hljs-keyword, .hljs-selector-tag, .hljs-subst {
+    color: rgb(var(--v-theme-on-surface));
+    font-weight: 700;
+  }
+  .hljs-literal, .hljs-number, .hljs-tag .hljs-attr, .hljs-template-variable, .hljs-variable {
+    color: rgb(var(--v-theme-warning));
+  }
+  .hljs-doctag, .hljs-string {
+    color: rgb(var(--v-theme-success));
+  }
+  .hljs-section, .hljs-selector-id, .hljs-title {
+    color: rgb(var(--v-theme-accent));
+    font-weight: 700;
+  }
+  .hljs-class .hljs-title, .hljs-type {
+    color: rgb(var(--v-theme-accent));
+    font-weight: 700;
+  }
+  .hljs-attribute, .hljs-name, .hljs-tag {
+    color: rgb(var(--v-theme-info));
+  }
+  .hljs-link, .hljs-regexp {
+    color: rgb(var(--v-theme-success));
+  }
+  .hljs-bullet, .hljs-symbol {
+    color: rgb(var(--v-theme-accent));
+  }
+  .hljs-built_in, .hljs-builtin-name {
+    color: rgb(var(--v-theme-info));
+  }
+  .hljs-meta {
+    color: rgb(var(--v-theme-on-surface-variant));
+    font-weight: 700;
+  }
+  .hljs-deletion {
+    background: rgb(var(--v-theme-error), 0.25);
+  }
+  .hljs-addition {
+    background: rgb(var(--v-theme-success), 0.25);
   }
 }
 
