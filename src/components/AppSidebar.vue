@@ -559,6 +559,12 @@ onUnmounted(() => {
   border-radius: var(--article-cover-radius);
 }
 
+// 文章标签 chip：tonal + base-color="primary" 会把文本渲染成 primary（深色模式 #6A5ACD），
+// 在暗色 surface 上对比度不足；改用主题 on-surface 动态变量（深色模式浅色 / 亮色模式深色）保证可读性
+:deep(.v-chip__content) {
+  color: rgb(var(--v-theme-on-surface));
+}
+
 .hot-section {
     transition: none; // FLIP 自行管理动画，不靠 CSS transition
 }
