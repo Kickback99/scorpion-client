@@ -13,13 +13,12 @@
 
       <!-- 内容：Markdown 渲染 -->
       <v-card-text>        
-        <div class="detail-panel">
+        <div class="detail-panel" @click="handleCopyClick">
           <component
             :is="MarkdownPreview"
             :text="content"
             :key="configStore.article_detail?.theme"
             :class="themeStore.isDark ? 'user-dark' : 'user-light'"
-            @copy-code-success="handleCopySuccess"
           />
         </div>
       </v-card-text>
@@ -77,14 +76,18 @@ watch(visible, (val) => { emit('update:modelValue', val) })
 // ============================================================
 const handleClose = () => { visible.value = false }
 
-const handleCopySuccess = () => {
-  const copyButtons = document.querySelectorAll('.v-md-copy-code-btn')
-  copyButtons.forEach(btn => {
-    btn.classList.add('copied')
-    setTimeout(() => {
-      btn.classList.remove('copied')
-    }, 1500)
-  })
+// 只给被点击的代码块按钮加对勾：先清掉其它按钮的 copied，实现排它效果
+const handleCopyClick = (e) => {
+  const btn = e.target.closest('.v-md-copy-code-btn')
+  if (!btn) return
+
+  document.querySelectorAll('.v-md-copy-code-btn.copied').forEach((b) => b.classList.remove('copied'))
+  btn.classList.add('copied')
+
+  // 1.5秒后移除
+  setTimeout(() => {
+    btn.classList.remove('copied')
+  }, 1500)
 }
 </script>
 
