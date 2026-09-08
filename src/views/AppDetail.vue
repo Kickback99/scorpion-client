@@ -22,13 +22,12 @@
       <span>{{ article.title }}</span>
     </v-card-title>
 
-    <div class="markdown-content">
+    <div class="markdown-content" @click="handleCopyClick">
        <component
         v-if="MarkdownPreviewComponent"
         :is="MarkdownPreviewComponent"
         :text="article.content"
         ref="preview"
-        @copy-code-success="handleCopySuccess"
         :class="themeStore.isDark?'user-dark':'user-light'"
         />
     </div>
@@ -225,18 +224,18 @@ const handleFavoriteToggle = async () => {
 };
 
 // ========== 代码块复制业务 ==========
-const handleCopySuccess = () => {
-  const copyButtons = document.querySelectorAll('.v-md-copy-code-btn')
-  
-  copyButtons.forEach(btn => {
-    // 添加copied类
-    btn.classList.add('copied')
-    
-    // 1.5秒后移除
-    setTimeout(() => {
-      btn.classList.remove('copied')
-    }, 1500)
-  })
+// 只给被点击的代码块按钮加对勾：先清掉其它按钮的 copied，实现排它效果
+const handleCopyClick = (e) => {
+  const btn = e.target.closest('.v-md-copy-code-btn')
+  if (!btn) return
+
+  document.querySelectorAll('.v-md-copy-code-btn.copied').forEach((b) => b.classList.remove('copied'))
+  btn.classList.add('copied')
+
+  // 1.5秒后移除
+  setTimeout(() => {
+    btn.classList.remove('copied')
+  }, 1500)
 }
 
 // ========== 主题切换业务 ==========
