@@ -146,9 +146,9 @@ const renderArticleItem = async() => {
   try {
     res = await articleDetailApi(props.id);
   } catch (e) {
-    // 文章不存在（真实 id 被拒绝等）：提示并回首页
-    window.$snackbar?.error('文章不存在')
-    router.replace('/')
+    // 资源不存在（后端 405，如 detail/1、detail/sssw 无对应文章）：直接跳 404，不弹提示
+    // 其余错误（网络超时/断网/服务异常）已由 http.js 拦截器统一提示，回首页兜底
+    router.replace(e?.code === 405 ? '/404' : '/')
     return
   } finally {
     isLoading.value = false
@@ -163,7 +163,7 @@ const renderArticleItem = async() => {
   });
 
   // 更新文章浏览量到redis（article.id 值是对外 url_id，后端解析为真实 id）
-  updateViewCountApi(article.value.id).catch(err => window.$snackbar?.error(err))
+  updateViewCountApi(article.value.id).catch(err => console.error('更新浏览量失败', err))
 
   // 异步预加载正文 Markdown（markdownReady 驱动骨架屏 → 标题与正文一起出现）
   loadMarkdown();
