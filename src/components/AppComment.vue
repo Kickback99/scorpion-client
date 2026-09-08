@@ -662,7 +662,7 @@ const submitComment = async () => {
 // 开始回复
 const startReply = (comment) => {
   if(!isLoggedIn.value){
-    window.$snackbar?.error('请登录','')
+    // 未登录，直接触发登录弹窗（不弹 snackbar，与「登录后参与评论」入口保持一致）
     emitter.emit('loginDialogVisible', true);
     return;
   }
