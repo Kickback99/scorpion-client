@@ -18,8 +18,8 @@
 
   <!-- 真实内容 -->
   <v-card v-else variant="flat">
-    <v-card-title class="detail-title">
-      <span>{{ article.title }}</span>
+    <v-card-title>
+      <span class="detail-title-text">{{ article.title }}</span>
     </v-card-title>
 
     <div class="markdown-content" @click="handleCopyClick">
@@ -279,8 +279,10 @@ watch(() => isLoggedIn.value, () => {
 
 <style scoped>
 /* 文章标题：Vuetify 的 v-card-title 默认 white-space:nowrap + text-overflow:ellipsis 会把长标题截断成单行；
- * 这里用 line-clamp 限制为最多 2 行，超出的部分省略号显示 */
-.detail-title {
+ * 这里对标题文本 span 用 line-clamp 限制为最多 2 行，超出的部分省略号显示。
+ * 注意：line-clamp 不能加在带 padding 的 v-card-title 上——其 overflow:hidden 会连同底部 padding 一起裁剪，
+ * 第三行文字会从底部 8px padding 里露出半行；故把 clamp 移到无 padding 的内层 span 上。 */
+.detail-title-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
