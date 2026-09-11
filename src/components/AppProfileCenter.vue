@@ -63,6 +63,7 @@
                 </template>
                 <template v-slot:no-data>
                   <v-empty-state
+                    class="custom-empty-state"
                     headline="暂无反馈"
                     text="你还没有提交过任何反馈"
                     icon="mdi-message-text-outline"
@@ -452,37 +453,20 @@ watch(tab, (newTab) => {
   margin: 0 !important; /* 移除默认外边距 */
 }
 
-/* --------------- 自定义空状态文字大小 --------------- */
+/* --------------- 自定义空状态：随 --profile-center-scale 等比缩放 ---------------
+   （v-empty-state 默认 icon size 96 会内联 height/width，需一并覆盖，否则移动端图标盒仍为 96px） */
 :deep(.custom-empty-state .v-empty-state__headline) {
-  font-size: 1.25rem !important;
+  font-size: calc(1.125rem * var(--profile-center-scale)) !important;
   font-weight: 500;
 }
 
 :deep(.custom-empty-state .v-empty-state__text) {
-  font-size: 0.875rem !important;
+  font-size: calc(0.875rem * var(--profile-center-scale)) !important;
 }
 
-  :deep(.custom-empty-state .v-icon) {
-    font-size: 60px !important;
-  }
-
-/* 移动端更小 */
-@media (max-width: 600px) {
-  .empty-state-container {
-    min-height: 150px;
-    padding: 16px;
-  }
-  
-  :deep(.custom-empty-state .v-empty-state__headline) {
-    font-size: 1rem !important;
-  }
-  
-  :deep(.custom-empty-state .v-empty-state__text) {
-    font-size: 0.75rem !important;
-  }
-  
-  :deep(.custom-empty-state .v-icon) {
-    font-size: 48px !important;
-  }
+:deep(.custom-empty-state .v-icon) {
+  font-size: calc(60px * var(--profile-center-scale)) !important;
+  height: calc(60px * var(--profile-center-scale)) !important;
+  width: calc(60px * var(--profile-center-scale)) !important;
 }
 </style>

@@ -563,30 +563,20 @@ defineExpose({
   overflow-y: auto;
 }
 
+/* 空状态：随 --content-list-scale 等比缩放，与全组件字号逻辑保持一致
+   （v-empty-state 默认 icon size 96 会内联 height/width，需一并覆盖，否则移动端图标盒仍为 96px） */
 :deep(.custom-empty-state .v-empty-state__headline) {
-  font-size: 1.25rem !important;
+  font-size: calc(1.125rem * var(--content-list-scale)) !important;
   font-weight: 500;
 }
 
 :deep(.custom-empty-state .v-empty-state__text) {
-  font-size: 0.875rem !important;
+  font-size: calc(0.875rem * var(--content-list-scale)) !important;
 }
 
 :deep(.custom-empty-state .v-icon) {
-  font-size: 60px !important;
-}
-
-@media (max-width: 600px) {
-  :deep(.custom-empty-state .v-empty-state__headline) {
-    font-size: 1rem !important;
-  }
-  
-  :deep(.custom-empty-state .v-empty-state__text) {
-    font-size: 0.75rem !important;
-  }
-  
-  :deep(.custom-empty-state .v-icon) {
-    font-size: 48px !important;
-  }
+  font-size: calc(60px * var(--content-list-scale)) !important;
+  height: calc(60px * var(--content-list-scale)) !important;
+  width: calc(60px * var(--content-list-scale)) !important;
 }
 </style>
