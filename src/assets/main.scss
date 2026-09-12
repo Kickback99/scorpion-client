@@ -79,3 +79,32 @@ html, body {
     left: 6px;
   }
 }
+
+/* ========== 空状态（.custom-empty-state）：字号 / 图标 / 间距统一在此定义 ==========
+   使用方只需在自己的根元素上设置 --empty-state-scale（移动端 0.8，桌面 1），
+   同一份规则同时覆盖组件自带 markup 与父组件经插槽传入的 markup，避免各写一份导致漂移。
+   !important 必要：v-empty-state 默认 icon size 96 会内联 height/width，
+   且 .v-empty-state--mobile 变体与本规则特异性相同，靠顺序不可靠。 */
+.custom-empty-state {
+  /* Vuetify 默认 0，图标盒底边紧贴标题 */
+  .v-empty-state__media {
+    margin-bottom: calc(5px * var(--empty-state-scale, 1)) !important;
+  }
+
+  .v-empty-state__headline {
+    font-size: calc(1.125rem * var(--empty-state-scale, 1)) !important;
+    font-weight: 500;
+    /* Vuetify 默认仅 8px，标题与描述挨得过近 */
+    margin-bottom: calc(30px * var(--empty-state-scale, 1)) !important;
+  }
+
+  .v-empty-state__text {
+    font-size: calc(0.875rem * var(--empty-state-scale, 1)) !important;
+  }
+
+  .v-icon {
+    font-size: calc(60px * var(--empty-state-scale, 1)) !important;
+    height: calc(60px * var(--empty-state-scale, 1)) !important;
+    width: calc(60px * var(--empty-state-scale, 1)) !important;
+  }
+}
