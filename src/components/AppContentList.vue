@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="content-list pa-6" :style="{ '--content-list-scale': handleFontScale }">
+  <v-sheet class="content-list pa-6" :style="{ '--content-list-scale': handleFontScale, '--empty-state-scale': handleFontScale }">
     <!-- 搜索框区域：只在非加载状态、启用搜索且有数据时显示 -->
     <div v-if="!loading && enableSearch && items.length > 0" class="d-flex justify-center mb-4">
       <v-text-field
@@ -563,27 +563,4 @@ defineExpose({
   overflow-y: auto;
 }
 
-/* 空状态：随 --content-list-scale 等比缩放，与全组件字号逻辑保持一致
-   （v-empty-state 默认 icon size 96 会内联 height/width，需一并覆盖，否则移动端图标盒仍为 96px） */
-/* Vuetify 默认 0，图标盒底边紧贴标题，统一留出间距 */
-:deep(.custom-empty-state .v-empty-state__media) {
-  margin-bottom: calc(5px * var(--content-list-scale)) !important;
-}
-
-:deep(.custom-empty-state .v-empty-state__headline) {
-  font-size: calc(1.125rem * var(--content-list-scale)) !important;
-  font-weight: 500;
-  /* Vuetify 默认仅 8px，兜底文案（标题 + 描述）挨得过近，统一放大 */
-  margin-bottom: calc(30px * var(--content-list-scale)) !important;
-}
-
-:deep(.custom-empty-state .v-empty-state__text) {
-  font-size: calc(0.875rem * var(--content-list-scale)) !important;
-}
-
-:deep(.custom-empty-state .v-icon) {
-  font-size: calc(60px * var(--content-list-scale)) !important;
-  height: calc(60px * var(--content-list-scale)) !important;
-  width: calc(60px * var(--content-list-scale)) !important;
-}
 </style>
