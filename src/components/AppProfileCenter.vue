@@ -65,7 +65,7 @@
                   <v-empty-state
                     class="custom-empty-state"
                     headline="暂无反馈"
-                    text="你还没有提交过任何反馈"
+                    text="你还没有提交任何反馈"
                     icon="mdi-message-text-outline"
                   ></v-empty-state>
                 </template>
@@ -88,7 +88,7 @@
               :hide-default-header="false"
               empty-icon="mdi-file-document-outline"
               empty-headline="暂无发布"
-              empty-text="你还没有发布过任何内容"
+              empty-text="你还没有发布任何文章"
               :get-item-id="(item) => item.id"
             >
               <template #column-title="{ item }">
@@ -136,7 +136,7 @@
               :search-fields="['content']"
               empty-icon="mdi-comment-outline"
               empty-headline="暂无评论"
-              empty-text="你还没有发表过任何评论"
+              empty-text="你还没有发布任何评论"
               :get-item-id="(item) => item.commentId || item.id"
             >
                 <!-- 自定义前置图标 -->
@@ -172,16 +172,6 @@
                 >
                   <v-icon size="18">mdi-delete</v-icon>
                 </v-btn>
-              </template>
-
-                <!-- 可选：自定义空状态插槽 -->
-              <template #empty="{ searchKeyword }">
-                <v-empty-state
-                  headline="暂无评论"
-                  :text="`没有找到包含 “${searchKeyword}” 的评论`"
-                  icon="mdi-comment-outline"
-                  class="custom-empty-state"
-                />
               </template>
             </AppContentList>
           </v-tabs-window-item>
