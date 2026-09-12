@@ -11,7 +11,7 @@
                     class="dialog-close-btn"
                     @click="dialogVisible = false"
                 >
-                    <v-icon size="30">mdi-close-circle</v-icon>
+                    <v-icon size="25">mdi-close</v-icon>
                 </v-btn>
                 <v-window v-model="step"
                 >
