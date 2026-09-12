@@ -1,7 +1,7 @@
 <template>
   <v-sheet class="content-list pa-6" :style="{ '--content-list-scale': handleFontScale }">
-    <!-- 搜索框区域：只在非加载状态且启用搜索时显示 -->
-    <div v-if="!loading && enableSearch" class="d-flex justify-center mb-4">
+    <!-- 搜索框区域：只在非加载状态、启用搜索且有数据时显示 -->
+    <div v-if="!loading && enableSearch && items.length > 0" class="d-flex justify-center mb-4">
       <v-text-field
         v-model="searchKeyword"
         :label="searchLabel"
