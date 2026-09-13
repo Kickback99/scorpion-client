@@ -47,8 +47,8 @@
                   </v-chip>
                 </v-list-item-title>
   
-                <v-list-item-subtitle class="description">
-                  <p class="ma-0 truncate-multi d-none d-md-block">{{ description }}</p>
+                <v-list-item-subtitle class="description d-none d-md-block">
+                  <p class="ma-0 truncate-multi">{{ description }}</p>
                 </v-list-item-subtitle>
   
                 <v-list-item-subtitle class="metadata pb-1">
@@ -200,17 +200,23 @@ const themeStore = useThemeStore()
   max-width: 100%;
 }
 
-/* pc端-两行截断 */
+/* pc端-标题两行截断 */
 .v-list-item-title .truncate-multi,
 .v-list-item-subtitle .truncate-multi {
 
   display: -webkit-box;
   white-space: wrap !important;
-  -webkit-line-clamp: 2; 
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  word-break: break-word; 
+  word-break: break-word;
+}
+
+/* 简介单独放宽到 3 行：md 上标题最多 2 行，2 行标题 + 3 行简介 = 137.9px，
+   仍在封面高度 140.6px 之内，卡片才能保持等高；放宽到 4 行就会把卡片撑高 */
+.v-list-item-subtitle .truncate-multi {
+  -webkit-line-clamp: 3;
 }
 
 
