@@ -28,18 +28,34 @@ export async function createMarkdownPreview(theme = 'github') {
       import('@kangc/v-md-editor/lib/theme/vuepress.js'),
       import('prismjs'),
     ]);
+    // 补语言组件必须另起一个 await：prism 组件都是裸用全局 Prism 赋值（如 Prism.languages.json = ...），
+    // 而 window.Prism 要等 prism-core 执行后才挂上，合并进上面的 Promise.all 会有求值顺序竞态。
+    // 只补默认入口没带的（默认已含 markup/css/clike/javascript，即 html/xml/css/js）：
+    // xml、html 是 markup 的别名；shell、sh 是 bash 的别名，故都不单列；
+    // java 依赖 clike、ts 依赖 javascript，二者默认入口已带，无需前置。
+    await Promise.all([
+      import('prismjs/components/prism-json'),
+      import('prismjs/components/prism-java'),
+      import('prismjs/components/prism-bash'),
+      import('prismjs/components/prism-typescript'),
+      import('prismjs/components/prism-sql'),
+      import('prismjs/components/prism-yaml'),
+      import('prismjs/components/prism-nginx'),
+    ]);
     await Promise.all([
       import('@kangc/v-md-editor/lib/theme/style/vuepress.css'),
       import('prismjs/themes/prism-tomorrow.css'), // Prism主题
     ]);
-    preview.use(vuepressTheme, { Prism });
+    // Prism 没有 vue 语言，借道 markup（xml/html 的别名本体），仅能着色 template 段
+    preview.use(vuepressTheme, { Prism, codeHighlightExtensionMap: { vue: 'markup' } });
   } else {
     const [{ default: githubTheme }, { default: hljs }] = await Promise.all([
       import('@kangc/v-md-editor/lib/theme/github.js'),
       import('highlight.js'),
     ]);
     await import('@kangc/v-md-editor/lib/theme/style/github.css');
-    preview.use(githubTheme, { Hljs: hljs });
+    // hljs 没有 vue 语言，借道 xml：其语法内置了 script/style 子语言，SFC 三段都能着色
+    preview.use(githubTheme, { Hljs: hljs, codeHighlightExtensionMap: { vue: 'xml' } });
   }
 
   return preview

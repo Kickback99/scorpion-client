@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
-import prismjs from 'vite-plugin-prismjs';
 
 // 主题配置（单一数据源：从 theme-config.js 提取背景色注入 index.html，改主题颜色自动同步）
 import { themeConfig } from './src/plugins/theme-config.js'
@@ -93,9 +92,6 @@ export default defineConfig(({ mode }) => {
       vuetify({
         autoImport: true,  // 必须启用自动导入
         styles: { configFile: 'src/assets/styles/variables.scss' },// 可选，用于自定义变量
-      }),
-      prismjs({
-        languages: ['json', 'xml', 'java', 'js'],
       }),
     ],
     resolve: {
