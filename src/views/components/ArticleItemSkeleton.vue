@@ -74,7 +74,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   }
 
   :deep(.v-skeleton-loader__heading) {
-    margin: 1px 0;
+    margin: 0; /* 行间距统一交给各断点的 row-gap / 骨高控制，见文件末尾 */
   }
 
   :deep(.v-skeleton-loader__text) {
@@ -140,16 +140,45 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
     height: 100%;
   }
 
-  // 标题骨按 ArticleItem 的行高排布：16px 骨 + 1.5px 间距 = 17.5px/行，
-  // 2 行正好 35px = ArticleItem 的标题区（.title-category h4 的 35px）
-  .article-skeleton :deep(.v-skeleton-loader__heading) {
-    height: 16px;
-    margin: 0 0 1.5px;
+  // 标题骨对齐真实标题的字形节奏：真实标题是 14px 字形 + 4.5px 字形间隙 = 18.5px 一行，
+  // 故骨高取 14px、骨间距取 4.5px，首个骨下移 2.5px 对应字形上留白，
+  // 合计 2.5 + 14 + 4.5 + 14 = 35px = ArticleItem 的标题区高度
+  // 注意：不能改 .skeleton-title 的 flex-direction——骨自带 flex: 1 1 100%，
+  // 竖排时 flex-basis 会按容器高度算成 0；它本来就是 flex-wrap 换行布局，用 row-gap 即可
+  .skeleton-title {
+    row-gap: 4.5px;
+    padding-top: 2.5px;
   }
 
-  // 日期行占位固定高度，与 ArticleItem 的 .metadata 的 32px 对齐
+  .article-skeleton :deep(.v-skeleton-loader__heading) {
+    height: 14px;
+    margin: 0;
+  }
+
+  // 日期行占位与 ArticleItem 的 .metadata 完全对齐：盒高 32px、内边距上 12 下 0。
+  // 骨高取 20px（= 真实日期行的行盒：图标 20px 撑满），骨底因此贴着盒底
   .skeleton-meta {
     height: 32px;
+    padding-top: 12px;
+    padding-bottom: 0 !important; /* 覆盖 Vuetify .pb-1 的 !important */
+  }
+
+  .skeleton-meta :deep(.v-skeleton-loader__subtitle) {
+    height: 20px;
+  }
+}
+
+// == sm 及以上（≥600px）：标题骨对齐真实标题的字形节奏 ==
+// 真实标题是 16px 字形、24px 行高：骨高取 16px（= 字形高），上下各留 4px 行内留白。
+// sm 只有一行（row-gap 不生效）合计 24px；md 及以上两行加 8px 间距合计 48px
+@media (min-width: 600px) {
+  .skeleton-title {
+    row-gap: 8px;
+    padding: 4px 0;
+  }
+
+  .article-skeleton :deep(.v-skeleton-loader__heading) {
+    height: 16px;
   }
 }
 </style>
