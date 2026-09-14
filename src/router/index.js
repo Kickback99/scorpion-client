@@ -23,7 +23,9 @@ const routes = [
         {
             path: '/profile',
             name: 'Profile',
-            component: AppProfileCenter
+            component: AppProfileCenter,
+            // 需登录访问：守卫按 meta 判定，不再比较 path 字面量
+            meta: { requiresAuth: true }
         },
         {path:"/detail/:id",name:'detail',component:AppDetail,props:true},
         {path:'/:pathMatch(.*)*',redirect:'/404'},
@@ -78,6 +80,14 @@ const loadClientConfig = async (forceRefresh = false) => {
   return loadingPromise
 }
 
+/**
+ * 判断路由是否需要登录（按路由 meta 声明，而非比较 path 字面量）
+ * Vue Router 匹配默认关闭敏感度（strict/sensitive 均为 false），/profile/、/PROFILE、/Profile
+ * 都能命中该路由记录，但 route.path 保留 URL 原样，用字面量比较会漏判
+ * @param {import('vue-router').RouteLocationNormalized} route
+ */
+export const requiresLogin = (route) => route.matched.some(record => record.meta.requiresAuth)
+
 // 添加路由守卫
 router.beforeEach(async(to, from, next) => {
 
@@ -98,11 +108,17 @@ router.beforeEach(async(to, from, next) => {
     return
   }
 
+  // 需要登录才能访问的页面：按路由 meta 判定
+  const requiresAuth = requiresLogin(to)
+
+  if (requiresAuth) {
+    // 先等服务端校验落地再判定：本地 user 缓存只是展示缓存（乐观渲染），不能作为放行依据，
+    // 否则会话已失效时仍会渲染出受保护页面（校验结果回来后拦截器只静默清状态，不会退出该页）
+    await userStore.verifyLogin()
+  }
+
   // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
-  const isLoggedIn = userStore.isLoggedIn
-  
-  // 如果需要登录才能访问的页面
-  if (to.path === '/profile' && !isLoggedIn) {
+  if (requiresAuth && !userStore.isLoggedIn) {
     next('/')
   } else {
     next()

@@ -18,6 +18,10 @@ const pickUserFields = (user) => {
   return result
 }
 
+// 在途的登录态校验请求：根组件挂载与路由守卫可能并发调用，共用同一个 Promise，
+// 保证守卫能等到校验结果再决定放行（否则第二个调用者会被 loginVerified 提前挡回，拿到的是未校验的缓存）
+let verifyPromise = null
+
 export const useUserStore = defineStore('user',{
     state:()=>({
         token:'',
@@ -48,19 +52,24 @@ export const useUserStore = defineStore('user',{
             }
         },
         // 会话内校验登录态：本地有登录态证据时才请求一次服务端校验（未登录网友零请求）
+        // 返回在途 Promise，调用方（路由守卫）可 await 到真实校验结果
         async verifyLogin(){
-            if (this.loginVerified) return
+            if (this.loginVerified) return verifyPromise
             this.loginVerified = true
             // 本地登录态证据：cookie 模式看 user 展示缓存，jwt 模式看 token
             const hasLocalAuth = isCookieMode() ? Object.keys(this.user).length > 0 : !!this.token
             if (!hasLocalAuth) return
-            try {
-                // _quiet：后台静默校验，401 时拦截器只清状态、不弹窗不跳转（网友刷新页面不该被"登录已过期"打扰）
-                const res = await userInfoApi({ _quiet: true })
-                this.user = res.data   // 200：刷新展示缓存
-            } catch (error) {
-                // 401 时 http.js 拦截器已静默清空缓存，这里不再处理
-            }
+            verifyPromise = (async () => {
+                try {
+                    // _quiet：后台静默校验，401 时拦截器只清状态、不弹窗不跳转（网友刷新页面不该被"登录已过期"打扰）
+                    const res = await userInfoApi({ _quiet: true })
+                    this.user = res.data   // 200：刷新展示缓存
+                } catch (error) {
+                    // 401 时 http.js 拦截器已静默清空缓存，这里不再处理；
+                    // 网络异常同样不清缓存，避免后端抖动把已登录用户挡在受保护页外
+                }
+            })()
+            return verifyPromise
         },
         setUser(user) {
             this.user = user
