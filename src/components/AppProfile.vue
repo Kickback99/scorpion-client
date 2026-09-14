@@ -138,34 +138,43 @@
             <v-text-field
               v-model="passwordData.oldPassword"
               label="原密码"
-              type="password"
+              :append-inner-icon="oldShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
+              @click:append-inner="toggleOldPwd"
+              :type="oldShowPassword ? 'text' : 'password'"
               variant="outlined"
               density="comfortable"
               :rules="[v => !!v || '请输入原密码']"
+              :prepend-inner-icon="oldShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
               class="mb-3"
             ></v-text-field>
             <v-text-field
               v-model="passwordData.newPassword"
               label="新密码"
-              type="password"
+              :append-inner-icon="newShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
+              @click:append-inner="toggleNewPwd"
+              :type="newShowPassword ? 'text' : 'password'"
               variant="outlined"
               density="comfortable"
               :rules="[
                 v => !!v || '请输入新密码',
                 v => v.length >= 6 || '密码长度至少6位'
               ]"
+              :prepend-inner-icon="newShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
               class="mb-3"
             ></v-text-field>
             <v-text-field
               v-model="passwordData.confirmPassword"
               label="确认新密码"
-              type="password"
+              :append-inner-icon="confirmShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
+              @click:append-inner="toggleConfirmPwd"
+              :type="confirmShowPassword ? 'text' : 'password'"
               variant="outlined"
               density="comfortable"
               :rules="[
                 v => !!v || '请确认新密码',
                 v => v === passwordData.newPassword || '两次输入的密码不一致'
               ]"
+              :prepend-inner-icon="confirmShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
             ></v-text-field>
           </v-form>
         </v-card-text>
@@ -218,6 +227,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { userUpdateInfoApi, userCancelApi, userChangePasswordApi } from '@/api/user'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
+import { usePasswordVisibility } from '@/utils/passwordVisibility'
 import { useWebSocket } from '@/server/useWebSocket.js'
 
 // 定义事件
@@ -256,6 +266,10 @@ const passwordData = reactive({
 })
 const passwordFormRef = ref(null)
 const changingPassword = ref(false)
+
+const { visible: oldShowPassword, toggle: toggleOldPwd } = usePasswordVisibility()
+const { visible: newShowPassword, toggle: toggleNewPwd } = usePasswordVisibility()
+const { visible: confirmShowPassword, toggle: toggleConfirmPwd } = usePasswordVisibility()
 
 // 文件校验
 const validateFile = (file) => {
