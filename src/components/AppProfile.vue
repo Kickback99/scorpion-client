@@ -141,8 +141,9 @@
               :append-inner-icon="oldShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append-inner="toggleOldPwd"
               :type="oldShowPassword ? 'text' : 'password'"
+              color="primary"
               variant="outlined"
-              density="comfortable"
+              density="compact"
               :rules="[v => !!v || '请输入原密码']"
               :prepend-inner-icon="oldShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
               class="mb-3"
@@ -153,8 +154,9 @@
               :append-inner-icon="newShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append-inner="toggleNewPwd"
               :type="newShowPassword ? 'text' : 'password'"
+              color="primary"
               variant="outlined"
-              density="comfortable"
+              density="compact"
               :rules="[
                 v => !!v || '请输入新密码',
                 v => v.length >= 6 || '密码长度至少6位'
@@ -168,8 +170,9 @@
               :append-inner-icon="confirmShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append-inner="toggleConfirmPwd"
               :type="confirmShowPassword ? 'text' : 'password'"
+              color="primary"
               variant="outlined"
-              density="comfortable"
+              density="compact"
               :rules="[
                 v => !!v || '请确认新密码',
                 v => v === passwordData.newPassword || '两次输入的密码不一致'
