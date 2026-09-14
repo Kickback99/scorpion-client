@@ -99,6 +99,23 @@ html, body {
   }
 }
 
+/* ========== 主题切换防闪：卡片 / 按钮底色不参与过渡 ==========
+   Vuetify 的 .v-card / .v-btn 把 background 放进了 transition-property
+   （$card-transition-property: box-shadow, opacity, background；
+    $button-transition-property: box-shadow, transform, opacity, background），
+   background 会展开成全部 background-* 长属性，包含 background-color。
+   而 .v-application 的底色没有过渡：切主题时页面底色先瞬切完，卡片却要把
+   rgb(var(--v-theme-surface)) 慢慢渐变 0.28s，在已经切换完的页面上留下一片亮卡片。
+   这里只把 background 从过渡属性里摘掉，其余属性按各自默认值保留。
+   !important 必要：vite-plugin-vuetify 的组件 CSS 是按组件注入的，排在全局表之后，
+   同特异性下靠顺序赢不了。 */
+.v-card {
+  transition-property: box-shadow, opacity !important;
+}
+.v-btn {
+  transition-property: box-shadow, transform, opacity !important;
+}
+
 /* ========== 空状态（.custom-empty-state）：字号 / 图标 / 间距统一在此定义 ==========
    使用方只需在自己的根元素上设置 --empty-state-scale（移动端 0.8，桌面 1），
    同一份规则同时覆盖组件自带 markup 与父组件经插槽传入的 markup，避免各写一份导致漂移。
