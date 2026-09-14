@@ -143,6 +143,7 @@ import { useThemeStore } from '@/store/theme'
 import { useConfigStore } from '@/store/config'
 import { useWebSocket } from '@/server/useWebSocket.js'
 import { userLogoutApi } from '@/api/user'
+import { requiresLogin } from '@/router'
 
 const { triggerSearch } = useSearch()
 const router = useRouter()
@@ -228,7 +229,8 @@ const handleLogout = async () => {
     closeWebSocket()
     userStore.clearUserStore()
 
-    if (router.currentRoute.value.path === '/profile') {
+    // 停留在需登录的页面（如 /profile、/PROFILE）时退出登录，必须离开该页面
+    if (requiresLogin(router.currentRoute.value)) {
       router.push('/')
     }
   }
