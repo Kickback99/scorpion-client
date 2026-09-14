@@ -46,7 +46,6 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { useSearch } from '@/utils/useSearch'
-import emitter from '@/utils/event-bus.js'
 import { useTagStore } from '@/store/tag'
 
 // ============================================================
@@ -187,21 +186,11 @@ const items = computed(() => {
 // ============================================================
 
 /**
- * 面包屑点击导航 — 处理首页 query 参数清除的边界情况
+ * 面包屑点击导航
+ * 首页 query 的清除与列表重置统一由 AppIndex 监听 route.query 完成，这里只需跳转
  */
 const handleItemClick = (item) => {
   if (item.disabled || !item.to) return
-
-  // 点击"首页"且当前在首页带查询参数时，需强制重置搜索 + 清 URL
-  if (route.path === '/' && route.query.type) {
-    const toPath = typeof item.to === 'string' ? item.to : item.to.path || ''
-    if (toPath === '/' && !item.to.query) {
-      emitter.emit('reset-search')
-      router.push('/')
-      return
-    }
-  }
-
   router.push(item.to)
 }
 
