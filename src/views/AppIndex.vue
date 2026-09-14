@@ -169,7 +169,11 @@ const resetScrollState = () => {
 }
 
 
+// 请求代次：回退/前进连续切换时会有多个请求同时在飞，只有最新一次的结果可被采纳
+let requestSeq = 0
+
 const renderArticleList = async() => {
+    const seq = ++requestSeq
     isLoading.value = true
     try {
       const res = await articleListApi({
@@ -177,14 +181,18 @@ const renderArticleList = async() => {
         pageSize: currentPageSize.value,
         searchData: searchData.value
       })
+      // 过期响应：期间已发起更新的请求，丢弃结果，避免列表停在错误的筛选上
+      if (seq !== requestSeq) return
       articleList.value = res.data.items.map(item => ({
         ...item,
         displayDescription: handleAutoDescription(item)
       }))
       total.value = res.data.total
     }finally {
-      // 数据加载完成后，标记首次加载结束
-      isLoading.value = false
+      // 数据加载完成后，标记首次加载结束（过期响应不得提前收起骨架屏）
+      if (seq === requestSeq) {
+        isLoading.value = false
+      }
     }
 }
 
@@ -198,6 +206,7 @@ const loadMoreArticles = async ({ done }) => {
     scrollLoading.value = true
     const nextPage = params.value.pageNum + 1
     const pageSize = currentPageSize.value
+    const seq = requestSeq // 记录发起时的请求代次
 
     try {
         const res = await articleListApi({
@@ -205,6 +214,12 @@ const loadMoreArticles = async ({ done }) => {
             pageSize: pageSize,
             searchData: searchData.value
         })
+
+        // 期间筛选条件已切换（renderArticleList 发起了新请求）：本次追加作废，避免混入旧筛选的文章
+        if (seq !== requestSeq) {
+            done('ok')
+            return
+        }
 
         if (res.code === 200 && res.data) {
             const newArticles = res.data.items || []
