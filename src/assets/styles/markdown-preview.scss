@@ -5,6 +5,9 @@
 // 组件自身特有样式仍写在各自的 <style> 里
 // ============================================================
 
+// 代码块语法高亮配色单独成文件，按语义角色分深浅成对维护
+@use './markdown-highlight';
+
 // ===== vuepress 主题：深色 =====
 .v-md-editor-preview.user-dark .vuepress-markdown-body {
   background: var(--v-theme-surface);
@@ -126,7 +129,8 @@
   }
 }
 
-// ===== github 主题：深色适配（代码块/行号/表格/行内代码/语法高亮） =====
+// ===== github 主题：深色适配（代码块/行号/表格/行内代码） =====
+// 语法高亮见 markdown-highlight.scss
 .v-md-editor-preview.user-dark .github-markdown-body {
   // 行内代码 `xxx`
   code:not(pre code) {
@@ -165,46 +169,6 @@
   }
   div[class*='v-md-pre-wrapper-'].line-numbers-mode .line-numbers-wrapper {
     color: rgb(var(--v-theme-on-surface-variant)) !important;
-  }
-
-  // 语法高亮：github-dark 亮色配色，关键词保持正文色不额外高亮
-  .hljs {
-    color: rgb(var(--v-theme-on-surface));
-  }
-  .hljs-keyword, .hljs-selector-tag, .hljs-subst {
-    color: rgb(var(--v-theme-on-surface));
-    font-weight: 700;
-  }
-  .hljs-comment, .hljs-quote, .hljs-meta {
-    color: #8b949e;
-  }
-  .hljs-doctag, .hljs-string {
-    color: #a5d6ff;
-  }
-  .hljs-title, .hljs-section, .hljs-selector-id, .hljs-class .hljs-title, .hljs-type {
-    color: #d2a8ff;
-    font-weight: 700;
-  }
-  .hljs-literal, .hljs-number, .hljs-variable, .hljs-template-variable, .hljs-attr {
-    color: #79c0ff;
-  }
-  .hljs-attribute, .hljs-name, .hljs-tag {
-    color: #7ee787;
-  }
-  .hljs-link, .hljs-regexp {
-    color: #a5d6ff;
-  }
-  .hljs-bullet, .hljs-symbol {
-    color: #f2cc60;
-  }
-  .hljs-built_in, .hljs-builtin-name {
-    color: #ffa657;
-  }
-  .hljs-deletion {
-    background: rgba(255, 123, 114, 0.2);
-  }
-  .hljs-addition {
-    background: rgba(126, 231, 135, 0.2);
   }
 }
 
