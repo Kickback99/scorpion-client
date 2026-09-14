@@ -50,7 +50,7 @@
                                     :class="showLoginCaptcha ? 'mb-2':'mb-4'"
                                     v-model="loginModel.password"
                                     :append-inner-icon="loginShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                                    @click:append-inner="eyeLoginPwd"
+                                    @click:append-inner="toggleLoginPwd"
                                     :type="loginShowPassword ? 'text' : 'password'"
                                     label="密码"
                                     placeholder="请输入密码"
@@ -148,7 +148,7 @@
                                     density="compact"
                                     v-model="registerModel.password"
                                     :append-inner-icon="registerShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                                    @click:append-inner="eyeRegisterPwd"
+                                    @click:append-inner="toggleRegisterPwd"
                                     :type="registerShowPassword ? 'text' : 'password'"
                                     label="密码"
                                     placeholder="请输入密码"
@@ -247,7 +247,7 @@
                                     density="compact"
                                     v-model="resetModel.newPassword"
                                     :append-inner-icon="resetShowPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                                    @click:append-inner="resetShowPassword = !resetShowPassword"
+                                    @click:append-inner="toggleResetPwd"
                                     :type="resetShowPassword ? 'text' : 'password'"
                                     label="新密码"
                                     placeholder="请输入新密码"
@@ -262,7 +262,7 @@
                                     density="compact"
                                     v-model="resetModel.confirmPassword"
                                     :append-inner-icon="resetShowConfirmPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                                    @click:append-inner="resetShowConfirmPassword = !resetShowConfirmPassword"
+                                    @click:append-inner="toggleResetConfirmPwd"
                                     :type="resetShowConfirmPassword ? 'text' : 'password'"
                                     label="确认密码"
                                     placeholder="请再次输入新密码"
@@ -298,6 +298,7 @@ import AppTermsDialog from '@/components/AppTermsDialog.vue'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 import { loadCaptchaComponent } from '@/utils/loadCaptcha'
 import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
+import { usePasswordVisibility } from '@/utils/passwordVisibility'
 
 // ============================================================
 // 数据相关
@@ -365,7 +366,7 @@ onUnmounted(() => {
 // ============================================================
 const loginModel = reactive({})
 
-const loginShowPassword = ref(false)
+const { visible: loginShowPassword, toggle: toggleLoginPwd } = usePasswordVisibility()
 
 const loginTerm = ref(false)
 
@@ -374,10 +375,6 @@ const chats = reactive([
     {id:'002',icon:'mdi-wechat',color:'success',to:''},
     {id:'001',icon:'mdi-github',color:'on-primary',to:''},
 ])
-
-const eyeLoginPwd = () => {
-     loginShowPassword.value = !loginShowPassword.value
-}
 
 // 获取表单 ref
 const loginFormRef = ref(null)
@@ -502,17 +499,9 @@ const handleLogin = async () => {
 // ============================================================
 const registerModel = reactive({})
 
-const registerShowPassword = ref(false)
+const { visible: registerShowPassword, toggle: toggleRegisterPwd } = usePasswordVisibility()
 
 const registerTerm = ref(false)
-
-const eyeRegisterPwd = () => {
-    //如果type是password类型，点击就把图标切换到mdi-eye-off
-
-    //否则就把图标切换到mdi-eye
-
-     registerShowPassword.value = !registerShowPassword.value
-}
 
 const registerLoading = ref(false)
 const registerFormRef = ref(null)
@@ -588,9 +577,9 @@ const resetFormRef = ref(null)
 
 const resetLoading = ref(false)
 
-const resetShowPassword = ref(false)
+const { visible: resetShowPassword, toggle: toggleResetPwd } = usePasswordVisibility()
 
-const resetShowConfirmPassword = ref(false)
+const { visible: resetShowConfirmPassword, toggle: toggleResetConfirmPwd } = usePasswordVisibility()
 
 const resetRules = {
     newPassword: [
