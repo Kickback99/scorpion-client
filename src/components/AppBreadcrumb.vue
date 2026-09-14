@@ -2,7 +2,7 @@
   <div class="breadcrumb-wrapper py-2" v-if="items.length > 1 || smAndDown">
     <div class="d-flex align-center">
       <v-breadcrumbs
-        v-if="items.length > 1 && !(smAndDown && route.path === '/profile') && !(route.path === '/about')"
+        v-if="items.length > 1 && !(smAndDown && isProfilePage) && !(route.path === '/about')"
         :items="items"
         density="compact"
         class="pa-0 flex-grow-0"
@@ -114,6 +114,12 @@ const findCategoryPath = (nodes, targetId) => {
   search(nodes, [])
   return path
 }
+
+/**
+ * 当前是否个人中心页 —— 按路由名判定而非 path 字面量，
+ * 兼容 /PROFILE、/profile/ 等大小写与尾斜杠写法（保留 path 比较会漏判）
+ */
+const isProfilePage = computed(() => route.name === 'Profile')
 
 /**
  * 页面标签映射
