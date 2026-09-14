@@ -288,8 +288,9 @@ const verify = async () => {
         throw new Error('请先完成验证码验证')
     }
     // 文本类：先触发 Vuetify 前端校验（必填）
-    const { valid } = await answerFieldRef.value.validate()
-    if (!valid) throw new Error('请输入正确的验证码')
+    // 注意：字段级 validate() 返回的是错误信息数组（表单级才返回 { valid, errors }），故按长度判断
+    const errors = await answerFieldRef.value.validate()
+    if (errors.length > 0) throw new Error('请输入正确的验证码')
     const v = (answer.value || '').trim()
     verifying.value = true
     try {
