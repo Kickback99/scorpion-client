@@ -26,11 +26,18 @@ html, body {
   }
 }
 
-/* ========== 全局滚动条：跟随主题色（--scrollbar-thumb-color 由 theme store 同步） ========== */
-html, body {
-  // Firefox
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb-color, #999) transparent;
+/* ========== 全局滚动条：跟随主题色（--scrollbar-thumb-color 由 theme store 同步） ==========
+ * 标准属性必须限定给「不支持 ::-webkit-scrollbar 的 Firefox」：
+ * Chromium 下元素上只要 scrollbar-width / scrollbar-color 非 auto，就会整体忽略 ::-webkit-scrollbar，
+ * 而 scrollbar-color 是可继承属性——设在 html/body 上会一路传给所有后代，
+ * 使代码块等内部滚动条退回默认 15px（横向尤其明显）。 */
+@supports not selector(::-webkit-scrollbar) {
+  html, body {
+    // Firefox：webkit 伪元素不可用，只能走标准属性
+    // 第二个颜色是底槽，与下方 ::-webkit-scrollbar-track 保持一致，改底槽两处一起改
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-color, #999) rgb(var(--v-theme-surface));
+  }
 }
 
 ::-webkit-scrollbar {
@@ -38,20 +45,32 @@ html, body {
   height: 6px;
 }
 
+/* 滚动条底槽（轨道）颜色 —— 想改底槽颜色改这一处即可（竖向、横向共用这条规则）
+ * 用 surface 而非 on-surface：on-surface 是「与表面对比」的色，浅色主题下近黑、深色主题下近白，
+ * 底槽会跟着反转；surface 才是两个主题下都同向（浅色主题浅、深色主题深）的次级表面色。 */
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgb(var(--v-theme-surface));
 }
 
 ::-webkit-scrollbar-thumb {
   --thumb-paint: color-mix(in srgb, var(--scrollbar-thumb-color, #999) 45%, transparent);
   border-radius: 999px;
-  // 滑块随内容动态伸缩，但最长不超过视口 40%（背景层截短：Chrome 不支持 thumb 的 max-height）
+  // 滑块随内容动态伸缩，但最长不超过视口的 40%（背景层截短：Chrome 不支持 thumb 的 max-length）
   background-image: linear-gradient(var(--thumb-paint), var(--thumb-paint));
-  background-size: 100% 40vh;
   background-repeat: no-repeat;
 
   &:hover {
     --thumb-paint: color-mix(in srgb, var(--scrollbar-thumb-color, #999) 75%, transparent);
+  }
+
+  // 纵向：最长 40vh
+  &:vertical {
+    background-size: 100% 40vh;
+  }
+
+  // 横向：最长 20vw（代码块只溢出几十 px 时，原生 thumb 会几乎占满整条轨道）
+  &:horizontal {
+    background-size: 20vw 100%;
   }
 }
 
