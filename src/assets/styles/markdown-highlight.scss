@@ -43,7 +43,7 @@
   // 所以 `=` 在浅色下是蓝的，不必另配。其余由后处理补出来的角色
   // （.hljs-brace / .hljs-bracket / .hljs-paren / .hljs-vue-directive /
   //  .hljs-object-key）Primer 没有对应槽位，配色见本块末尾「后处理补充的角色」。
-  .hljs-attr, .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-property, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id {
+  .hljs-attr, .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-property {
     color: #005cc5;
   }
   // 字符串 · 正则
@@ -67,7 +67,9 @@
   // 标签名 · 引号 · CSS 元素选择器 · 伪类
   // prettylights-syntax-entity-tag
   // 官方 #22863a 仅 4.35:1，改用 Primer 现行深绿（6.94:1）
-  .hljs-name, .hljs-quote, .hljs-selector-tag, .hljs-selector-pseudo {
+  // 选择器与标签名同色（对应深色那套把 selector-* 归到 cyan 角色的做法；
+  // Primer 官方本来把 selector-class / id / attr 放在 constant 蓝组，这里有意挪过来）
+  .hljs-name, .hljs-quote, .hljs-selector-tag, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id {
     color: #116329;
   }
   // 注释 · 代码 · 公式
@@ -76,9 +78,27 @@
   .hljs-comment, .hljs-code, .hljs-formula {
     color: #57606a;
   }
-  // CSS 属性名（与内置对象同组，Primer 官方归在 constant，这里随 variable 槽）
-  .hljs-attribute {
-    color: #953800;
+  // ── CSS 段（与深色同一套角色划分，各角色取浅色自己对应的色）──
+  // 深色那套的三个锚点：cyan=v-container、绿=isLoading、黄=variant
+  // 浅色里对应：v-container→#116329(标签名)、isLoading→#032f62(字符串)、variant→#005cc5(属性名)
+
+  // CSS 属性名（display / -webkit- / -clamp ...）
+  // 深色取「绿」角色 → 浅色取字符串色（12.43:1）
+  .hljs-attribute, .hljs-css-prop {
+    color: #032f62;
+  }
+  // 选择器位的裸 token 与 :deep —— 深色取「cyan」角色 → 浅色取标签名色（6.94:1）
+  .hljs-css-selector, .language-css .hljs-built_in {
+    color: #116329;
+  }
+  // CSS 属性值（vertical / hidden / -webkit-box ...）
+  // 深色取「黄」角色（与花括号同色）→ 浅色取属性名色（5.91:1）
+  .hljs-css-value, .language-css .hljs-number {
+    color: #005cc5;
+  }
+  // CSS 伪类（:first-child / :hover / :not / :is ...）—— 同 const 的关键字色（5.03:1）
+  .hljs-selector-pseudo, .language-css .hljs-built_in.hljs-css-pseudo {
+    color: #cf222e;
   }
   // 列表符号（prettylights-syntax-markup-list，官方 #735c0f，6.04:1）
   .hljs-bullet {
@@ -93,17 +113,15 @@
   // ── 后处理补充的角色（Primer 没有对应槽位，按深色的色相家族就近选色）──
   // 取色原则：每个角色都挑 Primer 调色板里与深色那套「同一色相家族」的值，
   // 这样深浅两套虽各自独立，同一类 token 的观感仍然对得上。
-  // 花括号 { }
-  // 与深色保持同一配法：深色给的是 entity 金黄 #FAD000（即与函数名/箭头同色），
-  // 浅色这边对应的 entity 槽是紫 #6f42c1（6.12:1），故同样与函数名同色。
-  .hljs-brace {
-    color: #6f42c1;
+  // 花括号 { } · 圆括号 ( )
+  // 深色那套两者统一用「黄」角色 #FAD000 → 浅色对应取属性名色 #005cc5（5.91:1）
+  .hljs-brace, .hljs-paren {
+    color: #005cc5;
   }
-  // 方括号 [ ] · 圆括号 ( )
-  // 浅色取 Primer 调色板里未被占用的橙 #bc4c00（4.73:1），与其余各色都不撞。
-  // 深色那套是亮紫 #FB94FF —— 两边色相在此项上刻意不对应：浅色若也用紫，
-  // 会与函数名/类名的 #6f42c1 撞色（sayHello() 的 sayHello 和 () 同色）。
-  .hljs-bracket, .hljs-paren {
+  // 方括号 [ ]
+  // 浅色取 Primer 调色板里未被占用的橙 #bc4c00（4.73:1）—— 深色是亮紫 #FB94FF，
+  // 两边色相在此项上刻意不对应（浅色若也用紫会与函数名 #6f42c1 撞色）
+  .hljs-bracket {
     color: #bc4c00;
   }
   // Vue 指令（v-if / :prop / @click）：深色用关键字橙 → 浅色取 Primer 的关键字红（5.03:1）
@@ -196,10 +214,10 @@
     color: #fb94ff;
   }
   // 圆括号 ( )（函数调用的 ()、参数表的 ()）
-  // 与方括号同色。hljs 不区分「调用括号」和「参数括号」——两者都是裸文本，
+  // 与花括号统一用金黄色。hljs 不区分「调用括号」和「参数括号」——两者都是裸文本，
   // 后处理统一归为 .hljs-paren，所以这里也无法只给调用括号上色。
   .hljs-paren {
-    color: #fb94ff;
+    color: #fad000;
   }
   // 字符串 · 正则
   // SoP scope: string / string.regexp.  #A5FF90（12.49:1）
@@ -212,7 +230,7 @@
   //   —— 官方这几类同为 #9EFFFF（13.14:1）
   //   偏离官方一处：.hljs-variable.language_（this / console）官方给的是
   //   #FB94FF 粉紫，这里归到变量色，与其它变量名保持一致（按实际观感取舍）。
-  .hljs-variable, .hljs-params, .hljs-name, .hljs-quote, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id, .hljs-selector-tag, .hljs-selector-pseudo {
+  .hljs-variable, .hljs-params, .hljs-name, .hljs-quote, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id, .hljs-selector-tag {
     color: #9effff;
   }
   // 属性访问（article.value 里的 .value）
@@ -220,12 +238,32 @@
   .hljs-property {
     color: #ffee80;
   }
-  // 内置对象 · 符号 · CSS 属性名 · meta
+  // 内置对象 · 符号 · meta
   // SoP scope: support / meta.  #80FFBB（12.23:1）
   //   （SoP 的 meta 官方是 #9EFFFF，与变量组同色；这里随 support 归到薄荷绿，
-  //    使 CSS 属性名与 !important 有区分度，属有意偏离，已在文件头说明）
-  .hljs-built_in, .hljs-symbol, .hljs-attribute, .hljs-meta {
+  //    使 !important 与变量有区分度，属有意偏离，已在文件头说明）
+  .hljs-built_in, .hljs-symbol, .hljs-meta {
     color: #80ffbb;
+  }
+  // ── CSS 段（角色由 markdown-config.js 按大括号深度分派，不依赖 hljs 的 class）──
+  // 属性名（display / -webkit- / -clamp ...）—— 与 JS 字符串同色的绿
+  .hljs-attribute, .hljs-css-prop {
+    color: #a5ff90;
+  }
+  // 选择器位的裸 token 与 :deep 的参数 —— 与标签名同色的 cyan
+  .hljs-css-selector, .language-css .hljs-built_in {
+    color: #9effff;
+  }
+  // 属性值（vertical / hidden / -webkit-box ...）—— 与花括号/圆括号同为「黄」角色
+  .hljs-css-value, .language-css .hljs-number {
+    color: #fad000;
+  }
+  // CSS 伪类（:first-child / :hover / :not / :is ...）—— 按关键字处理
+  // （与 const / && / || 同色）。
+  // 注意两个来源：hljs 正常标出的 .hljs-selector-pseudo，以及被它误标成
+  // .hljs-built_in 的 :not/:is（由后处理补上 .hljs-css-pseudo）
+  .hljs-selector-pseudo, .language-css .hljs-built_in.hljs-css-pseudo {
+    color: #ff9d00;
   }
   // 注释 · 代码 · 公式
   // 刻意不用 SoP 官方的注释色 —— SoP 用紫色 #B362FF，但它在深底上偏抢眼、
