@@ -39,6 +39,11 @@ const VUE_DIRECTIVE = /^(v-|:|@|#)/
 const JS_LANGUAGES = new Set(['javascript', 'js', 'jsx', 'typescript', 'ts', 'tsx'])
 const JS_SUBLANGUAGE = 'language-javascript'
 const CSS_SUBLANGUAGE = 'language-css'
+// 这几门语言的代码块「整块都是 CSS」（独立 ```css / ```scss 块没有子语言容器）
+const CSS_LANGUAGES = new Set(['css', 'scss', 'sass', 'less'])
+// 带单位的数值：hljs 把数字和单位标在同一个 .hljs-number 里（280px / 100% / 0.3s），
+// 但两者要分色，所以按这个正则把单位那截拆出来
+const CSS_NUMBER_WITH_UNIT = /^([+-]?[\d.]+)([a-z%]+)$/i
 // Vue 特有的「伪类」（实为作用域组合器），hljs 把它们和 :not/:is 一样标成 .hljs-built_in，
 // 但语义上是选择器的一部分，不是 CSS 伪类 —— 按名字区分开
 const VUE_PSEUDO = new Set(['deep', 'global', 'slotted'])
@@ -131,25 +136,46 @@ function wrapBareTokens(doc, box, regex, classOf) {
  * 一样标成 .hljs-built_in，这里按名字拆开。
  * @param {Document} doc
  */
-function markCssRoles(doc) {
-  doc.querySelectorAll(`.${CSS_SUBLANGUAGE}`).forEach((box) => {
-    // 深度 0 = 选择器位；>0 = 声明块内
-    let depth = 0
+function markCssRoles(doc, language) {
+  // 整块 CSS 的代码块从根节点做；vue 这类多语言块只在 style 子语言容器里做
+  const roots = CSS_LANGUAGES.has(language) ? [doc.body] : [...doc.querySelectorAll(`.${CSS_SUBLANGUAGE}`)]
+  roots.forEach((box) => {
+    // 块类型栈：true = at 规则块（@media { ... } 里面还是规则），
+    //            false = 声明块（里面是 属性: 值）
+    // 只看大括号深度是不够的 —— @media 里再包一层 .foo { } 时，深度是 2，
+    // 但 .foo 明明是选择器，不是属性名。
+    const blockStack = []
+    // 当前块的前导文本（用来判断 { 前面是不是 @xxx）
+    let prelude = ''
     // 当前声明里是否已经过了冒号（过了就是属性值）
     let afterColon = false
+
+    // 只有最内层是声明块时，冒号才是「属性名: 属性值」的那个冒号
+    const inDeclaration = () => blockStack.length > 0 && blockStack[blockStack.length - 1] === false
 
     const step = (chunk) => {
       for (const ch of chunk) {
         if (ch === '{') {
-          depth++
+          // 只看 prelude 的「最后一行」判断这个块是不是 at 规则块 ——
+          // 光看开头不行：前面若有注释或别的残留文本，@ 就不在开头了。
+          // 顺便剥掉可能残留的 // 注释再判。
+          const preludeTail =
+            prelude.replace(/\/\/[^\n]*/g, '').split('\n').filter((l) => l.trim()).pop() || ''
+          blockStack.push(preludeTail.trim().startsWith('@'))
+          prelude = ''
           afterColon = false
         } else if (ch === '}') {
-          depth--
+          blockStack.pop()
+          prelude = ''
           afterColon = false
         } else if (ch === ';') {
+          prelude = ''
           afterColon = false
-        } else if (ch === ':' && depth > 0) {
+        } else if (ch === ':' && inDeclaration()) {
           afterColon = true
+          prelude += ch
+        } else {
+          prelude += ch
         }
       }
     }
@@ -163,19 +189,31 @@ function markCssRoles(doc) {
           // 深度推进由 splitCssTextNode 内部负责，这里不能再 step 一次，否则重复计数。
           if (parent === box) splitCssTextNode(child)
         } else if (child.nodeType === 1) {
-          // 元素（hljs 已识别过的片段）：按当前深度分派
+          // 元素（hljs 已识别过的片段）：按当前所在块分派
           // 声明块里本不该出现选择器 —— 出现了就是 hljs 把 -webkit-line-clamp
-          // 这类拆碎后把 line 误标成 .hljs-selector-tag，归回属性名
-          if (depth > 0 && /(^|\s)hljs-selector-/.test(child.className)) {
+          // 这类拆碎后把 line 误标成 .hljs-selector-tag，归回属性名。
+          // 注意只在「声明块」里这么判：@media { .foo { } } 这种嵌套块里
+          // .foo 确实是选择器，不能动它
+          if (inDeclaration() && /(^|\s)hljs-selector-/.test(child.className)) {
             child.classList.add('hljs-css-prop')
           }
           if (child.classList.contains('hljs-built_in')) {
-            // :deep/:global/:slotted 归选择器；其余（:not/:is/...）是 CSS 伪类
-            child.classList.add(VUE_PSEUDO.has(child.textContent) ? 'hljs-css-selector' : 'hljs-css-pseudo')
+            // 同样是 .hljs-built_in，在 CSS 里其实是两种完全不同的东西：
+            //   紧跟冒号的 → 伪类函数（:deep / :not / :is）
+            //   其余       → 值函数（rgba / var / calc）
+            const prev = child.previousSibling
+            const followsColon = !!prev && prev.textContent.endsWith(':')
+            if (followsColon) {
+              // :deep/:global/:slotted 是 Vue 的作用域组合器，归选择器；其余是真伪类
+              child.classList.add(VUE_PSEUDO.has(child.textContent) ? 'hljs-css-selector' : 'hljs-css-pseudo')
+            } else {
+              child.classList.add('hljs-css-func')
+            }
           }
-          // 元素内部的文本不再拆，但深度仍要推进（大括号理论上不会落在 span 里，
-          // 这里只是保险：直接按它的文本内容推进一次）
-          step(child.textContent)
+          // 元素内部的文本不再拆，但块栈仍要推进（大括号理论上不会落在 span 里，
+          // 这里只是保险：直接按它的文本内容推进一次）。
+          // 注释要跳过 —— 里面可能出现任意字符，混进去会打乱块栈和 prelude
+          if (!child.classList.contains('hljs-comment')) step(child.textContent)
         }
       }
     }
@@ -223,14 +261,61 @@ function markCssRoles(doc) {
       if (fragment.childNodes.length) textNode.parentNode.replaceChild(fragment, textNode)
     }
 
+    // SCSS 的 // 行注释 hljs 不识别 —— <style> 段无论 lang="scss" 还是空，
+    // hljs 都固定按 css 语法高亮，不认 scss 方言。结果这些注释会被整段当成代码：
+    //   1. 注释里的词被当成 CSS 拆碎（「// ...仍各自 fixed 相对视口定位」里的 fixed）
+    //   2. 注释文字混进 prelude，把 @media 的 @ 前缀判断冲掉，块类型就判错了
+    // 这里先按行把 // ... 包成 .hljs-comment，后续就不会再动它们
+    const wrapLineComments = () => {
+      const walker = doc.createTreeWalker(box, NodeFilter.SHOW_TEXT)
+      const targets = []
+      let n
+      while ((n = walker.nextNode())) {
+        if (n.parentNode === box && n.nodeValue.includes('//')) targets.push(n)
+      }
+      targets.forEach((textNode) => {
+        const text = textNode.nodeValue
+        const fragment = doc.createDocumentFragment()
+        const re = /\/\/[^\n]*/g
+        let last = 0
+        let m
+        while ((m = re.exec(text)) !== null) {
+          if (m.index > last) fragment.appendChild(doc.createTextNode(text.slice(last, m.index)))
+          const span = doc.createElement('span')
+          span.className = 'hljs-comment'
+          span.textContent = m[0]
+          fragment.appendChild(span)
+          last = m.index + m[0].length
+        }
+        if (!fragment.childNodes.length) return
+        if (last < text.length) fragment.appendChild(doc.createTextNode(text.slice(last)))
+        textNode.parentNode.replaceChild(fragment, textNode)
+      })
+    }
+
+    wrapLineComments()
     visit(box)
+
+    // 带单位的数值：hljs 把数字和单位标成一个整的 .hljs-number（280px / 100% / 0.3s），
+    // 这里把单位那截拆出来单独成 .hljs-css-unit，好让两者分色。
+    // 没有单位的纯数字（999 / 0）正则不匹配，保持原样。
+    box.querySelectorAll('.hljs-number').forEach((el) => {
+      const match = el.textContent.match(CSS_NUMBER_WITH_UNIT)
+      if (!match) return
+      el.textContent = match[1]
+      const unit = doc.createElement('span')
+      unit.className = 'hljs-css-unit'
+      unit.textContent = match[2]
+      el.after(unit)
+    })
   })
 }
 
 function enhanceHighlightedHtml(html, language) {
   const isWholeJsBlock = JS_LANGUAGES.has(language)
   const hasJsSection = html.includes(JS_SUBLANGUAGE)
-  const hasCssSection = html.includes(CSS_SUBLANGUAGE)
+  // 独立的 ```css / ```scss 块没有 .language-css 容器，整块就是 CSS
+  const hasCssSection = CSS_LANGUAGES.has(language) || html.includes(CSS_SUBLANGUAGE)
   // 快速短路：没有要补的标点、没有属性名要拆、也没有 CSS 段要分派角色，直接原样返回
   if (!hasCssSection && !/[{}()\[\]=|&]/.test(html) && !html.includes('hljs-attr')) return html
 
@@ -239,7 +324,7 @@ function enhanceHighlightedHtml(html, language) {
   // ① CSS 段：按大括号深度分派属性名 / 属性值 / 选择器。
   //    必须排在标点那一步之前 —— 它要靠 { } 还在裸文本里来判断当前位置
   //    （标点那步会把大括号包成 span，之后就没法计数了）
-  if (hasCssSection) markCssRoles(doc)
+  if (hasCssSection) markCssRoles(doc, language)
 
   // ② 运算符 / 括号：整块根节点 + 各子语言容器（.language-xxx）都要处理。
   //    子语言容器要单独列，是因为 Vue 借道 xml 时 script / style 段各自包了一层。
@@ -257,15 +342,15 @@ function enhanceHighlightedHtml(html, language) {
     })
   }
 
-  // ③ 属性名按来源拆分
+  // ④ 属性名按来源拆分
   doc.querySelectorAll('.hljs-attr').forEach((el) => {
     if (el.closest('.hljs-tag')) {
       // 在标签内 = 模板属性（HTML/XML 属性名），带指令前缀的再标一层
       if (VUE_DIRECTIVE.test(el.textContent)) el.classList.add('hljs-vue-directive')
-    } else {
-      // 不在标签内 = JS 对象字面量的键（{ title: '', content: '' } 里的 title/content）。
-      // 这个判据对独立的 ```js 代码块同样成立 —— 那种块没有 .language-javascript
-      // 容器，但仍不会有 .hljs-tag 祖先。
+    } else if (isWholeJsBlock || el.closest(`.${JS_SUBLANGUAGE}`)) {
+      // 在 JS 段里且不在标签内 = 对象字面量的键（{ title: '', content: '' } 里的 title）。
+      // 必须限定 JS —— CSS 段里的 .hljs-attr 是自定义属性（--toc-scale），
+      // 语义完全不同，涂成对象键的颜色是错的。
       el.classList.add('hljs-object-key')
     }
   })

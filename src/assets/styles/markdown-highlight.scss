@@ -87,17 +87,25 @@
   .hljs-attribute, .hljs-css-prop {
     color: #032f62;
   }
-  // 选择器位的裸 token 与 :deep —— 深色取「cyan」角色 → 浅色取标签名色（6.94:1）
-  .hljs-css-selector, .language-css .hljs-built_in {
+  // 选择器位的裸 token · :deep · CSS 自定义属性
+  // 深色取「cyan」角色 → 浅色取标签名色（6.94:1）
+  .hljs-css-selector, .language-css .hljs-attr {
     color: #116329;
   }
-  // CSS 属性值（vertical / hidden / -webkit-box ...）
+  // CSS 属性值里的关键字（vertical / hidden ...）与数值本身（16px 里的 16）
   // 深色取「黄」角色（与花括号同色）→ 浅色取属性名色（5.91:1）
   .hljs-css-value, .language-css .hljs-number {
     color: #005cc5;
   }
-  // CSS 伪类（:first-child / :hover / :not / :is ...）—— 同 const 的关键字色（5.03:1）
-  .hljs-selector-pseudo, .language-css .hljs-built_in.hljs-css-pseudo {
+  // CSS 段的「运算符」色 —— 深色是 #FF9D00 → 浅色取关键字色（5.03:1）
+  // 覆盖：单位（px/%/em/rem/vh...）、!important、at 规则（@media）、
+  //       值函数（rgba/var/calc）、伪类
+  .hljs-css-unit,
+  .language-css .hljs-meta,
+  .language-css .hljs-keyword,
+  .hljs-css-func,
+  .hljs-selector-pseudo,
+  .hljs-css-pseudo {
     color: #cf222e;
   }
   // 列表符号（prettylights-syntax-markup-list，官方 #735c0f，6.04:1）
@@ -250,19 +258,32 @@
   .hljs-attribute, .hljs-css-prop {
     color: #a5ff90;
   }
-  // 选择器位的裸 token 与 :deep 的参数 —— 与标签名同色的 cyan
-  .hljs-css-selector, .language-css .hljs-built_in {
+  // 选择器位的裸 token · :deep · CSS 自定义属性（--toc-scale）—— 与标签名同色的 cyan
+  //   （CSS 里的 .hljs-attr 就是自定义属性名，后处理已把它排除在「JS 对象键」之外）
+  .hljs-css-selector, .language-css .hljs-attr {
     color: #9effff;
   }
-  // 属性值（vertical / hidden / -webkit-box ...）—— 与花括号/圆括号同为「黄」角色
+  // 属性值里的关键字（vertical / hidden / -webkit-box ...）与数值本身
+  // （16px 里的 16、100% 里的 100，不带单位的那截）—— 与花括号/圆括号同为「黄」角色
   .hljs-css-value, .language-css .hljs-number {
     color: #fad000;
   }
-  // CSS 伪类（:first-child / :hover / :not / :is ...）—— 按关键字处理
-  // （与 const / && / || 同色）。
-  // 注意两个来源：hljs 正常标出的 .hljs-selector-pseudo，以及被它误标成
-  // .hljs-built_in 的 :not/:is（由后处理补上 .hljs-css-pseudo）
-  .hljs-selector-pseudo, .language-css .hljs-built_in.hljs-css-pseudo {
+  // CSS 段的「运算符」色 #FF9D00，统一这几类：
+  //   单位          .hljs-css-unit（px / % / em / rem / vh / vw / s ...）
+  //                 —— hljs 本来把单位并进 .hljs-number，由后处理拆出来
+  //   !important    .hljs-meta
+  //   at 规则       .hljs-keyword（@media / @supports）
+  //   值函数        .hljs-css-func（rgba / var / calc）
+  //   伪类          .hljs-selector-pseudo（:first-child / :hover）
+  //                 与后处理补的 .hljs-css-pseudo（:not / :is）
+  // 注：CSS 里的 .hljs-built_in 已经被后处理细分成 css-selector / css-pseudo / css-func
+  // 三类，所以这里不再直接盯 built_in 本身
+  .hljs-css-unit,
+  .language-css .hljs-meta,
+  .language-css .hljs-keyword,
+  .hljs-css-func,
+  .hljs-selector-pseudo,
+  .hljs-css-pseudo {
     color: #ff9d00;
   }
   // 注释 · 代码 · 公式
