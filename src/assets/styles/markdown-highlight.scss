@@ -30,20 +30,30 @@
   .hljs-doctag, .hljs-keyword, .hljs-meta .hljs-keyword, .hljs-template-tag, .hljs-template-variable, .hljs-type {
     color: #cf222e;
   }
-  // 函数名 · 方法名 · 类名 · 箭头函数
+  // 函数名 · 方法名 · 箭头函数
   // prettylights-syntax-entity（官方 #6f42c1，6.12:1）
   // .hljs-function 是箭头函数本体（形如 () =>），深色那套给了 entity 金黄，
   // 这里对应给 entity 紫，保证 => 与函数名「log」同色。
-  .hljs-title, .hljs-title.class_, .hljs-title.class_.inherited__, .hljs-title.function_, .hljs-function {
+  .hljs-title, .hljs-title.function_, .hljs-function {
     color: #6f42c1;
   }
-  // 属性名 · 常量 · 数字 · 运算符 · 属性访问 · CSS 选择器
+  // 组件名 · 导入的类名（AppComment / AppMobileRelated ...）
+  // 深色那套把它和标签名归在同一个色（#9EFFFF），浅色这边对应取标签名色（6.94:1）
+  .hljs-title.class_, .hljs-title.class_.inherited__ {
+    color: #116329;
+  }
+  // 模板属性名（class / variant / setup / scoped ...）
+  // 深色那套是 entity 金黄 #FAD000 → 浅色对应取 entity 紫（6.12:1）
+  .hljs-attr {
+    color: #6f42c1;
+  }
+  // 常量 · 数字 · 运算符 · 属性访问
   // prettylights-syntax-constant（官方 #005cc5，5.91:1）
   // 注：.hljs-operator 是 hljs 标准类名，Primer 官方本就把它归在本组（蓝），
   // 所以 `=` 在浅色下是蓝的，不必另配。其余由后处理补出来的角色
   // （.hljs-brace / .hljs-bracket / .hljs-paren / .hljs-vue-directive /
   //  .hljs-object-key）Primer 没有对应槽位，配色见本块末尾「后处理补充的角色」。
-  .hljs-attr, .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-property {
+  .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-property {
     color: #005cc5;
   }
   // 字符串 · 正则
