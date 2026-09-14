@@ -351,6 +351,7 @@ emitter.on('loginDialogVisible',param => {
 })
 
 import { onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { userLoginApi, userRegisterApi, userPasswordResetApi } from '@/api/user';
 import { useUserStore } from '@/store/user';
 import { isCookieMode } from '@/utils/auth';
@@ -419,6 +420,17 @@ const loginRules = {
 
 const userStore = useUserStore()
 
+// 被路由守卫拦回首页时 URL 会带上 ?redirect=（见 router/index.js）：
+// 自动弹出登录框说明原因，登录成功后再回跳原目标，避免"点个人中心却莫名回到首页"
+const route = useRoute()
+const router = useRouter()
+
+watch(() => route.query.redirect, (redirect) => {
+    if (redirect && !userStore.isLoggedIn) {
+        dialogVisible.value = true
+    }
+}, { immediate: true })
+
 // 认证模式错配提示：生产环境对网友降级为通用错误（避免暴露前后端配置细节），其余环境保留具体原因便于排查
 const authMismatchTip = (detail) => import.meta.env.PROD ? '服务异常，请稍后重试' : detail
 
@@ -464,10 +476,15 @@ const handleLogin = async () => {
             Object.assign(loginModel,{username:'',password:''})
 
             dialogVisible.value = false
-            
+
             // 登录成功后的处理
             // dialogVisible.value = false
             // 跳转到首页等
+            // 因访问受保护页面被拦下（守卫写入的 ?redirect=）：登录后回跳原目标，只接受站内路径
+            const redirect = route.query.redirect
+            if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
+                router.replace(redirect)
+            }
         }
     } catch (error) {
         console.error('登录失败:', error)

@@ -78,7 +78,8 @@ renderCateList()
   sidebarVisible.value = to.path != '/about'
 },{immediate:true}) */
 
-const isBigScreen = computed(() => route.path === '/about' || route.path === '/profile' || route.path === '/friendLink' || route.path === '/404')
+// 个人中心按路由名判定（兼容 /PROFILE、/profile/ 等写法），其余公开页仍按 path
+const isBigScreen = computed(() => route.path === '/about' || route.name === 'Profile' || route.path === '/friendLink' || route.path === '/404')
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
 const showSidebar = computed(() => !isBigScreen.value)
 // TOC 图标占位列：桌面端 + 非大屏页 + outer 模式时显示

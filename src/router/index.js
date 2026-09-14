@@ -119,7 +119,8 @@ router.beforeEach(async(to, from, next) => {
 
   // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
   if (requiresAuth && !userStore.isLoggedIn) {
-    next('/')
+    // 带上原目标：AppLogin 检测到 redirect 会自动弹出登录框，登录成功后回跳该路径
+    next({ path: '/', query: { redirect: to.fullPath } })
   } else {
     next()
   }
