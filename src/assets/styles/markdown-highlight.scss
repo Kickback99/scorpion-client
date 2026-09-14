@@ -115,7 +115,6 @@
   // 标题（仅 Markdown 内嵌标题会命中，官方 #005cc5，5.91:1）
   .hljs-section {
     color: #005cc5;
-    font-weight: 700;
   }
 
   // ── 后处理补充的角色（Primer 没有对应槽位，按深色的色相家族就近选色）──
@@ -298,9 +297,6 @@
   .hljs-bullet, .hljs-section {
     color: #fad000;
   }
-  .hljs-section {
-    font-weight: 700;
-  }
   // diff 增删（SoP scope: markup.inserted / markup.deleted，11.42 / 5.19:1）
   .hljs-addition {
     color: #8efa00;
@@ -321,8 +317,20 @@
   .hljs-emphasis {
     font-style: italic;
   }
-  .hljs-strong {
-    font-weight: 700;
+}
+
+// ── 统一去掉 hljs 代码块里的加粗 ────────────────────────────────
+// 加粗来源有两个：
+//   1. v-md-editor 内置的旧版 github.css —— 给 keyword / selector-tag / subst /
+//      title / section / selector-id / type / meta / strong 都加了 font-weight: 700；
+//   2. 本项目配色早期给 .hljs-section / .hljs-strong 加过 700（已从本文件删掉）。
+// 那份内置 CSS 是运行时动态注入的，加载顺序不可控，所以这里用属性选择器一把压掉。
+// 不逐个列 class —— 列了也容易随内置主题变化而漏。
+// 特异性 (0,4,0)，高于内置规则的 (0,1,0)~(0,2,0)，不需要 !important。
+.v-md-editor-preview.user-light .github-markdown-body,
+.v-md-editor-preview.user-dark .github-markdown-body {
+  [class*='hljs-'] {
+    font-weight: normal;
   }
 }
 
