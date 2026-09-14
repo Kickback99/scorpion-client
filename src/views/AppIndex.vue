@@ -106,7 +106,7 @@
 import { articleListApi } from '@/api/article';
 import ArticleItem from './components/ArticleItem.vue';
 import ArticleItemSkeleton from './components/ArticleItemSkeleton.vue';
-import { ref,onMounted,onUnmounted,watch, provide, computed } from 'vue'
+import { ref,onMounted,watch, provide, computed } from 'vue'
 import { useDisplay } from 'vuetify';
 import { mdToPlainText } from '@/utils/useExtractText'
 import { useConfigStore } from '@/store/config';
@@ -119,8 +119,6 @@ const {smAndUp} = useDisplay()
 const isLoading = ref(false)
 const scrollLoading = ref(false) // 滚动加载状态
 
-// 全局总线
-import emitter from '@/utils/event-bus.js'
 import { useRoute, useRouter } from 'vue-router';
 
 
@@ -241,42 +239,28 @@ const loadMoreArticles = async ({ done }) => {
     }
 }
 
-// 初始化加载（处理滚动和分页两种模式）
-const initLoadArticles = async () => {
-    if (isScrollMode.value) {
-        // 滚动模式：重置状态并加载第一页
-        resetScrollState()
-        await renderArticleList()
-    } else {
-        // 分页模式：直接加载
-        await renderArticleList()
-    }
-}
-
-// 仅当无筛选 query 时才做默认加载；带 query 时交由 onMounted 里的 watch(immediate) 统一处理，避免重复请求
-if (!route.query.type || !route.query.param) {
-    initLoadArticles()
-}
-
-// 绑定总线事件：reset-search 重置筛选并重新加载
-const handleResetSearch = () => {
+/**
+ * 更新搜索状态
+ * @param {{type: string, param: string}|null} data 路由筛选参数；传 null 表示无筛选条件
+ */
+const updateSearchState = (data) => {
   params.value.pageNum = 1
-  searchData.value = {
-    keyword: '',
-    categoryId: null,
-    tagId: null
-  }
-  // 根据模式决定是否重置滚动状态
+
+  // 滚动模式需要重置状态
   if (isScrollMode.value) {
       resetScrollState()
   }
-  renderArticleList()
+
+  // 更新当前搜索参数
+  searchData.value = {
+    keyword: data?.type === 'keyword' ? data.param : '',
+    categoryId: data?.type === 'cate' ? Number(data.param) : null,
+    tagId: data?.type === 'tag' ? Number(data.param) : null
+  }
 }
 
-onMounted(()=>{
-  emitter.on('reset-search', handleResetSearch)
-
-  // 监听路由变化处理参数
+onMounted(() => {
+  // 监听路由变化处理参数（列表数据始终以 URL query 为准，浏览器回退/前进同样生效）
   watch(() => route.query, (newQuery) => {
     if (newQuery.type && newQuery.param) {
       // console.log('query参数路由执行...')
@@ -284,37 +268,17 @@ onMounted(()=>{
         type: newQuery.type,
         param: newQuery.param
       })
-      // 根据模式决定是否重置滚动状态
-      if (isScrollMode.value) {
-          resetScrollState()
-      }
-      renderArticleList()
+    } else {
+      // 回到无筛选条件的首页（含回退/前进）——必须重置筛选，否则会沿用上一次的搜索结果
+      updateSearchState(null)
     }
+    // 根据模式决定是否重置滚动状态
+    if (isScrollMode.value) {
+        resetScrollState()
+    }
+    renderArticleList()
   }, { immediate: true })
 })
-
-onUnmounted(()=>{
-    emitter.off('reset-search', handleResetSearch)
-})
-
-
-
-// 更新搜索状态
-const updateSearchState = (data) => {
-  params.value.pageNum = 1
-  
-  // 滚动模式需要重置状态
-  if (isScrollMode.value) {
-      resetScrollState()
-  }
-  
-  // 更新当前搜索参数
-  searchData.value = {
-    keyword: data.type === 'keyword' ? data.param : '',
-    categoryId: data.type === 'cate' ? Number(data.param) : null,
-    tagId: data.type === 'tag' ? Number(data.param) : null
-  }
-}
 
 const handleAutoDescription = (item) => {
     switch (item.isAutoDescription) {

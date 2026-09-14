@@ -25,7 +25,7 @@
     </AppBlogBox>
 
     <AppBlogBox :title="titles.tags">
-        <v-chip-group column class="pa-2" mandatory>
+        <v-chip-group column class="pa-2" mandatory :model-value="selectedTagId">
         <v-chip label v-for="item in tagStore.list" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id"
         base-color="primary"
         >{{ item.name }}</v-chip>
@@ -108,7 +108,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted,onUnmounted,ref, watch } from 'vue'
+import { nextTick, onMounted,onUnmounted,ref, watch, computed } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppBlogBox from './AppBlogBox.vue';
 import AppNoticeSnackbar from './AppNoticeSnackbar.vue';
@@ -268,6 +268,11 @@ const latestBlogs = ref([])
 const latestLoading = ref(false)
 
 // 搜索功能
+/**
+ * 当前 URL 命中的标签 id — 高亮跟随地址栏，保证回退/前进/直接访问链接时正确回显
+ */
+const selectedTagId = computed(() => route.query.type === 'tag' ? Number(route.query.param) : null)
+
 const onSearch = (type,param) => {
     // alert(123)
     // emitter.emit('search',{type,param})

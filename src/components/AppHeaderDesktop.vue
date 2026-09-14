@@ -3,7 +3,6 @@
   <v-app-bar-title>
     <router-link
       to="/"
-      @click="handleLogoClick"
       style="color: inherit; text-decoration: none;"
     >
       蝎子编程
@@ -186,12 +185,7 @@ const hasChildren = (item) => {
   return item.children && item.children.length > 0
 }
 
-// ============================================================
-// Logo 事件
-// ============================================================
-const handleLogoClick = () => {
-  emitter.emit('reset-search')
-}
+// Logo 回首页由 router-link 完成，首页 query 的清除与列表重置由 AppIndex 监听 route.query 统一处理
 
 // ============================================================
 // 导航事件
