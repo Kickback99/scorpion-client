@@ -81,16 +81,24 @@ export const useThemeStore = defineStore('theme', {
       const validTheme = this.getValidTheme(vuetifyTheme, themeName)
       vuetifyTheme.change(validTheme)
       this.currentTheme = validTheme
-      this.syncScrollbarTheme(vuetifyTheme)
+      this.syncDocumentTheme(vuetifyTheme)
     },
 
     /**
-     * 同步当前主题色到 CSS 变量，供 main.scss 全局滚动条使用
+     * 同步当前主题到 <html> 上的内联样式与 CSS 变量
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
      */
-    syncScrollbarTheme(vuetifyTheme) {
-      const colors = vuetifyTheme.global.current.value.colors
-      document.documentElement.style.setProperty('--scrollbar-thumb-color', colors['primary'])
+    syncDocumentTheme(vuetifyTheme) {
+      const current = vuetifyTheme.global.current.value
+      const root = document.documentElement
+      // main.scss 全局滚动条取色
+      root.style.setProperty('--scrollbar-thumb-color', current.colors['primary'])
+      // 背景色与 color-scheme 由 vite.config.js 的 inject-theme-bg 脚本在页面加载时写入，
+      // 用于盖住 JS 执行前的白屏。那份脚本只在加载时写一次，此后切主题不会更新，
+      // <html> 就会一直停在加载那一刻的主题值（露出的背景、原生滚动条 / 表单控件都跟着错），
+      // 所以这里让它们跟着主题一起回写。
+      root.style.backgroundColor = current.colors['background']
+      root.style.colorScheme = current.dark ? 'dark' : 'normal'
     },
     
     /**
@@ -119,7 +127,7 @@ export const useThemeStore = defineStore('theme', {
           this.currentTheme = fallbackTheme
         }
       }
-      this.syncScrollbarTheme(vuetifyTheme)
+      this.syncDocumentTheme(vuetifyTheme)
     },
     
     /**
