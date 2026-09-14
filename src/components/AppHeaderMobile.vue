@@ -206,9 +206,9 @@ watch(smAndDown, (newValue, oldValue) => {
 // ============================================================
 // Logo 事件
 // ============================================================
+// 回首页由 router-link 完成，首页 query 的清除与列表重置由 AppIndex 监听 route.query 统一处理
 const handleLogoClick = () => {
   drawer.value = false
-  emitter.emit('reset-search')
 }
 
 // ============================================================
