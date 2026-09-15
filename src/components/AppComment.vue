@@ -744,7 +744,7 @@ const getAvatarColor = (userId) => {
 
 const getAvatarIcon = (userId) => {
   const icons = [
-    'mdi-account-circle',
+    'mdi-account',
     'mdi-account-cowboy-hat',
     'mdi-account-star',
     'mdi-account-music',

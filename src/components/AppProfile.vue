@@ -30,7 +30,7 @@
             <v-avatar :size="display.mobile.value ? 65 : 100" color="grey-lighten-2">
               <!-- 使用预览URL或默认头像 -->
               <v-img v-if="avatarPreview || profileData.avatar" :src="avatarPreview || profileData.avatar"></v-img>
-              <v-icon v-else size="60" color="grey">mdi-account-circle</v-icon>
+              <v-icon v-else size="60" color="grey">mdi-account</v-icon>
               <!-- 使用 v-file-input 触发文件选择 -->
               <v-file-input
                 ref="fileInputRef"

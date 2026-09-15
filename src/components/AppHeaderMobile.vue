@@ -26,7 +26,7 @@
             style="cursor: pointer;"
           >
             <v-avatar size="32" color="white">
-              <v-icon color="primary" v-if="!userAvatar">mdi-account-circle</v-icon>
+              <v-icon color="primary" v-if="!userAvatar">mdi-account</v-icon>
               <v-img v-else :src="userAvatar" alt="avatar"></v-img>
             </v-avatar>
             <v-icon color="white" size="20" class="ml-1">mdi-menu-down</v-icon>
@@ -36,7 +36,7 @@
         <v-list density="compact" min-width="80" class="mt-2 scorpion-list-mobile">
           <v-list-item @click="handleProfile">
             <template v-slot:prepend>
-              <v-icon>mdi-account-circle</v-icon>
+              <v-icon>mdi-account</v-icon>
             </template>
             <v-list-item-title>个人中心</v-list-item-title>
           </v-list-item>

@@ -4,7 +4,7 @@ import { h } from 'vue'
 import { VSvgIcon } from 'vuetify/components/VIcon'
 import { aliases } from 'vuetify/iconsets/mdi-svg'
 import {
-  mdiAccount, mdiAccountBadge, mdiAccountCircle, mdiAccountCowboyHat, mdiAccountMusic,
+  mdiAccount, mdiAccountBadge, mdiAccountCowboyHat, mdiAccountMusic,
   mdiAccountOffOutline, mdiAccountRemove, mdiAccountStar, mdiAlert, mdiAlertCircleOutline,
   mdiArrowRight, mdiCamera, mdiChatOutline, mdiCheckCircle, mdiChevronDown, mdiChevronRight,
   mdiChevronUp, mdiClockAlertOutline, mdiClockOutline, mdiClose, mdiComment,
@@ -20,7 +20,6 @@ import {
 const whitelist = {
   'mdi-account': mdiAccount,
   'mdi-account-badge': mdiAccountBadge,
-  'mdi-account-circle': mdiAccountCircle,
   'mdi-account-cowboy-hat': mdiAccountCowboyHat,
   'mdi-account-music': mdiAccountMusic,
   'mdi-account-off-outline': mdiAccountOffOutline,
