@@ -393,10 +393,24 @@ const openCancelDialog = () => {
   showCancelDialog.value = true
 }
 
+// 点击「确认注销」：先校验验证码，再弹全局确认框，删号不可逆，多一道确认
 const cancelAccount = async () => {
   const { valid } = await cancelFormRef.value.validate()
   if (!valid) return
 
+  window.$dialog.confirm({
+    title: '确认注销账号',
+    content: '注销后账号将被删除且无法恢复，确定要继续吗？',
+    icon: 'mdi-alert',
+    iconColor: 'error',
+    confirmText: '确认注销',
+    confirmColor: 'error',
+    onConfirm: doCancelAccount
+  })
+}
+
+// 确认框点「确认注销」后真正执行
+const doCancelAccount = async () => {
   cancelling.value = true
   try {
     await userCancelApi({ verifyCode: cancelData.verifyCode })
