@@ -1,4 +1,5 @@
 <template>
+  <!-- ===== 消息条主体 ===== -->
   <v-snackbar
     v-model="visible"
     z-index="9999"
@@ -119,6 +120,9 @@ const handleAction = () => {
   }
 }
 
+// ============================================================
+// 参数处理
+// ============================================================
 // 统一参数处理函数
 const normalizeParams = (text, title, options) => {
   let finalTitle = ''
@@ -138,6 +142,9 @@ const normalizeParams = (text, title, options) => {
   return { title: finalTitle, options: finalOptions }
 }
 
+// ============================================================
+// 快捷方法
+// ============================================================
 // error 方法
 const error = (text, title, options = {}) => {
   const { title: finalTitle, options: finalOptions } = normalizeParams(text, title, options)
@@ -202,6 +209,9 @@ const info = (text, title, options = {}) => {
   })
 }
 
+// ============================================================
+// 公开方法
+// ============================================================
 // 暴露方法给全局使用
 if (typeof window !== 'undefined') {
   window.$snackbar = {

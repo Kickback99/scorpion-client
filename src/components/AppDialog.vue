@@ -1,4 +1,5 @@
 <template>
+  <!-- ===== 对话框主体 ===== -->
   <v-dialog
     v-model="visible"
     :max-width="config.maxWidth"
@@ -55,6 +56,9 @@
 import { ref, reactive } from 'vue'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
+// ============================================================
+// 数据
+// ============================================================
 const visible = ref(false)
 const scale = useDialogFontScale()
 
@@ -82,6 +86,9 @@ const config = reactive({
 let confirmCallback = null
 let cancelCallback = null
 
+// ============================================================
+// 渲染
+// ============================================================
 // 显示对话框的方法
 const show = (options) => {
   // 重置配置
@@ -110,6 +117,9 @@ const show = (options) => {
   visible.value = true
 }
 
+// ============================================================
+// 快捷方法
+// ============================================================
 // alert 方法（只有确认按钮）
 const alert = (options) => {
   show({
@@ -129,6 +139,9 @@ const confirm = (options) => {
   })
 }
 
+// ============================================================
+// 事件处理
+// ============================================================
 const handleConfirm = () => {
   visible.value = false
   if (confirmCallback) {
@@ -154,6 +167,9 @@ const handleDialogClose = (val) => {
   }
 }
 
+// ============================================================
+// 公开方法
+// ============================================================
 // 暴露方法给全局使用
 if (typeof window !== 'undefined') {
   window.$dialog = {

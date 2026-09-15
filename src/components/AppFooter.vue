@@ -9,7 +9,6 @@
 </template>
 
 <script setup>
-// 依赖导入
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
 // ============================================================

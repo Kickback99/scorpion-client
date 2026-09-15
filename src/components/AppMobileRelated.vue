@@ -48,6 +48,9 @@ import { useSearch } from '@/utils/useSearch'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 import coverRect from '@/assets/images/cover-rect.png'
 
+// ============================================================
+// 数据
+// ============================================================
 const { smAndDown } = useDisplay()
 const scale = useDialogFontScale()
 const { triggerSearch } = useSearch()
@@ -71,6 +74,9 @@ const titles = ref({
 const tagList = ref([])
 const articleList = ref([])
 
+// ============================================================
+// 数据同步
+// ============================================================
 // 同步 props → 本地 ref，与 AppSidebar handleDetailData 逻辑一致
 watch(() => props.tags, (val) => {
   if (val && val.length > 0) {

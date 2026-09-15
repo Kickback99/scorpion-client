@@ -16,6 +16,10 @@ import { onMounted } from 'vue'
 import { useConfigStore } from './store/config.js';
 import { useUserStore } from './store/user.js'
 import { loadClientConfig } from './router'
+
+// ============================================================
+// 数据
+// ============================================================
 const configStore = useConfigStore()
 const userStore = useUserStore()
 
@@ -23,6 +27,9 @@ const userStore = useUserStore()
 const { initWebSocketListener } = useWebSocket()
 import websocketManager from '@/server/websocketManager'
 
+// ============================================================
+// 生命周期
+// ============================================================
 onMounted(async() => {
   // 等待配置加载完成，再判断 websocket 开关（避免使用默认值 true）
   await loadClientConfig()

@@ -95,6 +95,9 @@ const countdown = ref(0)  // 倒计时秒数
 const isSending = ref(false)  // 是否正在发送验证码
 let countdownTimer = null  // 倒计时定时器引用，onUnmounted 清理
 
+// ============================================================
+// 生命周期
+// ============================================================
 // 组件卸载时清理定时器，防止内存泄漏
 onUnmounted(() => {
     if (countdownTimer) {

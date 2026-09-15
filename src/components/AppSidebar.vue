@@ -1,4 +1,5 @@
 <template>
+    <!-- ===== 文章搜索 ===== -->
     <div class="sidebar-search-offset">
         <AppBlogBox title="文章搜索">
             <v-text-field
@@ -16,6 +17,7 @@
         </AppBlogBox>
     </div>
 
+    <!-- ===== 公告消息 ===== -->
     <AppBlogBox title="公告消息" v-if="configStore.getNoticeEnabled()">
         <v-card-text>
             <!-- 普通消息显示在卡片内 -->
@@ -24,6 +26,7 @@
         </v-card-text>
     </AppBlogBox>
 
+    <!-- ===== 文章标签 ===== -->
     <AppBlogBox :title="titles.tags">
         <v-chip-group column class="pa-2" mandatory :model-value="selectedTagId">
         <v-chip label v-for="item in tagStore.list" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id"
@@ -32,6 +35,7 @@
         </v-chip-group>
     </AppBlogBox>
 
+    <!-- ===== 热门文章 ===== -->
     <div ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
         <v-list>
@@ -46,6 +50,7 @@
     </AppBlogBox>
     </div>
 
+    <!-- ===== 文章列表（最新发布 / 相关文章） ===== -->
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
         <!-- 骨架屏：加载中 -->
@@ -89,7 +94,7 @@
     </AppBlogBox>
     </div>
 
-    <!-- 富文本公告 Snackbar -->
+    <!-- ===== 富文本公告 Snackbar ===== -->
     <AppNoticeSnackbar
       v-model="noticeSnackbarVisible"
       :title="longTextNotice?.title || '公告消息'"
@@ -98,7 +103,7 @@
       @dont-show-again="handleNoticeDontShowAgain"
     />
 
-    <!-- 富文本公告 Dialog（Markdown 渲染） -->
+    <!-- ===== 富文本公告 Dialog（Markdown 渲染） ===== -->
     <AppNoticeDialog
       v-model="noticeDialogVisible"
       :title="longTextNotice?.title || '公告消息'"
@@ -114,6 +119,10 @@ import AppBlogBox from './AppBlogBox.vue';
 import AppNoticeSnackbar from './AppNoticeSnackbar.vue';
 import AppNoticeDialog from './AppNoticeDialog.vue';
 import { hotListApi, latestListApi, tagListApi } from '@/api/article';
+
+// ============================================================
+// 数据
+// ============================================================
 const keyword = ref('')
 // 全局总线
 import emitter from '@/utils/event-bus.js'
@@ -142,6 +151,9 @@ const noticeDialogVisible = ref(false)
 // 记录已展示的富文本公告 ID，防止重复弹出
 const shownLongTextIds = new Set()
 
+// ============================================================
+// 公告渲染
+// ============================================================
 /**
  * 渲染公告列表
  * @param {Array} list 公告列表
@@ -186,6 +198,9 @@ const renderNotices = (list, options = {}) => {
 
 }
 
+// ============================================================
+// 公告拉取与推送
+// ============================================================
 /**
  * 获取当前展示的公告列表
  * @param {Object} options 选项，透传给 renderNotices
@@ -241,6 +256,9 @@ const handleNoticeMessage = (data) => {
     }
 }
 
+// ============================================================
+// 公告交互处理
+// ============================================================
 /**
  * 点击"不再提示"：写入 StealthStorage 标记
  */
@@ -258,6 +276,9 @@ const handleNoticeAction = () => {
     noticeDialogVisible.value = true
 }
 
+// ============================================================
+// 列表数据
+// ============================================================
 const user = ref({
     username: 'JohnDoe',
     email: 'johndoe@example.com',
@@ -267,6 +288,9 @@ const hotBlogs = ref([])
 const latestBlogs = ref([])
 const latestLoading = ref(false)
 
+// ============================================================
+// 搜索
+// ============================================================
 // 搜索功能
 /**
  * 当前 URL 命中的标签 id — 高亮跟随地址栏，保证回退/前进/直接访问链接时正确回显
@@ -285,6 +309,9 @@ const onSearch = (type,param) => {
     keyword.value = ''
 }
 
+// ============================================================
+// 列表渲染
+// ============================================================
 // 动态标题状态
 const titles = ref({
     articles:'最新发布',
@@ -334,6 +361,9 @@ const handleDetailData = (data) => {
     }
 }
 
+// ============================================================
+// 生命周期
+// ============================================================
 onMounted(()=>{
     if (configStore.getNoticeSseEnabled()) {
       // 1. 获取当前公告列表
@@ -363,6 +393,9 @@ onUnmounted(() => {
   emitter.off('detail-data', handleDetailData)
 })
 
+// ============================================================
+// 路由监听
+// ============================================================
 // 监听路由地址变化
 watch(() => route.path,(newPath) => {
     if(!newPath.includes('/detail')){
@@ -372,7 +405,9 @@ watch(() => route.path,(newPath) => {
     }
 })
 
-// -- 热门文章滚动跟随（今日头条式） --
+// ============================================================
+// 热门文章滚动跟随（今日头条式）
+// ============================================================
 const { mobile } = useDisplay()
 
 const hotRef = ref(null)
@@ -384,6 +419,9 @@ let originalRecBottom = 0
 let flipTimer = null
 let sidebarNaturalTop = 0 // v-col 顶部的文档坐标，用于 fixed 时对齐「文章搜索」间距
 
+// ============================================================
+// FLIP 切换动画
+// ============================================================
 const animateFlip = (toFixed) => {
     const el = hotRef.value
     if (!el) return
@@ -447,6 +485,9 @@ const animateFlip = (toFixed) => {
     })
 }
 
+// ============================================================
+// 固定位置与滚动处理
+// ============================================================
 const updateFixedStyle = () => {
     const el = hotRef.value
     if (!el) return
@@ -529,6 +570,9 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+// ============================================================
+// 搜索栏偏移
+// ============================================================
 // 让「文章搜索」与左侧轮播图/文章内容区垂直对齐（而非与面包屑对齐）
 // 偏移量 = 面包屑高度(py-2 16px + 紧凑面包屑 25.6px) + 下方 v-row/v-container 产生的 4px 间距
 // 注意：偏移加在侧边栏内容上而非 v-col 上，这样「热门文章」fixed 时测量 v-col 不会带上该偏移
@@ -536,7 +580,9 @@ onUnmounted(() => {
     margin-top: 45.6px;
 }
 
-// == Sidebar skeleton: aggressive bone margin reset ==
+// ============================================================
+// Sidebar skeleton: aggressive bone margin reset
+// ============================================================
 .sidebar-skeleton-item {
   :deep(.v-skeleton-loader__image) {
     margin: 0;
@@ -553,6 +599,9 @@ onUnmounted(() => {
   max-width: 50%;
 }
 
+// ============================================================
+// 封面与标签配色
+// ============================================================
 // 最新文章封面图 & 骨架屏统一圆角
 .customImg {
   border-radius: var(--article-cover-radius);
@@ -568,6 +617,9 @@ onUnmounted(() => {
   color: rgb(var(--v-theme-on-surface));
 }
 
+// ============================================================
+// 热门文章
+// ============================================================
 // 热门文章排名序号：实心主色方块 + 白色数字，背景/文字色随主题深浅自动适配
 .hot-rank {
   display: inline-flex;
@@ -591,6 +643,9 @@ onUnmounted(() => {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 } */
 
+// ============================================================
+// 列表项间距
+// ============================================================
 /* 使用深度选择器 */
 :deep(.v-list-item__spacer) {
   width: 16px !important; /* 调整为更小的值 */
@@ -600,6 +655,9 @@ onUnmounted(() => {
     width: 10px !important; /* 调整为更小的值 */
 }
 
+// ============================================================
+// 搜索框样式
+// ============================================================
 :deep(.v-text-field .v-label) {
   font-size: 10px !important;
 }
@@ -625,7 +683,9 @@ onUnmounted(() => {
   font-size: 12px !important;
 }
 
-/* 富文本内容样式 */
+// ============================================================
+// 富文本内容样式
+// ============================================================
 .long-text-content {
   white-space: pre-wrap;
   word-wrap: break-word;

@@ -1,5 +1,6 @@
 <!-- components/ReplyInput.vue -->
 <template>
+  <!-- ===== 回复输入框 ===== -->
   <div class="reply-input-wrapper" :class="{ 'child-reply-wrapper': isChildReply }">
     <div class="reply-input-container">
 
@@ -44,6 +45,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+// ============================================================
+// 数据
+// ============================================================
 const props = defineProps({
   // 目标用户名
   targetUsername: {
@@ -72,6 +76,9 @@ const emit = defineEmits(['submit', 'cancel', 'update:content'])
 // 内部内容状态
 const internalContent = ref(props.content)
 
+// ============================================================
+// 内容监听
+// ============================================================
 // 监听外部内容变化
 watch(() => props.content, (newVal) => {
   internalContent.value = newVal
@@ -82,6 +89,9 @@ watch(internalContent, (newVal) => {
   emit('update:content', newVal)
 })
 
+// ============================================================
+// 交互处理
+// ============================================================
 // 提交回复
 const handleSubmit = () => {
   if (!internalContent.value.trim()) return
@@ -95,6 +105,9 @@ const handleCancel = () => {
 </script>
 
 <style scoped>
+/* ============================================================
+   输入框主体
+   ============================================================ */
 .reply-input-wrapper {
   margin: 8px 16px 8px 56px;
   animation: slideDown 0.2s ease-out;
@@ -122,6 +135,9 @@ const handleCancel = () => {
   flex: 1;
 }
 
+/* ============================================================
+   文本域与操作按钮
+   ============================================================ */
 .reply-textarea {
   font-size: 0.875rem;
 }
@@ -138,6 +154,9 @@ const handleCancel = () => {
   margin-top: 8px;
 }
 
+/* ============================================================
+   展开动画
+   ============================================================ */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -149,7 +168,9 @@ const handleCancel = () => {
   }
 }
 
-/* 移动端适配 */
+/* ============================================================
+   移动端适配
+   ============================================================ */
 @media (max-width: 600px) {
   .reply-input-wrapper {
     margin-left: 8px;

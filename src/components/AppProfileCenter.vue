@@ -39,12 +39,12 @@
          style="overflow: hidden; min-width: 0;"
         >
         <v-tabs-window v-model="tab">
-          <!-- 个人资料 Tab -->
+          <!-- ===== 个人资料 Tab ===== -->
           <v-tabs-window-item value="profile">
               <AppProfile @profile-saved="handleProfileSaved" ref="profileRef" />
           </v-tabs-window-item>
 
-          <!-- 我的反馈 Tab -->
+          <!-- ===== 我的反馈 Tab ===== -->
           <v-tabs-window-item v-if="configStore.isMyFeedbackEnabled" value="feedback">
             <v-sheet class="pa-6">
               <v-data-table
@@ -73,7 +73,7 @@
             </v-sheet>
           </v-tabs-window-item>
 
-          <!-- 我的发布 Tab -->
+          <!-- ===== 我的发布 Tab ===== -->
           <v-tabs-window-item v-if="configStore.isMyPublishesEnabled" value="posts">
             <AppContentList
               ref="postListRef"
@@ -121,7 +121,7 @@
             </AppContentList>
           </v-tabs-window-item>
 
-          <!-- 我的评论 Tab -->
+          <!-- ===== 我的评论 Tab ===== -->
           <v-tabs-window-item v-if="configStore.isMyCommentsEnabled" value="comments">
             <AppContentList
               ref="commentListRef"
@@ -176,7 +176,7 @@
             </AppContentList>
           </v-tabs-window-item>
 
-          <!-- 我的收藏 Tab -->
+          <!-- ===== 我的收藏 Tab ===== -->
           <v-tabs-window-item v-if="configStore.isMyFavoritesEnabled" value="favorites">
             <AppContentList
               ref="favoriteListRef"
@@ -252,7 +252,9 @@ const display = useDisplay()
 // 移动端字号缩放系数（动态 rem 适配）
 const handleFontScale = computed(() => (display.mobile.value ? 0.8 : 1))
 
-// ==================== 个人资料 ====================
+// ============================================================
+// 个人资料
+// ============================================================
 // 组件引用
 const profileRef = ref(null)
 
@@ -262,6 +264,9 @@ const handleProfileSaved = (data) => {
   // 可以在这里做其他处理，比如刷新其他 tab 的数据
 }
 
+// ============================================================
+// 数据
+// ============================================================
 // 定义评论相关的配置和删除方法
 const commentHeaders = [
   { title: '评论内容', key: 'content', align: 'start' },
@@ -300,6 +305,9 @@ const favoriteHeaders = [
   { title: '操作', key: 'actions', sortable: false,align: 'end'  }
 ]
 
+// ============================================================
+// 工具方法
+// ============================================================
 const getStatusColor = (status) => {
   const colors = {
     '待处理': 'warning',
@@ -315,6 +323,9 @@ const formatDate = (date) => {
   return new Date(date).toLocaleString('zh-CN')
 }
 
+// ============================================================
+// Tab 数据加载
+// ============================================================
 // TODO: 加载各 tab 数据的方法
 const loadFeedback = async () => {
   feedbackLoading.value = true
@@ -345,6 +356,9 @@ const commentListRef = ref(null)
 const favoriteListRef = ref(null)
 
 
+// ============================================================
+// Tab 切换监听
+// ============================================================
 // 监听 tab 切换，加载数据
 watch(tab, (newTab) => {
   switch (newTab) {
@@ -371,6 +385,9 @@ watch(tab, (newTab) => {
 </script>
 
 <style scoped>
+/* ============================================================
+   移动端字号缩放
+   ============================================================ */
 .profile-center {
   --profile-center-scale: 1;
   max-width: 75%;
@@ -409,6 +426,9 @@ watch(tab, (newTab) => {
   }
 }
 
+/* ============================================================
+   头像
+   ============================================================ */
 .avatar-wrapper {
   position: relative;
   display: inline-block;
@@ -421,6 +441,9 @@ watch(tab, (newTab) => {
   background-color: white;
 }
 
+/* ============================================================
+   评论项
+   ============================================================ */
 .comment-item {
   border-bottom: 1px solid #e0e0e0;
 }
@@ -429,6 +452,9 @@ watch(tab, (newTab) => {
   border-bottom: none;
 }
 
+/* ============================================================
+   分页
+   ============================================================ */
 :deep(.pagination-full-width .v-pagination__list) {
   display: flex;
   justify-content: space-between;

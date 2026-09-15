@@ -1,5 +1,5 @@
 <template>
-    <!-- 骨架屏 -->
+    <!-- ===== 骨架屏 ===== -->
     <v-container v-if="isLoading">
         <v-card style="position: relative;">
             <v-skeleton-loader type="image" height="250" class="carousel-skeleton" />
@@ -11,7 +11,7 @@
         </v-card>
     </v-container>
 
-    <!-- 真实轮播 -->
+    <!-- ===== 真实轮播 ===== -->
     <v-container v-else-if="carouselItems.length > 0">
         <v-card>
             <v-carousel
@@ -46,11 +46,18 @@ import { ref, onMounted } from 'vue'
 import { getCarouselListApi } from '@/api/carousel'
 import { useRouter } from 'vue-router'
 import coverRect from '@/assets/images/cover-rect.png'
+
+// ============================================================
+// 数据
+// ============================================================
 const router = useRouter()
 
 const isLoading = ref(true)
 const carouselItems = ref([])
 
+// ============================================================
+// 渲染
+// ============================================================
 // 加载轮播图
 const loadCarousel = async () => {
     try {
@@ -63,6 +70,9 @@ const loadCarousel = async () => {
     }
 }
 
+// ============================================================
+// 交互处理
+// ============================================================
 // 跳转链接：外部链接新窗口打开，内部链接路由跳转
 const goToLink = (link) => {
     if (!link) return
@@ -75,6 +85,9 @@ const goToLink = (link) => {
     }
 }
 
+// ============================================================
+// 生命周期
+// ============================================================
 onMounted(() => {
     loadCarousel()
 })

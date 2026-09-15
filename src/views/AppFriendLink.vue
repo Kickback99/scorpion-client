@@ -1,7 +1,7 @@
 <template>
   <v-container>
 
-      <!-- 顶部进度条 -->
+      <!-- ===== 顶部进度条 ===== -->
     <div v-if="loading" class="loading-wrapper">
       <v-progress-linear
         indeterminate
@@ -12,7 +12,7 @@
     </div>
 
     <v-sheet class="mx-auto" :width="sheetWidth">
-      <!-- 友链网格 - 响应式布局：屏幕有多宽就显示多少列 -->
+      <!-- ===== 友链网格 - 响应式布局：屏幕有多宽就显示多少列 ===== -->
       <template v-if="friendLinkList.length > 0">
         <v-row dense>
           <v-col
@@ -49,7 +49,7 @@
           </v-col>
         </v-row>
 
-        <!-- 无限滚动加载 -->
+        <!-- ===== 无限滚动加载 ===== -->
         <v-infinite-scroll
           :status="scrollStatus"
           @load="loadMore"
@@ -69,7 +69,7 @@
         </v-infinite-scroll>
       </template>
 
-      <!-- 空状态 -->
+      <!-- ===== 空状态 ===== -->
       <v-card v-else-if="!loading && friendLinkList.length === 0">
         <v-empty-state
           icon="mdi-link-variant-off"
@@ -100,7 +100,9 @@ const configStore = useConfigStore()
 import { useDisplay } from 'vuetify'
 import { getClientFriendLinkListApi } from '@/api/friendLink'
 
+// ============================================================
 // 响应式断点
+// ============================================================
 const { name: breakpointName } = useDisplay()
 
 // 计算 sheet 的宽度（基于栅格系统的9格）
@@ -153,7 +155,9 @@ const xl = computed(() => {
   return undefined
 })
 
+// ============================================================
 // 数据状态
+// ============================================================
 const loading = ref(true)
 const friendLinkList = ref([])
 const params = ref({
@@ -167,6 +171,9 @@ const scrollStatus = ref('') // 滚动状态: '', 'loading', 'empty'
 // 友链评论总数
 const totalCount = ref(0)
 
+// ============================================================
+// 列表加载
+// ============================================================
 // 获取友链列表
 const fetchFriendLinks = async (isLoadMore = false) => {
   try {
@@ -231,6 +238,9 @@ const loadMore = async ({ done }) => {
 }
 
 
+// ============================================================
+// 评论数
+// ============================================================
 // 获取友链评论总数
 const fetchLinkCommentCount = async () => {
   try {
@@ -248,6 +258,9 @@ const handleCommentCountChange = async () => {
   await fetchLinkCommentCount()
 }
 
+// ============================================================
+// 初始化
+// ============================================================
 // 初始化加载
 const init = async () => {
   loading.value = true
@@ -264,6 +277,9 @@ init()
 </script>
 
 <style scoped lang="scss">
+// ============================================================
+// 加载进度条
+// ============================================================
 .loading-wrapper {
   position: fixed;
   top: 64px;
@@ -276,6 +292,9 @@ init()
   position: relative;
 }
 
+// ============================================================
+// 友链卡片
+// ============================================================
 .friend-link-card {
   transition: all 0.2s ease;
   cursor: pointer;

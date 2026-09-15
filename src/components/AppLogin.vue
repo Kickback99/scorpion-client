@@ -15,7 +15,7 @@
                 </v-btn>
                 <v-window v-model="step"
                 >
-                    <!-- 登录视图 -->
+                    <!-- ===== 登录视图 ===== -->
                     <v-window-item :value="1">
                         <v-card title height="auto"  :class="`d-flex flex-column ${handlePadding}`">
                             <v-container class="d-flex align-center">
@@ -115,7 +115,7 @@
                         </v-card> 
                     </v-window-item>
 
-                    <!-- 注册视图 -->
+                    <!-- ===== 注册视图 ===== -->
                     <v-window-item :value="2">
                         <v-card title height="auto" :class="`d-flex flex-column ${handlePadding}`">
                             <v-container class="d-flex align-center">
@@ -188,6 +188,7 @@
                             </v-container>
                         </v-card> 
                     </v-window-item>
+                    <!-- ===== 注册成功视图 ===== -->
                     <v-window-item :value="3">
                         <v-card title height="auto" class="d-flex align-center">
                             <v-container class="text-center">
@@ -200,7 +201,7 @@
                         </v-card> 
                     </v-window-item>
 
-                    <!-- 忘记密码视图 -->
+                    <!-- ===== 忘记密码视图 ===== -->
                     <v-window-item :value="4">
                         <v-card title height="auto" :class="`d-flex flex-column ${handlePadding}`">
                             <v-container class="d-flex align-center">
@@ -227,7 +228,7 @@
                         </v-card>
                     </v-window-item>
 
-                    <!-- 重置密码视图 -->
+                    <!-- ===== 重置密码视图 ===== -->
                     <v-window-item :value="5">
                         <v-card title height="auto" :class="`d-flex flex-column ${handlePadding}`">
                             <v-container class="d-flex align-center">
@@ -286,7 +287,7 @@
         </template>
     </v-dialog>
 
-    <!-- 条款/协议弹窗 -->
+    <!-- ===== 条款/协议弹窗 ===== -->
     <AppTermsDialog v-model="termsVisible" :title="termsTitle" :content="termsContent" />
 </template>
 
@@ -301,7 +302,7 @@ import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
 import { usePasswordVisibility } from '@/utils/passwordVisibility'
 
 // ============================================================
-// 数据相关
+// 数据
 // ============================================================
 const display = useDisplay()
 
@@ -362,7 +363,7 @@ onUnmounted(() => {
 })
 
 // ============================================================
-// 登录相关
+// 登录
 // ============================================================
 const loginModel = reactive({})
 
@@ -495,7 +496,7 @@ const handleLogin = async () => {
 }
 
 // ============================================================
-// 注册相关
+// 注册
 // ============================================================
 const registerModel = reactive({})
 
@@ -506,7 +507,7 @@ const registerTerm = ref(false)
 const registerLoading = ref(false)
 const registerFormRef = ref(null)
 
-// ========== 注册表单校验规则 ==========
+// ===== 注册表单校验规则 =====
 const registerRules = {
     username: [
         (v) => !!v || '请输入用户名',
@@ -546,7 +547,7 @@ const handleRegister = async () => {
 }
 
 // ============================================================
-// 忘记密码相关
+// 忘记密码
 // ============================================================
 const forgotModel = reactive({})
 
@@ -569,7 +570,7 @@ const handleForgotNext = async () => {
 }
 
 // ============================================================
-// 重置密码相关
+// 重置密码
 // ============================================================
 const resetModel = reactive({})
 
@@ -615,7 +616,7 @@ const handlePasswordReset = async () => {
 }
 
 // ============================================================
-// 条款弹窗相关
+// 条款弹窗
 // ============================================================
 const termsVisible = ref(false)
 const termsTitle = ref('')
@@ -676,6 +677,9 @@ const forwardLogin = () => {
 </script>
 
 <style lang="scss" scoped>
+// ============================================================
+// 弹窗容器与过渡
+// ============================================================
 .dialog-container {
     position: relative;
     
@@ -705,6 +709,9 @@ const forwardLogin = () => {
     transform: scale(1);
 }
 
+// ============================================================
+// 移动端字号缩放
+// ============================================================
 .dialog-container {
     --login-scale: 1;
 

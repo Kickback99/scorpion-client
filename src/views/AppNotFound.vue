@@ -13,10 +13,12 @@
 </template>
 
 <script setup>
-// 依赖导入
 import { useRouter } from 'vue-router'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
+// ============================================================
+// 数据
+// ============================================================
 const scale = useDialogFontScale(0.8)
 
 // ============================================================

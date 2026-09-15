@@ -1,4 +1,5 @@
 <template>
+  <!-- ===== 文章卡片骨架屏 ===== -->
   <v-card class="article-skeleton">
     <v-list-item class="pa-0">
       <template v-slot:prepend>
@@ -48,14 +49,22 @@
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
 
+// ============================================================
+// 数据
+// ============================================================
 const display = useDisplay()
 
+// ============================================================
+// 计算属性
+// ============================================================
 const coverWidth = computed(() => (display.xs.value ? 110 : display.smAndDown.value ? 150 : 250))
 const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 </script>
 
 <style scoped lang="scss">
-// == Container matching AppArticleItem ==
+// ============================================================
+// Container matching AppArticleItem
+// ============================================================
 .skeleton-cover-wrap {
   margin: 0 20px 0 12px;
 }
@@ -64,7 +73,9 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   border-radius: var(--article-cover-radius);
 }
 
-// == Aggressive bone margin reset ==
+// ============================================================
+// Aggressive bone margin reset
+// ============================================================
 // Vuetify default: all bone types have margin: 16px. This inflates the card
 // by ~128px of wasted space. We reset to minimal values.
 .article-skeleton {
@@ -86,7 +97,9 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   }
 }
 
-// == Title row ==
+// ============================================================
+// Title row
+// ============================================================
 .skeleton-title-row {
   display: flex;
   justify-content: space-between;
@@ -110,24 +123,32 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   max-width: 75%;
 }
 
-// == Description (matches AppArticleItem .description { margin-top: 10px }) ==
+// ============================================================
+// Description (matches AppArticleItem .description { margin-top: 10px })
+// ============================================================
 .skeleton-desc {
   margin-top: 10px;
 }
 
-// == Metadata (matches AppArticleItem .metadata { padding-top: 4px }) ==
+// ============================================================
+// Metadata (matches AppArticleItem .metadata { padding-top: 4px })
+// ============================================================
 .skeleton-meta {
   padding-top: 4px;
   margin-top: auto;
 }
 
-// == Match AppArticleItem list-item vertical padding ==
+// ============================================================
+// Match AppArticleItem list-item vertical padding
+// ============================================================
 :deep(.v-list-item) {
   padding-bottom: 10px !important;
   padding-top: 10px !important;
 }
 
-// == xs（<600px）：对齐 AppArticleItem 的恒高适配 ==
+// ============================================================
+// xs（<600px）：对齐 AppArticleItem 的恒高适配
+// ============================================================
 // AppArticleItem 在 xs 下标题预留 2 行、图片去掉宽高比并拉伸到与文字栏等高
 @media (max-width: 599.98px) {
   // 图片占位块跟随文字栏高度拉伸（AppArticleItem 同款 align-self: stretch）
@@ -168,7 +189,9 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   }
 }
 
-// == sm 及以上（≥600px）：标题骨对齐真实标题的字形节奏 ==
+// ============================================================
+// sm 及以上（≥600px）：标题骨对齐真实标题的字形节奏
+// ============================================================
 // 真实标题是 16px 字形、24px 行高：骨高取 16px（= 字形高），上下各留 4px 行内留白。
 // sm 只有一行（row-gap 不生效）合计 24px；md 及以上两行加 8px 间距合计 48px
 @media (min-width: 600px) {

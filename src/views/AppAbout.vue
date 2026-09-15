@@ -14,6 +14,9 @@
 <script setup>
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
+// ============================================================
+// 数据
+// ============================================================
 // 应用标题：统一取自 .env 的 VITE_APP_TITLE，改一处全局生效
 const appTitle = import.meta.env.VITE_APP_TITLE
 

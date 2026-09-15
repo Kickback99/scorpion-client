@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-// 依赖导入
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useConfigStore } from '@/store/config'

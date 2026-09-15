@@ -1,5 +1,5 @@
 <template>
-  <!-- 全宽应用栏 -->
+  <!-- ===== 全宽应用栏 ===== -->
   <v-app-bar app color="secondary">
     <!-- 将导航内容限制在容器内 -->
     <v-container class="d-flex align-center">
@@ -20,6 +20,9 @@ import AppHeaderDesktop from './AppHeaderDesktop.vue'
 import AppHeaderMobile from './AppHeaderMobile.vue'
 import { useThemeStore } from '@/store/theme'
 
+// ============================================================
+// 数据
+// ============================================================
 const { smAndDown } = useDisplay()
 const vuetifyTheme = useTheme()
 const themeStore = useThemeStore()
@@ -33,16 +36,14 @@ provide('drawer', drawer)
 // ============================================================
 // 主题
 // ============================================================
-
-/**
- * 初始化主题：从 Vuetify 同步到 store
- */
+// 初始化主题：从 Vuetify 同步到 store
 const initTheme = () => {
   themeStore.initTheme(vuetifyTheme)
 }
 
-// ========== 双向同步 ==========
-
+// ============================================================
+// 双向同步
+// ============================================================
 // 监听 Store 变化，同步到 Vuetify
 watch(
   () => themeStore.currentTheme,

@@ -20,7 +20,7 @@
       />
     </div>
 
-    <!-- ==================== Table 模式（v-data-table + 分页）==================== -->
+    <!-- ===== Table 模式（v-data-table + 分页）===== -->
     <div v-if="contentType === 'table'">
       <!-- 数据加载中，显示 loading -->
       <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <!-- ==================== Grid 模式（虚拟滚动表格）==================== -->
+    <!-- ===== Grid 模式（虚拟滚动表格）===== -->
     <div v-if="contentType === 'grid'" class="grid-container">
       
       <!-- 数据加载之前，使用 loading -->
@@ -140,7 +140,7 @@
     </slot>
     </div>
 
-     <!-- ==================== Card 模式（卡片列表布局）==================== -->
+     <!-- ===== Card 模式（卡片列表布局）===== -->
     <div v-else-if="contentType === 'card'" class="content-card-list">
 
       <!-- 数据加载之前，使用 loading -->
@@ -226,6 +226,9 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
+// ============================================================
+// 数据
+// ============================================================
 // Props 定义
 const props = defineProps({
   // 内容类型：'grid'（虚拟滚动）、'card'（卡片）、'table'（表格+分页）
@@ -348,6 +351,9 @@ const currentPage = ref(1)
 const total = ref(0)
 const deletingIds = ref([]) // 正在删除的ID列表
 
+// ============================================================
+// 计算属性
+// ============================================================
 // 计算每页显示数量
 const itemsPerPage  = computed(() => {
   if (props.pageSize !== null) return props.pageSize
@@ -388,6 +394,9 @@ const hasData = computed(() => {
   return filteredItems.value.length > (display.mobile.value ? 5 : 6)
 })
 
+// ============================================================
+// 接口请求
+// ============================================================
 // 方法
 const loadData = async (page = currentPage.value) => {
   loading.value = true
@@ -429,6 +438,9 @@ const loadData = async (page = currentPage.value) => {
   }
 }
 
+// ============================================================
+// 交互处理
+// ============================================================
 // 自定义分页切换
 const handlePageChange = (page) => {
   loadData(page)
@@ -470,6 +482,9 @@ const handleClearSearch = () => {
   return new Date(date).toLocaleString('zh-CN')
 } */
 
+// ============================================================
+// 监听
+// ============================================================
 // 监听搜索关键词变化
 watch(searchKeyword, () => {
   if (props.contentType !== 'table') {
@@ -483,6 +498,9 @@ watch(() => props.enableSearch, () => {
   searchKeyword.value = ''
 })
 
+// ============================================================
+// 生命周期
+// ============================================================
 // 生命周期
 if (props.autoLoad) {
   onMounted(() => {
@@ -490,6 +508,9 @@ if (props.autoLoad) {
   })
 }
 
+// ============================================================
+// 公开方法
+// ============================================================
 // 暴露方法供父组件调用
 defineExpose({
   loadData,
@@ -499,6 +520,9 @@ defineExpose({
 </script>
 
 <style scoped>
+/* ============================================================
+   字号缩放
+   ============================================================ */
 .content-list {
   --content-list-scale: 1;
 
@@ -550,6 +574,9 @@ defineExpose({
   }
 }
 
+/* ============================================================
+   列表项
+   ============================================================ */
 .content-item {
   border-bottom: 1px solid #e0e0e0;
 }
@@ -558,6 +585,9 @@ defineExpose({
   border-bottom: none;
 }
 
+/* ============================================================
+   卡片列表
+   ============================================================ */
 .content-card-list {
   max-height: calc(100vh - 200px);
   overflow-y: auto;

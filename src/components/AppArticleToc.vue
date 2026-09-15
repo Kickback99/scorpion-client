@@ -79,7 +79,6 @@
 </template>
 
 <script setup>
-// 依赖导入
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useConfigStore } from '@/store/config'
@@ -87,14 +86,14 @@ import { useConfigStore } from '@/store/config'
 const display = useDisplay()
 const configStore = useConfigStore()
 
+// ============================================================
+// 数据
+// ============================================================
 const props = defineProps({
   /** markdown 预览组件实例，用于查询标题 DOM */
   preview: { type: Object, default: null }
 })
 
-// ============================================================
-// 数据
-// ============================================================
 const showToc = ref(false)
 const tocAnchors = ref([])
 const selectedTocItem = ref([])
