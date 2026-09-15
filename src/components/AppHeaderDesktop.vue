@@ -94,7 +94,7 @@
             style="cursor: pointer;"
           >
             <v-avatar size="36" color="white" class="mr-2">
-              <v-icon color="primary" v-if="!userAvatar">mdi-account-circle</v-icon>
+              <v-icon color="primary" v-if="!userAvatar">mdi-account</v-icon>
               <v-img v-else :src="userAvatar" alt="avatar"></v-img>
             </v-avatar>
             <span class="text-white text-body-2">{{ userName }}</span>
@@ -105,7 +105,7 @@
         <v-list density="compact" min-width="100" class="mt-2">
           <v-list-item @click="handleProfile">
             <template v-slot:prepend>
-              <v-icon>mdi-account-circle</v-icon>
+              <v-icon>mdi-account</v-icon>
             </template>
             <v-list-item-title>个人中心</v-list-item-title>
           </v-list-item>

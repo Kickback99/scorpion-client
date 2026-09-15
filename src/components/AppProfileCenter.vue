@@ -11,7 +11,7 @@
           class="mb-4"
         >
           <v-tab value="profile">
-            <v-icon left class="mr-2">mdi-account-circle</v-icon>
+            <v-icon left class="mr-2">mdi-account</v-icon>
             个人资料
           </v-tab>
           <v-tab v-if="configStore.isMyFeedbackEnabled" value="feedback">
