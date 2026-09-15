@@ -27,10 +27,10 @@
       <v-row>
         <v-col cols="12" class="text-center">
           <div class="avatar-wrapper mb-4">
-            <v-avatar :size="display.mobile.value ? 65 : 100" color="grey-lighten-2">
+            <v-avatar :size="display.mobile.value ? 65 : 100" color="surface-variant">
               <!-- 使用预览URL或默认头像 -->
               <v-img v-if="avatarPreview || profileData.avatar" :src="avatarPreview || profileData.avatar"></v-img>
-              <v-icon v-else size="60" color="grey">mdi-account</v-icon>
+              <v-icon v-else size="60" color="primary">mdi-account</v-icon>
               <!-- 使用 v-file-input 触发文件选择 -->
               <v-file-input
                 ref="fileInputRef"
