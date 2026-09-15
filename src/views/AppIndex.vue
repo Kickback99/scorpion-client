@@ -11,7 +11,7 @@
              ></v-progress-linear>
           </div>
            <div>
-             <ArticleItemSkeleton
+             <AppArticleItemSkeleton
                v-for="n in currentPageSize"
                :key="n"
                :class="{ 'mt-5': n !== 1 }"
@@ -28,7 +28,7 @@
                   :loading="scrollLoading"
                   @load="loadMoreArticles"
               >
-                <ArticleItem v-for="(item,index) in articleList" :key="item.id" 
+                <AppArticleItem v-for="(item,index) in articleList" :key="item.id"
                     :class="{'mt-5':(index !== 0)}"
                     :id="item.id"
                     :title="item.title" 
@@ -40,7 +40,7 @@
                     :favoriteCount="item.favoriteCount"
                     :commentCount="item.commentCount"
                     :isTop="item.isTop">
-                </ArticleItem>
+                </AppArticleItem>
 
                 <template v-slot:loading>
                   <div class="text-center py-4">
@@ -59,8 +59,8 @@
             
             <!-- 分页加载模式（原有逻辑） -->
             <template v-else>
-              <ArticleItem 
-                  v-for="(item, index) in articleList" 
+              <AppArticleItem
+                  v-for="(item, index) in articleList"
                   :key="item.id" 
                   :class="{'mt-5': (index !== 0)}"
                   :id="item.id"
@@ -104,8 +104,8 @@
 
 <script setup>
 import { articleListApi } from '@/api/article';
-import ArticleItem from './components/ArticleItem.vue';
-import ArticleItemSkeleton from './components/ArticleItemSkeleton.vue';
+import AppArticleItem from './components/AppArticleItem.vue';
+import AppArticleItemSkeleton from './components/AppArticleItemSkeleton.vue';
 import { ref,onMounted,watch, provide, computed } from 'vue'
 import { useDisplay } from 'vuetify';
 import { mdToPlainText } from '@/utils/useExtractText'
