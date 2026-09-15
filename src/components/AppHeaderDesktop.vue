@@ -55,14 +55,12 @@
     </template>
     <v-btn
       v-if="configStore.getFriendLinkEnabled()"
-      color="success"
       variant="text"
       @click="handleNavClick('friendLink')"
       class="text-none"
       >友链</v-btn>
     <v-btn
       v-if="configStore.getAboutEnabled()"
-      color="success"
       variant="text"
       @click="handleNavClick('about')"
       class="text-none"
