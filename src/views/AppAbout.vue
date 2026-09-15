@@ -1,11 +1,11 @@
 <template>
   <v-container class="about-page pa-0">
         <v-card class="mx-auto mt-5" rounded="xm" :style="{ '--about-scale': scale }">
-          <v-card-title class="text-h5 font-weight-bold">蝎子编程</v-card-title>
+          <v-card-title class="text-h5 font-weight-bold">{{ appTitle }}</v-card-title>
           <v-card-subtitle>你好，很高兴遇见你。</v-card-subtitle>
           <v-divider></v-divider>
           <v-card-text class="text-body-1">
-            这里是蝎子编程，一个分享编程知识和学习笔记的小站。欢迎有空常来看看，一起交流，一起进步。
+            这里是{{ appTitle }}，一个分享编程知识和学习笔记的小站。欢迎有空常来看看，一起交流，一起进步。
           </v-card-text>
         </v-card>
   </v-container>
@@ -13,6 +13,9 @@
 
 <script setup>
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
+
+// 应用标题：统一取自 .env 的 VITE_APP_TITLE，改一处全局生效
+const appTitle = import.meta.env.VITE_APP_TITLE
 
 const scale = useDialogFontScale(0.8)
 </script>
