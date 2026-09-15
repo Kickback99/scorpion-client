@@ -6,7 +6,7 @@
       @click="handleLogoClick"
       style="color: inherit; text-decoration: none;"
     >
-      蝎子编程
+      {{ appTitle }}
     </router-link>
   </v-app-bar-title>
 
@@ -168,6 +168,8 @@ defineProps(['categories'])
 // ============================================================
 // 数据
 // ============================================================
+// 应用标题：统一取自 .env 的 VITE_APP_TITLE，改一处全局生效
+const appTitle = import.meta.env.VITE_APP_TITLE
 const configStore = useConfigStore()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
