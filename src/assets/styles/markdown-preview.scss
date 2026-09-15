@@ -8,7 +8,7 @@
 // 代码块语法高亮配色单独成文件，按语义角色分深浅成对维护
 @use './markdown-highlight';
 
-// ===== vuepress 主题：深色 =====
+// ===== VuePress 主题：深色 =====
 .v-md-editor-preview.user-dark .vuepress-markdown-body {
   background: var(--v-theme-surface);
   color: #fff;
@@ -50,7 +50,7 @@
   }
 }
 
-// ===== vuepress 主题：浅色 =====
+// ===== VuePress 主题：浅色 =====
 .v-md-editor-preview.user-light .vuepress-markdown-body {
   background: var(--v-theme-surface);
   color: #000;
@@ -121,7 +121,7 @@
   }
 }
 
-// ===== github 主题：浅色 =====
+// ===== GitHub 主题：浅色 =====
 .v-md-editor-preview.user-light .github-markdown-body {
   code:not(pre code) {
     background-color: rgb(var(--v-theme-surface-variant), 0.7) !important;
@@ -129,7 +129,7 @@
   }
 }
 
-// ===== github 主题：深色适配（代码块/行号/表格/行内代码） =====
+// ===== GitHub 主题：深色适配（代码块/行号/表格/行内代码） =====
 // 语法高亮见 markdown-highlight.scss
 .v-md-editor-preview.user-dark .github-markdown-body {
   // 行内代码 `xxx`
@@ -138,7 +138,7 @@
     color: rgb(var(--v-theme-on-surface-variant)) !important;
   }
 
-  // 文字链接（覆盖 github 主题默认的蓝色 #0366d6，深色底上对比度不足）
+  // 文字链接（覆盖 GitHub 主题默认的蓝色 #0366d6，深色底上对比度不足）
   a {
     color: rgb(var(--v-theme-warning)) !important;
   }

@@ -38,8 +38,7 @@
                   </v-btn>
                 </div>
             </template>
-            <!-- 右侧内容区域 -->
-              <!-- <v-list-item-content class="d-flex flex-column justify-space-between"> -->
+                <!-- 右侧内容区域 -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title" :class="display.sm.value ? 'truncate-single' : 'truncate-multi'">{{ title }}</h4>
                   <v-chip v-if="cateName && !display.xs.value" color="accent" size="small" class="category mt-1 mr-2">
@@ -69,7 +68,6 @@
                     {{ commentCount || 0 }}
                   </span>
                 </v-list-item-subtitle>
-              <!-- </v-list-item-content> -->
         </v-list-item>
   </v-card>
   </template>
@@ -100,22 +98,11 @@ const configStore = useConfigStore()
 
 const props = defineProps(['id','title','cateName','cover','description','createTime','viewCount', 'favoriteCount', 'commentCount', 'isTop'])
 
-/* const descriptionText = computed(()=>{
-   return mdToPlainText(props.description)
-}) */
-
 const themeStore = useThemeStore()
 
 </script>
 
 <style scoped>
-/* .title-category {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-} */
-
 /* 封面容器 - 相对定位 */
 .cover-container {
   position: relative;
@@ -270,38 +257,8 @@ const themeStore = useThemeStore()
   }
 }
 
-:deep(.v-img__img--contain){
-  /* padding-bottom: 10px;
-  padding-top: 10px; */
-}
-
 :deep(.v-list-item){
   padding-bottom: 10px !important;
   padding-top: 10px !important;
 }
-
-/* .title-category h4 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  width: 350px;
-}
-
-.category {
-  font-size: 0.875rem;
-  color: #555;
-}
-
-.description p {
-  margin: 0;
-  font-size: 1rem;
-  color: #333;
-}
-
-.metadata {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.875rem;
-  color: #777;
-} */
 </style>
