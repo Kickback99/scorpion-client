@@ -20,7 +20,7 @@ const configStore = useConfigStore()
 const userStore = useUserStore()
 
 // 初始化 WebSocket
-const { initWebSocketListener, closeWebSocket } = useWebSocket()
+const { initWebSocketListener } = useWebSocket()
 import websocketManager from '@/server/websocketManager'
 
 onMounted(async() => {

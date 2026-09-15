@@ -236,9 +236,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useDisplay } from 'vuetify'
-import { useRouter } from 'vue-router'
 import { watch } from 'vue'
 import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
 import AppContentList from './AppContentList.vue'

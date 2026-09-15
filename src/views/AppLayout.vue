@@ -44,10 +44,8 @@ import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AppCarousel from '@/components/AppCarousel.vue';
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from '@/components/AppFooter.vue';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
-// 全局总线
-import emitter from '@/utils/event-bus.js'
 import { useDisplay } from 'vuetify';
 import { useConfigStore } from '@/store/config';
 
@@ -65,18 +63,6 @@ const renderCateList = async() => {
     categories.value = res.data
 }
 renderCateList()
-
-/* watch(()=>route.path,(newPath) => {
-    if (newPath !== '/') {
-      emitter.emit('reset-search')
-    }
-}) */
-
-
-/* watch(route,(to,form) => {
-  console.log(to.path)
-  sidebarVisible.value = to.path != '/about'
-},{immediate:true}) */
 
 // 个人中心按路由名判定（兼容 /PROFILE、/profile/ 等写法），其余公开页仍按 path
 const isBigScreen = computed(() => route.path === '/about' || route.name === 'Profile' || route.path === '/friendLink' || route.path === '/404')
@@ -99,10 +85,7 @@ const tocSpaceStyle = computed(() => {
 // 轮播图显示条件：首页 + 大屏 + 轮播图数量限制(>0)
 const showCarousel = computed(() => route.path === '/' && mdAndUp.value && configStore.getCarouselLimit)
 
-
-
 // console.log('route.path',route.path)
-
 </script>
 
 <style scoped lang="scss">
