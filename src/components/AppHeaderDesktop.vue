@@ -1,5 +1,5 @@
 <template>
-  <!-- 应用标题/Logo -->
+  <!-- ===== 应用标题/Logo ===== -->
   <v-app-bar-title>
     <router-link
       to="/"
@@ -9,7 +9,7 @@
     </router-link>
   </v-app-bar-title>
 
-  <!-- 桌面导航 -->
+  <!-- ===== 桌面导航 ===== -->
   <div class="d-flex ml-4">
     <template v-for="item in categories" :key="item.id">
       <!-- 有子菜单：hover 展开下拉，箭头跟随状态旋转 -->
@@ -66,10 +66,10 @@
       class="text-none"
       >关于</v-btn>
 
-    <!-- 右侧用户区域 - 桌面端 -->
+    <!-- ===== 右侧用户区域 - 桌面端 ===== -->
     <v-spacer></v-spacer>
 
-    <!-- ========== 桌面端主题切换按钮 ========== -->
+    <!-- ===== 桌面端主题切换按钮 ===== -->
     <v-btn
       @click="handleToggleTheme"
       variant="text"

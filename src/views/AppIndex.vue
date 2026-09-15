@@ -1,6 +1,6 @@
 <template>
     <v-container>
-          <!-- 加载中：进度条 + 骨架屏同时显示 -->
+          <!-- ===== 加载中：进度条 + 骨架屏同时显示 ===== -->
          <template v-if="isLoading">
            <div class="loading-wrapper">
              <v-progress-linear
@@ -19,7 +19,7 @@
            </div>
          </template>
 
-          <!-- 正常文章列表 -->
+          <!-- ===== 正常文章列表 ===== -->
           <template v-else-if="articleList.length > 0">
             <!-- 滚动加载模式 -->
             <template v-if="isScrollMode">
@@ -90,7 +90,7 @@
             </template>
           </template>
 
-            <!-- 空状态显示 -->
+            <!-- ===== 空状态显示 ===== -->
              <v-card v-else>
               <v-empty-state
                   icon="mdi-file-document-outline"
@@ -110,6 +110,10 @@ import { ref,onMounted,watch, provide, computed } from 'vue'
 import { useDisplay } from 'vuetify';
 import { mdToPlainText } from '@/utils/useExtractText'
 import { useConfigStore } from '@/store/config';
+
+// ============================================================
+// 数据
+// ============================================================
 const configStore = useConfigStore()
 
 
@@ -125,6 +129,9 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 const router = useRouter()
 
+// ============================================================
+// 计算属性
+// ============================================================
 // 判断是否为滚动模式
 const isScrollMode = computed(() => {
     return configStore.getListLoadMode() === 'scroll'
@@ -140,6 +147,9 @@ const currentPageSize = computed(() => {
 })
 
 
+// ============================================================
+// 列表状态
+// ============================================================
 // 文章列表
 const articleList = ref([])
 
@@ -172,6 +182,9 @@ const resetScrollState = () => {
 // 请求代次：回退/前进连续切换时会有多个请求同时在飞，只有最新一次的结果可被采纳
 let requestSeq = 0
 
+// ============================================================
+// 列表渲染
+// ============================================================
 const renderArticleList = async() => {
     const seq = ++requestSeq
     isLoading.value = true
@@ -196,6 +209,9 @@ const renderArticleList = async() => {
     }
 }
 
+// ============================================================
+// 滚动加载
+// ============================================================
 // 加载更多（无限滚动）- 仿照评论组件
 const loadMoreArticles = async ({ done }) => {
     if (!hasMore.value) {
@@ -254,6 +270,9 @@ const loadMoreArticles = async ({ done }) => {
     }
 }
 
+// ============================================================
+// 搜索处理
+// ============================================================
 /**
  * 更新搜索状态
  * @param {{type: string, param: string}|null} data 路由筛选参数；传 null 表示无筛选条件
@@ -274,6 +293,9 @@ const updateSearchState = (data) => {
   }
 }
 
+// ============================================================
+// 路由监听
+// ============================================================
 onMounted(() => {
   // 监听路由变化处理参数（列表数据始终以 URL query 为准，浏览器回退/前进同样生效）
   watch(() => route.query, (newQuery) => {
@@ -295,6 +317,9 @@ onMounted(() => {
   }, { immediate: true })
 })
 
+// ============================================================
+// 描述处理
+// ============================================================
 const handleAutoDescription = (item) => {
     switch (item.isAutoDescription) {
     case 1: // 刻意留空
@@ -308,6 +333,9 @@ const handleAutoDescription = (item) => {
 </script>
 
 <style scoped lang="scss">
+// ============================================================
+// 分页
+// ============================================================
 :deep(.pagination-full-width .v-pagination__list) {
   display: flex;
   justify-content: space-between;
@@ -321,6 +349,9 @@ const handleAutoDescription = (item) => {
   margin: 0 !important; /* 移除默认外边距 */
 }
 
+// ============================================================
+// 加载状态
+// ============================================================
 .loading-wrapper {
     position: fixed;
     top: 64px;

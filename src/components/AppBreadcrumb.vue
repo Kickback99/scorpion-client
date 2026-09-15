@@ -1,6 +1,7 @@
 <template>
   <div class="breadcrumb-wrapper py-2" v-if="items.length > 1 || smAndDown">
     <div class="d-flex align-center">
+      <!-- ===== 面包屑 ===== -->
       <v-breadcrumbs
         v-if="items.length > 1 && !(smAndDown && isProfilePage) && !(route.path === '/about')"
         :items="items"
@@ -22,7 +23,7 @@
         </template>
       </v-breadcrumbs>
 
-      <!-- 移动端搜索 -->
+      <!-- ===== 移动端搜索 ===== -->
       <v-text-field
         v-if="smAndDown"
         :style="{ visibility: route.path === '/' ? 'visible' : 'hidden' }"
@@ -41,7 +42,6 @@
 </template>
 
 <script setup>
-// 依赖导入
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
@@ -64,6 +64,9 @@ const { triggerSearch } = useSearch()
 
 const keyword = ref('')
 
+// ============================================================
+// 搜索处理
+// ============================================================
 // 移动端搜索
 const onSearch = (type, param) => {
   if (type === 'keyword') {
@@ -75,6 +78,9 @@ const onSearch = (type, param) => {
   keyword.value = ''
 }
 
+// ============================================================
+// 分类与标签
+// ============================================================
 const props = defineProps({
   categories: {
     type: Array,

@@ -23,7 +23,7 @@
         </v-btn>
       </div>
 
-      <!-- 头像 -->
+      <!-- ===== 头像 ===== -->
       <v-row>
         <v-col cols="12" class="text-center">
           <div class="avatar-wrapper mb-4">
@@ -123,7 +123,7 @@
       </div>
     </v-form>
 
-    <!-- 修改密码弹窗 -->
+    <!-- ===== 修改密码弹窗 ===== -->
     <v-dialog v-model="showChangePasswordDialog" max-width="500">
       <v-card :style="{ '--dialog-scale': scale }">
         <v-card-title class="text-h6 d-flex align-center justify-space-between">
@@ -189,7 +189,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- 注销账号弹窗 -->
+    <!-- ===== 注销账号弹窗 ===== -->
     <v-dialog v-model="showCancelDialog" max-width="500">
       <v-card :style="{ '--dialog-scale': scale }">
         <v-card-title class="text-h6 d-flex align-center justify-space-between">
@@ -234,7 +234,7 @@ import { usePasswordVisibility } from '@/utils/passwordVisibility'
 import { useWebSocket } from '@/server/useWebSocket.js'
 
 // ============================================================
-// 用户详情
+// 数据
 // ============================================================
 // 定义事件
 const emit = defineEmits(['profile-saved'])
@@ -263,6 +263,9 @@ const saving = ref(false)
 const fileInputRef = ref(null)
 const avatarPreview = ref(null) // 头像预览URL
 
+// ============================================================
+// 头像
+// ============================================================
 // 文件校验
 const validateFile = (file) => {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
@@ -301,6 +304,9 @@ const triggerFileInput = () => {
   fileInputRef.value?.click()
 }
 
+// ============================================================
+// 保存
+// ============================================================
 const saveProfile = async () => {
   const { valid } = await profileFormRef.value.validate()
   if (!valid) return
@@ -433,6 +439,9 @@ const doCancelAccount = async () => {
   }
 }
 
+// ============================================================
+// 公开方法
+// ============================================================
 // 暴露方法供父组件调用
 defineExpose({
   loadProfile: () => {
@@ -449,6 +458,9 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+// ============================================================
+// 头像
+// ============================================================
 .avatar-wrapper {
   position: relative;
   display: inline-block;

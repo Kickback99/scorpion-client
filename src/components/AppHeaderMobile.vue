@@ -1,5 +1,5 @@
 <template>
-  <!-- 应用标题/Logo -->
+  <!-- ===== 应用标题/Logo ===== -->
   <v-app-bar-title>
     <router-link
       to="/"
@@ -10,7 +10,7 @@
     </router-link>
   </v-app-bar-title>
 
-  <!-- 移动端控制区 -->
+  <!-- ===== 移动端控制区 ===== -->
   <div class="d-flex ml-auto align-center">
     <!-- 移动端用户区域 -->
     <div v-if="isLoggedIn">
@@ -62,7 +62,7 @@
       登录
     </v-btn>
 
-    <!-- ========== 移动端主题切换按钮（图标按钮） ========== -->
+    <!-- ===== 移动端主题切换按钮（图标按钮） ===== -->
     <v-btn
       size="small"
       @click="handleToggleTheme"
@@ -82,7 +82,7 @@
     </v-btn>
   </div>
 
-  <!-- 移动端抽屉菜单（Teleport 到父级 .mobile-drawer-portal 以脱离 v-app-bar DOM 层级） -->
+  <!-- ===== 移动端抽屉菜单（Teleport 到父级 .mobile-drawer-portal 以脱离 v-app-bar DOM 层级） ===== -->
   <Teleport to=".mobile-drawer-portal">
     <v-navigation-drawer
       v-model="drawer"
@@ -125,7 +125,7 @@
           ></v-list-item>
         </template>
 
-        <!-- ========== 移动端添加友链和关于按钮 ========== -->
+        <!-- ===== 移动端添加友链和关于按钮 ===== -->
 
         <v-list-item
           v-if="configStore.getFriendLinkEnabled()"
