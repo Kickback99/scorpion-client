@@ -25,7 +25,7 @@
             class="user-info-wrapper cursor-pointer d-flex align-center"
             style="cursor: pointer;"
           >
-            <v-avatar size="32" color="white">
+            <v-avatar size="28" color="white">
               <v-icon color="primary" v-if="!userAvatar">mdi-account</v-icon>
               <v-img v-else :src="userAvatar" alt="avatar"></v-img>
             </v-avatar>

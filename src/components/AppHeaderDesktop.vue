@@ -93,7 +93,7 @@
             class="user-info-wrapper cursor-pointer d-flex align-center"
             style="cursor: pointer;"
           >
-            <v-avatar size="36" color="white" class="mr-2">
+            <v-avatar size="32" color="white" class="mr-2">
               <v-icon color="primary" v-if="!userAvatar">mdi-account</v-icon>
               <v-img v-else :src="userAvatar" alt="avatar"></v-img>
             </v-avatar>
