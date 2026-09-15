@@ -207,10 +207,10 @@ const handleItemClick = (item) => {
 // 面包屑容器
 // ============================================================
 
-.breadcrumb-wrapper {
+/* .breadcrumb-wrapper {
   // Vuetify 工具类已处理深浅模式适配，不需要额外样式
   // text-medium-emphasis / text-high-emphasis 自动适配主题
-}
+} */
 
 .breadcrumb-link {
   cursor: pointer;

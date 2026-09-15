@@ -233,6 +233,9 @@ import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 import { usePasswordVisibility } from '@/utils/passwordVisibility'
 import { useWebSocket } from '@/server/useWebSocket.js'
 
+// ============================================================
+// 用户详情
+// ============================================================
 // 定义事件
 const emit = defineEmits(['profile-saved'])
 
@@ -259,20 +262,6 @@ const saving = ref(false)
 // 文件相关
 const fileInputRef = ref(null)
 const avatarPreview = ref(null) // 头像预览URL
-
-// 修改密码
-const showChangePasswordDialog = ref(false)
-const passwordData = reactive({
-  oldPassword: '',
-  newPassword: '',
-  confirmPassword: ''
-})
-const passwordFormRef = ref(null)
-const changingPassword = ref(false)
-
-const { visible: oldShowPassword, toggle: toggleOldPwd } = usePasswordVisibility()
-const { visible: newShowPassword, toggle: toggleNewPwd } = usePasswordVisibility()
-const { visible: confirmShowPassword, toggle: toggleConfirmPwd } = usePasswordVisibility()
 
 // 文件校验
 const validateFile = (file) => {
@@ -344,6 +333,22 @@ const saveProfile = async () => {
   }
 }
 
+// ============================================================
+// 修改密码
+// ============================================================
+const showChangePasswordDialog = ref(false)
+const passwordData = reactive({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+const passwordFormRef = ref(null)
+const changingPassword = ref(false)
+
+const { visible: oldShowPassword, toggle: toggleOldPwd } = usePasswordVisibility()
+const { visible: newShowPassword, toggle: toggleNewPwd } = usePasswordVisibility()
+const { visible: confirmShowPassword, toggle: toggleConfirmPwd } = usePasswordVisibility()
+
 const changePassword = async () => {
   const { valid } = await passwordFormRef.value.validate()
   if (!valid) return
@@ -374,8 +379,9 @@ const changePassword = async () => {
   }
 }
 
-// ------------------------ 注销账号 ------------------------
-
+// ============================================================
+// 注销账号
+// ============================================================
 const router = useRouter()
 
 const showCancelDialog = ref(false)
