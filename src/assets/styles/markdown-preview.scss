@@ -138,6 +138,11 @@
     color: rgb(var(--v-theme-on-surface-variant)) !important;
   }
 
+  // 文字链接（覆盖 github 主题默认的蓝色 #0366d6，深色底上对比度不足）
+  a {
+    color: rgb(var(--v-theme-warning)) !important;
+  }
+
   // 表格：背景、文字、边框
   table {
     tr {
