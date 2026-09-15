@@ -9,7 +9,7 @@
 
     <v-divider></v-divider>
 
-    <!-- 评论输入框 -->
+    <!-- ===== 评论输入框 ===== -->
     <v-card-text v-if="isLoggedIn">
       <v-textarea
         v-model="commentContent"
@@ -46,7 +46,7 @@
 
     <v-divider></v-divider>
 
-    <!-- 评论列表 -->
+    <!-- ===== 评论列表 ===== -->
     <v-card-text v-if="loading && commentList.length === 0" class="text-center py-8">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </v-card-text>
@@ -280,7 +280,7 @@
       </v-infinite-scroll>
     </v-card-text>
 
-    <!-- 删除确认对话框 -->
+    <!-- ===== 删除确认对话框 ===== -->
     <v-dialog v-model="deleteDialogVisible" max-width="400" persistent>
       <v-card>
         <v-card-title class="text-h6">
@@ -330,6 +330,9 @@ import { getCommentsApi, addCommentApi, getChildCommentsApi, deleteCommentApi, g
 import AppReplyInput from './AppReplyInput.vue'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
+// ============================================================
+// 数据
+// ============================================================
 const props = defineProps({
   articleId: {
     type: [Number, String],
@@ -378,6 +381,9 @@ const replyTarget = ref(null)
 const replyContent = ref('')
 const replyLoading = ref(false)
 
+// ============================================================
+// 工具方法
+// ============================================================
 // 根据评论类型动态获取评论是否启用（使用 configStore 的方法）
 const isCommentTypeEnabled = () => {
   return configStore.isCommentTypeEnabledWithExtra(props.commentType, props.isComment)
@@ -410,6 +416,9 @@ const getRemainingCount = (comment) => {
   return remaining > 0 ? remaining : 0
 }
 
+// ============================================================
+// 评论列表
+// ============================================================
 // 初始化评论的子评论状态（整合v1逻辑）
 const initCommentChildren = (comment) => {
   comment.childLoading = false
@@ -537,6 +546,9 @@ const loadComments = async () => {
   await initLoadComments()
 }
 
+// ============================================================
+// 子评论
+// ============================================================
 // 展开子评论
 const expandChildren = async (comment) => {
   // 如果已经显示了全部子评论，不需要再加载
@@ -632,6 +644,9 @@ const loadMoreChildren = async (comment) => {
   }
 }
 
+// ============================================================
+// 发表与回复
+// ============================================================
 // 发表评论
 const submitComment = async () => {
   if (!commentContent.value.trim()) return
@@ -719,6 +734,9 @@ const showLoginDialog = () => {
   emitter.emit('loginDialogVisible', true)
 }
 
+// ============================================================
+// 展示辅助
+// ============================================================
 const formatTime = (time) => {
   if (!time) return ''
   const date = new Date(time)
@@ -755,6 +773,9 @@ const getAvatarIcon = (userId) => {
   return icons[index]
 }
 
+// ============================================================
+// 删除评论
+// ============================================================
 // 删除相关状态
 const deleteDialogVisible = ref(false)
 const deletingCommentId = ref(null)
@@ -801,6 +822,9 @@ const confirmDelete = async () => {
   }
 }
 
+// ============================================================
+// 监听
+// ============================================================
 watch(() => props.articleId, () => {
   if (isCommentTypeEnabled()) {
     loadComments()
@@ -835,6 +859,9 @@ watch(() => props.articleId, () => {
   }
 }) */
 
+// ============================================================
+// 生命周期
+// ============================================================
 onMounted(() => {
   initConfig()
   if (isCommentTypeEnabled() && (props.commentType === 'friendLink' || props.articleId)) {

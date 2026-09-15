@@ -1,8 +1,9 @@
 <template>
     <v-app>
+        <!-- ===== 顶部导航 ===== -->
         <AppHeader :categories="categories"></AppHeader>
 
-        <!-- 主内容 -->
+        <!-- ===== 主内容 ===== -->
         <v-main>
             <v-container>
                 <v-row>
@@ -32,7 +33,7 @@
             </v-container>
         </v-main>
 
-        <!-- 底部页脚 -->
+        <!-- ===== 底部页脚 ===== -->
         <AppFooter></AppFooter>
     </v-app>
 </template>
@@ -49,6 +50,9 @@ import { useRoute } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import { useConfigStore } from '@/store/config';
 
+// ============================================================
+// 数据
+// ============================================================
 const {mdAndUp, lgAndUp} = useDisplay()
 
 const configStore = useConfigStore()
@@ -58,12 +62,18 @@ const route = useRoute()
 
 const categories = ref([])
 
+// ============================================================
+// 渲染
+// ============================================================
 const renderCateList = async() => {
     const res = await cateListApi()
     categories.value = res.data
 }
 renderCateList()
 
+// ============================================================
+// 计算属性
+// ============================================================
 // 个人中心按路由名判定（兼容 /PROFILE、/profile/ 等写法），其余公开页仍按 path
 const isBigScreen = computed(() => route.path === '/about' || route.name === 'Profile' || route.path === '/friendLink' || route.path === '/404')
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)

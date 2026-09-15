@@ -1,6 +1,7 @@
 <template>
   <v-card :to="{name:'detail',params:{id}}">
         <v-list-item class="pa-0">
+            <!-- ===== 封面 ===== -->
             <template v-slot:prepend>
               <div class="cover-container">
                 <v-img
@@ -38,7 +39,7 @@
                   </v-btn>
                 </div>
             </template>
-                <!-- 右侧内容区域 -->
+                <!-- ===== 右侧内容区域 ===== -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title" :class="display.sm.value ? 'truncate-single' : 'truncate-multi'">{{ title }}</h4>
                   <v-chip v-if="cateName && !display.xs.value" color="accent" size="small" class="category mt-1 mr-2">
@@ -78,6 +79,9 @@ import { useThemeStore } from '@/store/theme';
 import { useDisplay } from 'vuetify';
 import coverRect from '@/assets/images/cover-rect.png';
 
+// ============================================================
+// 数据
+// ============================================================
 const display = useDisplay()
 const configStore = useConfigStore()
 
@@ -103,6 +107,9 @@ const themeStore = useThemeStore()
 </script>
 
 <style scoped>
+/* ============================================================
+   封面与置顶徽章
+   ============================================================ */
 /* 封面容器 - 相对定位 */
 .cover-container {
   position: relative;
@@ -157,6 +164,9 @@ const themeStore = useThemeStore()
 }
 
 
+/* ============================================================
+   卡片布局与元信息
+   ============================================================ */
 .metadata{
     padding-top: 8px;
     margin-top: auto;
@@ -179,6 +189,9 @@ const themeStore = useThemeStore()
   }
 }
 
+/* ============================================================
+   标题与简介截断
+   ============================================================ */
 /* sm 端-单行截断 */
 .v-list-item-title .truncate-single{
   white-space: nowrap;
@@ -208,6 +221,9 @@ const themeStore = useThemeStore()
 
 
 
+/* ============================================================
+   标题与分类行
+   ============================================================ */
 .title-category {
   display: flex;
   justify-content: space-between; /* 两端对齐，标题在左，分类在右 */
@@ -222,7 +238,9 @@ const themeStore = useThemeStore()
   }
 }
 
-/* ===== xs（<600px）：卡片恒高 =====
+/* ============================================================
+   xs（<600px）：卡片恒高
+   ============================================================
    1) 标题预留 2 行——1 行标题的卡片也占 2 行的高度
    2) 图片去掉固定宽高比（见模板 :aspect-ratio），高度跟随文字栏
    两者配合保证：不论标题是否换行卡片高度一致，且图片与文字栏上下两端对齐 */

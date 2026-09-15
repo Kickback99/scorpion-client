@@ -1,6 +1,6 @@
 <template>
   <v-container>
-  <!-- 骨架屏：加载中 -->
+  <!-- ===== 骨架屏：加载中 ===== -->
   <v-card v-if="isLoading || !markdownReady" variant="flat">
     <v-card-title>
       <v-skeleton-loader type="heading" class="detail-skeleton-title" />
@@ -16,7 +16,7 @@
     </div>
   </v-card>
 
-  <!-- 真实内容 -->
+  <!-- ===== 真实内容 ===== -->
   <v-card v-else variant="flat">
     <v-card-title>
       <span class="detail-title-text">{{ article.title }}</span>
@@ -33,10 +33,10 @@
     </div>
   </v-card>
 
-  <!-- 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） -->
+  <!-- ===== 移动端：相关标签 + 相关文章（复用 AppSidebar 逻辑） ===== -->
   <AppMobileRelated v-if="isArticleLoaded && markdownReady" :tags="tags" :articles="cateArticles" />
 
-  <!-- 底部操作栏 -->
+  <!-- ===== 底部操作栏 ===== -->
   <div v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && isArticleLoaded && markdownReady" class="mt-5 d-flex justify-center py-4">
     <v-btn
       variant="text"
@@ -57,7 +57,7 @@
     </v-btn>
   </div>
   
-  <!-- 新增：评论组件 -->
+  <!-- ===== 新增：评论组件 ===== -->
   <div class="mt-5" v-if="isArticleLoaded && markdownReady && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
     :articleId="article.id"
@@ -68,10 +68,10 @@
   </div>
 
 
-  <!-- TOC 文章目录 -->
+  <!-- ===== TOC 文章目录 ===== -->
   <AppArticleToc ref="tocRef" :preview="preview" />
 
-  <!-- 回到顶部 -->
+  <!-- ===== 回到顶部 ===== -->
   <AppBackToTop ref="backToTopRef" :hasToc="hasToc" />
   </v-container>
 </template>
@@ -90,6 +90,10 @@ import AppComment from '@/components/AppComment.vue'
 import AppMobileRelated from '@/components/AppMobileRelated.vue'
 import AppArticleToc from '@/components/AppArticleToc.vue'
 import AppBackToTop from '@/components/AppBackToTop.vue'
+
+// ============================================================
+// 数据
+// ============================================================
 const userStore = useUserStore()
 
 // 判断用户是否已登录（统一走 store getter：cookie 模式看 user 展示缓存，jwt 模式看 token+user）
@@ -125,6 +129,9 @@ const configStore = useConfigStore()
 // 无法在骨架屏阶段提前感知「正文就绪」，也就没法让标题与正文一起出现
 const MarkdownPreviewComponent = shallowRef(null);
 
+// ============================================================
+// Markdown 加载
+// ============================================================
 const loadMarkdown = async (force = false) => {
   // 已加载则跳过，避免路由切换时重复加载导致骨架屏闪烁
   if (!force && MarkdownPreviewComponent.value) return;
@@ -254,6 +261,9 @@ watch(() => configStore.getArticleTheme(), () => {
 });
 
 
+// ============================================================
+// 生命周期
+// ============================================================
 onMounted(() => {
   renderArticleItem();
 });
@@ -284,6 +294,9 @@ watch(() => isLoggedIn.value, () => {
 </script>
 
 <style scoped>
+/* ============================================================
+   标题
+   ============================================================ */
 /* 文章标题：Vuetify 的 v-card-title 默认 white-space:nowrap + text-overflow:ellipsis 会把长标题截断成单行；
  * 这里对标题文本 span 用 line-clamp 限制为最多 2 行，超出的部分省略号显示。
  * 注意：line-clamp 不能加在带 padding 的 v-card-title 上——其 overflow:hidden 会连同底部 padding 一起裁剪，
@@ -297,6 +310,9 @@ watch(() => isLoggedIn.value, () => {
   white-space: normal;
 }
 
+/* ============================================================
+   骨架屏
+   ============================================================ */
 /* 骨架屏：标题骨 32px 匹配真实标题行高，全宽 */
 .detail-skeleton-title {
   width: 100%;
@@ -312,12 +328,13 @@ watch(() => isLoggedIn.value, () => {
   padding: 8px 36px 16px 16px;
 }
 
-/* ============ 骨架屏内容行宽度控制区 ============
- * 每组 sentences 渲染 2 行 text 骨：
- *   第1行 :first-child   → 默认 100%，可在此改 max-width
- *   第2行 :nth-child(2)  → Vuetify 默认 max-width 50%
- * 修改宽度就在下方规则里调整即可
- */
+/* ============================================================
+   骨架屏内容行宽度控制区
+   ============================================================
+   每组 sentences 渲染 2 行 text 骨：
+     第1行 :first-child   → 默认 100%，可在此改 max-width
+     第2行 :nth-child(2)  → Vuetify 默认 max-width 50%
+   修改宽度就在下方规则里调整即可 */
  .detail-skeleton-content :deep(.v-skeleton-loader__text:first-child) {
   max-width: 70%;
 }
@@ -325,6 +342,9 @@ watch(() => isLoggedIn.value, () => {
   margin: 4px 0;
 }
 
+/* ============================================================
+   正文
+   ============================================================ */
 /* 主内容区域 */
 .markdown-content {
   width: 100%;
