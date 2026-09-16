@@ -8,7 +8,7 @@
           size="small"
           @click="showChangePasswordDialog = true"
         >
-          <v-icon left size="18">mdi-lock-reset</v-icon>
+          <v-icon size="18">mdi-lock-reset</v-icon>
           修改密码
         </v-btn>
         <v-btn
@@ -18,7 +18,7 @@
           class="ml-2"
           @click="openCancelDialog"
         >
-          <v-icon left size="18">mdi-account-remove</v-icon>
+          <v-icon size="18">mdi-account-remove</v-icon>
           注销账号
         </v-btn>
       </div>
@@ -117,7 +117,7 @@
           :loading="saving"
           @click="saveProfile"
         >
-          <v-icon left>mdi-content-save</v-icon>
+          <v-icon>mdi-content-save</v-icon>
           保存
         </v-btn>
       </div>
