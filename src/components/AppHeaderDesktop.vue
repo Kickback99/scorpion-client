@@ -124,7 +124,7 @@
       @click="handleLogin"
       class="text-none"
     >
-      <v-icon left>mdi-account</v-icon>
+      <v-icon>mdi-account</v-icon>
       登录
     </v-btn>
   </div>

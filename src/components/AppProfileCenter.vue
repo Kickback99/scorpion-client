@@ -11,23 +11,23 @@
           class="mb-4"
         >
           <v-tab value="profile">
-            <v-icon left class="mt-1 mr-2">mdi-account</v-icon>
+            <v-icon class="mt-1 mr-2">mdi-account</v-icon>
             个人资料
           </v-tab>
           <v-tab v-if="configStore.isMyFeedbackEnabled" value="feedback">
-            <v-icon left class="mt-1 mr-2">mdi-message-text</v-icon>
+            <v-icon class="mt-1 mr-2">mdi-message-text</v-icon>
             我的反馈
           </v-tab>
           <v-tab v-if="configStore.isMyPublishesEnabled" value="posts">
-            <v-icon left class="mt-1 mr-2">mdi-file-document</v-icon>
+            <v-icon class="mt-1 mr-2">mdi-file-document</v-icon>
             我的发布
           </v-tab>
           <v-tab v-if="configStore.isMyCommentsEnabled" value="comments">
-            <v-icon left class="mt-1 mr-2">mdi-comment</v-icon>
+            <v-icon class="mt-1 mr-2">mdi-comment</v-icon>
             我的评论
           </v-tab>
           <v-tab v-if="configStore.isMyFavoritesEnabled" value="favorites">
-            <v-icon left class="mt-1 mr-2">mdi-heart</v-icon>
+            <v-icon class="mt-1 mr-2">mdi-heart</v-icon>
             我的收藏
           </v-tab>
           </v-tabs>
