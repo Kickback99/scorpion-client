@@ -42,7 +42,7 @@
                 <!-- ===== 右侧内容区域 ===== -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title" :class="display.sm.value ? 'truncate-single' : 'truncate-multi'">{{ title }}</h4>
-                  <v-chip v-if="cateName && !display.xs.value" color="accent" size="small" class="category mt-1 mr-2">
+                  <v-chip v-if="cateName && !display.xs.value" label density="comfortable" base-color="primary" size="small" class="category mt-1 mr-2">
                     {{ cateName }}
                   </v-chip>
                 </v-list-item-title>
@@ -236,6 +236,11 @@ const themeStore = useThemeStore()
     min-width: 0; /* 允许收缩 */
     margin: 0;
   }
+}
+
+/* 对齐侧边栏「文章标签」chip：tonal 把文字染成 primary 对比度不足，改用 on-surface（须只覆盖内容区，动根节点底纹会跟着变） */
+.category :deep(.v-chip__content) {
+  color: rgb(var(--v-theme-on-surface));
 }
 
 /* ============================================================
