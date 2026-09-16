@@ -166,6 +166,8 @@ const renderNotices = (list, options = {}) => {
     let longTextItem = null
 
     list.forEach(item => {
+        // 防御性拦截：只渲染前台范围（1-前台用户 / 3-全部），后台公告不得混入前台
+        if (item.targetType !== undefined && item.targetType !== 1 && item.targetType !== 3) return
         if (item.type === 0) {
             normalContent = item.content
         } else if (item.type === 1) {
