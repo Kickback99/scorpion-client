@@ -1,6 +1,6 @@
 <template>
   <v-container class="about-page pa-0">
-        <v-card class="mx-auto mt-5" rounded="xm" :style="{ '--about-scale': scale }">
+        <v-card class="mx-auto mt-3" rounded="xm" :style="{ '--about-scale': scale }">
           <v-card-title class="text-h5 font-weight-bold">{{ appTitle }}</v-card-title>
           <v-card-subtitle>你好，很高兴遇见你。</v-card-subtitle>
           <v-divider></v-divider>

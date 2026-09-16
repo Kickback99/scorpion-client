@@ -24,8 +24,10 @@
       </v-breadcrumbs>
 
       <!-- ===== 移动端搜索 ===== -->
+      <!-- 关于页额外用 v-if 排除：该页面包屑本就隐藏，若仍保留这个 visibility:hidden 的搜索框，
+           整条 py-2 容器会被撑到 56px，在卡片上方留下一段纯空白（见 git 3a045b7 的占位初衷只针对有面包屑的路由） -->
       <v-text-field
-        v-if="smAndDown"
+        v-if="smAndDown && route.path !== '/about'"
         :style="{ visibility: route.path === '/' ? 'visible' : 'hidden' }"
         v-model="keyword"
         label="请输入标题/内容"
