@@ -115,15 +115,21 @@ router.beforeEach(async(to, from, next) => {
     // 先等服务端校验落地再判定：本地 user 缓存只是展示缓存（乐观渲染），不能作为放行依据，
     // 否则会话已失效时仍会渲染出受保护页面（校验结果回来后拦截器只静默清状态，不会退出该页）
     await userStore.verifyLogin()
+
+    // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
+    if (!userStore.isLoggedIn) {
+      if (configStore.getUserLoginEnabled()) {
+        // 带上原目标：AppLogin 检测到 redirect 会自动弹出登录框，登录成功后回跳该路径
+        next({ path: '/', query: { redirect: to.fullPath } })
+      } else {
+        // 登录功能已关闭：没有登录入口可引导，受保护页面当不存在处理（与友链/关于页关闭时一致）
+        next('/404')
+      }
+      return
+    }
   }
 
-  // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
-  if (requiresAuth && !userStore.isLoggedIn) {
-    // 带上原目标：AppLogin 检测到 redirect 会自动弹出登录框，登录成功后回跳该路径
-    next({ path: '/', query: { redirect: to.fullPath } })
-  } else {
-    next()
-  }
+  next()
 })
 
 // 路由守卫完成后的回调 - 可以在页面加载后执行一些操作

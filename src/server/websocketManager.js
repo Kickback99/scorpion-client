@@ -1,4 +1,5 @@
 import { useUserStore } from '@/store/user'
+import { useConfigStore } from '@/store/config'
 import router from '@/router';
 import emitter from '@/utils/event-bus.js'
 import { userLogoutApi } from '@/api/user';
@@ -274,6 +275,11 @@ class WebSocketManager {
     const userStore = useUserStore()
     // 清空用户所有数据
     userStore.clearUserStore()
+    // 登录功能已关闭：没有登录入口可引导，不弹登录框与"请重新登录"提示，直接回首页
+    if (!useConfigStore().getUserLoginEnabled()) {
+      router.replace('/')
+      return
+    }
     // 提示用户重新登录
     emitter.emit('loginDialogVisible',true)
     // 提示信息

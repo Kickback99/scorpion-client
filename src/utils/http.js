@@ -10,6 +10,7 @@ const instance = axios.create({baseURL,timeout:15000,withCredentials:true})
 import router from '@/router';
 
 import {isAuthRequired} from '@/api/authRequired'
+import { useConfigStore } from '@/store/config'
 import { useWebSocket } from '@/server/useWebSocket.js'
 // 关闭 WebSocket（修改密码/注销后断开连接，与 Header 的 handleLogout 保持一致）
 const { closeWebSocket } = useWebSocket()
@@ -41,6 +42,11 @@ const handleAuthExpired = (message, config) => {
     userStore.clearUserStore()
     // 后台静默校验触发的失效：清状态即可，不打扰用户
     if (config && config._quiet) {
+        return
+    }
+    // 跳首页保留：受保护页面在登录关闭时不存在，停在原地的会话残留无意义；登录关闭时仅去掉误导性的"重新登录"提示
+    if (!useConfigStore().getUserLoginEnabled()) {
+        router.replace('/')
         return
     }
     // 提示用户重新登录

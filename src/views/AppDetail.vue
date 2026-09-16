@@ -58,7 +58,7 @@
   </div>
   
   <!-- ===== 新增：评论组件 ===== -->
-  <div class="mt-5" v-if="isArticleLoaded && markdownReady && configStore.getUserLoginEnabled() && configStore.getArticleCommentEnabled() && article.isComment === '1'">
+  <div class="mt-5" v-if="isArticleLoaded && markdownReady && (configStore.getUserLoginEnabled() || isLoggedIn) && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
     :articleId="article.id"
     :isComment="article.isComment"
