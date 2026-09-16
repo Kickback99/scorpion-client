@@ -344,6 +344,8 @@ const handleIconSize = computed(() => (display.mobile.value ? 54 : 70))
 // 全局总线
 // ============================================================
 emitter.on('loginDialogVisible',param => {
+    // 登录功能已关闭：统一兜底不弹（各 emit 点分散在收藏/评论/强退等处，弹了也没有登录入口可引导）
+    if(param === true && !configStore.getUserLoginEnabled()) return
     if(dialogVisible.value && param === true) return
     dialogVisible.value = param
     showLoginCaptcha.value = false
@@ -424,7 +426,8 @@ const route = useRoute()
 const router = useRouter()
 
 watch(() => route.query.redirect, (redirect) => {
-    if (redirect && !userStore.isLoggedIn) {
+    // redirect 来自 URL（守卫写入或用户手输），需再判一次登录开关：登录关闭时弹了也登不进去
+    if (redirect && !userStore.isLoggedIn && configStore.getUserLoginEnabled()) {
         dialogVisible.value = true
     }
 }, { immediate: true })
