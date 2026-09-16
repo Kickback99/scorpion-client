@@ -39,7 +39,7 @@
         variant="text"
         @click="showLoginDialog"
       >
-        <v-icon left>mdi-login</v-icon>
+        <v-icon>mdi-login</v-icon>
         登录后参与评论
       </v-btn>
     </v-card-text>
@@ -231,7 +231,7 @@
                     @click="loadMoreChildren(comment)"
                     class="mx-1"
                   >
-                    <v-icon left size="16">mdi-chevron-down</v-icon>
+                    <v-icon size="16">mdi-chevron-down</v-icon>
                     查看更多
                   </v-btn>
                   
@@ -242,7 +242,7 @@
                     @click="collapseChildren(comment)"
                     class="mx-1"
                   >
-                    <v-icon left size="16">mdi-chevron-up</v-icon>
+                    <v-icon size="16">mdi-chevron-up</v-icon>
                     收起
                   </v-btn>
                 </template>
@@ -255,7 +255,7 @@
                   color="primary"
                   @click="expandChildren(comment)"
                 >
-                  <v-icon left size="16">mdi-chevron-down</v-icon>
+                  <v-icon size="16">mdi-chevron-down</v-icon>
                   查看剩余 {{ getRemainingCount(comment) }} 条回复
                 </v-btn>
               </div>
