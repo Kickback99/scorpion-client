@@ -1,6 +1,7 @@
 <template>
   <v-container class="about-page pa-0">
-        <v-card class="mx-auto mt-3" rounded="xm" :style="{ '--about-scale': scale }">
+        <!-- text 变体：去掉卡片底色与投影，标题/正文直接落在页面背景上（布局与内边距不变） -->
+        <v-card class="mx-auto mt-3" variant="text" :style="{ '--about-scale': scale }">
           <v-card-title class="text-h5 font-weight-bold">{{ appTitle }}</v-card-title>
           <v-card-subtitle>你好，很高兴遇见你。</v-card-subtitle>
           <v-divider></v-divider>
