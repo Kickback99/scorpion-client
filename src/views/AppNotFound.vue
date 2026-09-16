@@ -5,7 +5,7 @@
             <h1 class="text-h3 font-weight-black text-primary">404</h1>
             <p class="text-body-1 text-medium-emphasis mt-3">页面不存在</p>
             <v-btn color="primary" class="mt-5" @click="handleBackHome">
-                <v-icon start>mdi-home</v-icon>
+                <v-icon>mdi-home</v-icon>
                 返回首页
             </v-btn>
         </div>
@@ -55,6 +55,8 @@ const handleBackHome = () => {
 
     :deep(.v-btn) {
         --v-btn-size: calc(0.875rem * var(--not-found-scale)) !important;
+        // Vuetify 的 height 固定 36px 不随字号缩放，这里让它跟 --not-found-scale 一起缩
+        --v-btn-height: calc(36px * var(--not-found-scale)) !important;
         // Vuetify 的 padding 固定 16px 不随字号缩放，这里让它跟 --not-found-scale 一起缩
         padding-inline: calc(8px * var(--not-found-scale)) !important;
     }
