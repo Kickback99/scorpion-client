@@ -22,6 +22,10 @@
       <span class="detail-title-text">{{ article.title }}</span>
     </v-card-title>
 
+    <v-card-subtitle>
+      <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">发布于 {{ article.createTime || '-' }} · 浏览 {{ article.viewCount || 0 }}</span></v-divider>
+    </v-card-subtitle>
+
     <div class="markdown-content" @click="handleCopyClick">
        <component
         v-if="MarkdownPreviewComponent"
