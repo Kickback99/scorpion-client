@@ -78,7 +78,7 @@
         />
       </v-card>
 
-      <div class="mt-5" v-if="configStore.getFriendLinkCommentEnabled()">
+      <div class="mt-5" v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && configStore.getFriendLinkCommentEnabled()">
         <!-- 复用 AppComment 组件，传入友链ID和API类型 -->
         <AppComment 
           :articleId="null" 
@@ -96,7 +96,12 @@ import { ref, computed  } from 'vue'
 import AppComment from '@/components/AppComment.vue'
 import { getFriendLinkCommentCountApi } from '@/api/comment'
 import { useConfigStore } from '@/store/config'
+import { useUserStore } from '@/store/user'
 const configStore = useConfigStore()
+const userStore = useUserStore()
+
+// 评论区可见性（与 AppDetail 一致）：登录开关只关登录入口，已登录用户不受影响
+const isLoggedIn = computed(() => userStore.isLoggedIn)
 import { useDisplay } from 'vuetify'
 import { getClientFriendLinkListApi } from '@/api/friendLink'
 
