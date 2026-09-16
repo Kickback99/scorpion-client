@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container :class="{ 'detail-xs': xs }">
   <!-- ===== 骨架屏：加载中 ===== -->
   <v-card v-if="isLoading || !markdownReady" variant="flat">
     <v-card-title>
@@ -19,7 +19,7 @@
   <!-- ===== 真实内容 ===== -->
   <v-card v-else variant="flat">
     <v-card-title>
-      <span class="detail-title-text">{{ article.title }}</span>
+      <h1 class="detail-title-text">{{ article.title }}</h1>
     </v-card-title>
 
     <v-card-subtitle>
@@ -120,6 +120,8 @@ const isLoading = ref(true);
 // 骨架屏内容行组数：移动端 4 组，PC 6 组
 const display = useDisplay();
 const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6));
+// xs（< 600px）：标题缩一档的开关，尺寸见样式区 .detail-xs
+const { xs } = useDisplay();
 // 文章详情是否真正加载完毕：isLoading=false 且已拿到文章数据（覆盖路由切换中 / 文章不存在等路径）
 const isArticleLoaded = computed(() => !isLoading.value && !!article.value.id);
 // 正文是否加载完成：手动预加载 Markdown（异步），完成后置 true；
@@ -301,10 +303,8 @@ watch(() => isLoggedIn.value, () => {
 /* ============================================================
    标题
    ============================================================ */
-/* 文章标题：Vuetify 的 v-card-title 默认 white-space:nowrap + text-overflow:ellipsis 会把长标题截断成单行；
- * 这里对标题文本 span 用 line-clamp 限制为最多 2 行，超出的部分省略号显示。
- * 注意：line-clamp 不能加在带 padding 的 v-card-title 上——其 overflow:hidden 会连同底部 padding 一起裁剪，
- * 第三行文字会从底部 8px padding 里露出半行；故把 clamp 移到无 padding 的内层 span 上。 */
+/* 文章标题：用 h1 拿语义（全页唯一主标题，故正文须从 ## 起），字号字重显式定（32px/44px、600），不跟 Vuetify 的 h1 默认值（40px、700）；
+ * clamp 限 2 行，须放在无 padding 的内层元素上，否则会被 v-card-title 的 overflow 连底部 padding 一起裁掉。 */
 .detail-title-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -312,19 +312,22 @@ watch(() => isLoggedIn.value, () => {
   line-clamp: 2;
   overflow: hidden;
   white-space: normal;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 44px;
 }
 
 /* ============================================================
    骨架屏
    ============================================================ */
-/* 骨架屏：标题骨 32px 匹配真实标题行高，全宽 */
+/* 骨架屏：标题骨对齐标题单行行高（桌面 44px / xs 34px），全宽 */
 .detail-skeleton-title {
   width: 100%;
 }
 
 .detail-skeleton-title :deep(.v-skeleton-loader__heading) {
   margin: 0;
-  height: 32px;
+  height: 44px;
 }
 
 /* 骨架屏：内容区 padding 对齐真实内容（左16卡片 + 右16卡片+20 markdown） */
@@ -354,9 +357,46 @@ watch(() => isLoggedIn.value, () => {
   width: 100%;
 }
 
+/* 正文 h4：github 主题给 1em（= 正文 16px），与正文同大比不出层级，抬到 18px；
+ * vuepress 主题未定义 h4 字号，会落到 Vuetify 默认值，一并覆盖以保证两套主题一致 */
+:deep(.github-markdown-body h4),
+:deep(.vuepress-markdown-body h4) {
+  font-size: 18px;
+}
+
 /* 行内代码字号：与正文一致（库默认 85% 偏小，移动端尤甚） */
 :deep(.markdown-content code:not(pre code)) {
   font-size: 1em !important;
+}
+
+/* ============================================================
+   xs（< 600px）：标题缩一档
+   ============================================================
+   主标题 → 24，正文 h2 → 20，h3 → 18，h4 → 17；正文 h5–h6 本就小于正文 16px，再缩会不可读，保持原样。
+   两套主题基准不同（github 用 em、vuepress 用 rem），统一用 px 覆盖，小屏表现才一致。 */
+.detail-xs .detail-title-text {
+  font-size: 24px;
+  line-height: 34px;
+}
+
+.detail-xs :deep(.github-markdown-body h2),
+.detail-xs :deep(.vuepress-markdown-body h2) {
+  font-size: 20px;
+}
+
+.detail-xs :deep(.github-markdown-body h3),
+.detail-xs :deep(.vuepress-markdown-body h3) {
+  font-size: 18px;
+}
+
+.detail-xs :deep(.github-markdown-body h4),
+.detail-xs :deep(.vuepress-markdown-body h4) {
+  font-size: 17px;
+}
+
+/* 骨架骨同步到 xs 下的标题单行行高 */
+.detail-xs .detail-skeleton-title :deep(.v-skeleton-loader__heading) {
+  height: 34px;
 }
 
 </style>
