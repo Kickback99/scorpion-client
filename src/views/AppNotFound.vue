@@ -55,6 +55,8 @@ const handleBackHome = () => {
 
     :deep(.v-btn) {
         --v-btn-size: calc(0.875rem * var(--not-found-scale)) !important;
+        // Vuetify 的 padding 固定 16px 不随字号缩放，这里让它跟 --not-found-scale 一起缩
+        padding-inline: calc(8px * var(--not-found-scale)) !important;
     }
 }
 </style>
