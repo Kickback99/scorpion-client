@@ -12,7 +12,7 @@
                     @load="backgroundLoaded = true"
                     @click="generate"
                 >
-                <v-btn v-if="backgroundLoaded" icon variant="text" size="small" color="primary" class="app-icon-btn" :disabled="verified" @click="generate">
+                <v-btn v-if="backgroundLoaded" icon variant="text" size="small" color="primary" class="app-icon-btn" @click="generate">
                     <v-icon>mdi-refresh</v-icon>
                 </v-btn>
             </div>
@@ -28,7 +28,6 @@
                 prepend-inner-icon="mdi-shield-check"
                 :class="{ 'mb-2 mt-4': backgroundLoaded }"
                 :loading="verifying"
-                :disabled="verified"
             ></v-text-field>
         </template>
 
@@ -110,8 +109,8 @@
             </div>
         </template>
 
-        <!-- ===== 验证通过遮罩（文本/点选类型） ===== -->
-        <div v-if="verified && !isSliderType" class="captcha-success">
+        <!-- ===== 验证通过遮罩（仅点选类型；文本类提交即登录/注册，遮罩无意义且会禁掉刷新按钮） ===== -->
+        <div v-if="verified && isClickType" class="captcha-success">
             <v-icon color="success">mdi-check-circle</v-icon>
             <span>验证通过</span>
         </div>
@@ -139,7 +138,6 @@ const props = defineProps({
 const TEXT_TYPES = ['default', 'chinese', 'english', 'number', 'mixed', 'gif']
 const isTextType = computed(() => TEXT_TYPES.includes(props.type))
 const isClickType = computed(() => props.type === 'click')
-const isSliderType = computed(() => !isTextType.value && !isClickType.value)
 
 // 点选验证码需要点击的字符数（对应后端 StandardWordClickImageCaptchaGenerator.checkClickCount 默认值）
 const CLICK_COUNT = 4
