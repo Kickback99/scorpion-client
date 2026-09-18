@@ -159,7 +159,7 @@
               density="compact"
               :rules="[
                 v => !!v || '请输入新密码',
-                v => v.length >= 6 || '密码长度至少6位'
+                v => PASSWORD_REGEX.test(v) || PASSWORD_MESSAGE
               ]"
               :prepend-inner-icon="newShowPassword ? 'mdi-lock-open-outline' : 'mdi-lock-outline'"
               class="mb-3"
@@ -230,6 +230,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { userUpdateInfoApi, userCancelApi, userChangePasswordApi } from '@/api/user'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
+import { PASSWORD_REGEX, PASSWORD_MESSAGE } from '@/utils/password'
 import { usePasswordVisibility } from '@/utils/passwordVisibility'
 import { useWebSocket } from '@/server/useWebSocket.js'
 

@@ -299,6 +299,7 @@ import AppTermsDialog from '@/components/AppTermsDialog.vue'
 import AppEmailCodeField from '@/components/AppEmailCodeField.vue'
 import { loadCaptchaComponent } from '@/utils/loadCaptcha'
 import { SERVICE_TERMS, PRIVACY_POLICY } from '@/utils/terms'
+import { PASSWORD_REGEX, PASSWORD_MESSAGE } from '@/utils/password'
 import { usePasswordVisibility } from '@/utils/passwordVisibility'
 
 // ============================================================
@@ -411,7 +412,7 @@ const loginRules = {
     ],
     password: [
         (v) => !!v || '请输入密码',
-        (v) => /^\S{4,15}$/.test(v) || '密码必须是 4-15位 的非空字符'
+        (v) => PASSWORD_REGEX.test(v) || PASSWORD_MESSAGE
     ],
     term: [
         (v) => !!v || '请同意本网站的条款与协议'
@@ -518,7 +519,7 @@ const registerRules = {
     ],
     password: [
         (v) => !!v || '请输入密码',
-        (v) => /^\S{4,15}$/.test(v) || '密码必须是 4-15位 的非空字符'
+        (v) => PASSWORD_REGEX.test(v) || PASSWORD_MESSAGE
     ],
     term: [
         (v) => !!v || '请同意本网站的条款与协议'
@@ -588,7 +589,7 @@ const { visible: resetShowConfirmPassword, toggle: toggleResetConfirmPwd } = use
 const resetRules = {
     newPassword: [
         (v) => !!v || '请输入新密码',
-        (v) => /^\S{4,15}$/.test(v) || '密码必须是 4-15位 的非空字符'
+        (v) => PASSWORD_REGEX.test(v) || PASSWORD_MESSAGE
     ],
     confirmPassword: [
         (v) => !!v || '请再次输入新密码',
