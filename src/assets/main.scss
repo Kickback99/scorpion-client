@@ -20,9 +20,12 @@ html, body {
 }
 
 // 等宽代码字体回退链（!important 必要：覆盖 v-md-editor 主题 CSS 更高优先级的选择器）
+// 末尾接全站中文栈：上面的等宽字体都没有中文字形，不接会落到 generic monospace（Windows 上是宋体），与全站中文不一致
 .v-md-editor-preview {
   pre, code {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', 'Consolas', 'Courier New', monospace !important;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', 'Consolas', 'Courier New', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', monospace !important;
+    // 连字（=> != 等）：JetBrains Mono 的连字在 calt 特性里（GSUB 无 liga），故用规范属性 contextual
+    font-variant-ligatures: contextual;
   }
 }
 
