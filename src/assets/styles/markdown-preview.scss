@@ -8,6 +8,14 @@
 // 代码块语法高亮配色单独成文件，按语义角色分深浅成对维护
 @use './markdown-highlight';
 
+// ===== 正文英文字体：拉回全局字体栈 =====
+// 主题各自写死了 -apple-system 字体链且其 CSS 是运行时加载的，故必须 !important 才能让正文拉丁走 Inter；
+// 用 inherit 复用全局栈（variables.scss 的 $body-font-family），避免两处维护同一份列表
+.v-md-editor-preview .github-markdown-body,
+.v-md-editor-preview .vuepress-markdown-body {
+  font-family: inherit !important;
+}
+
 // ===== VuePress 主题：深色 =====
 .v-md-editor-preview.user-dark .vuepress-markdown-body {
   background: var(--v-theme-surface);
