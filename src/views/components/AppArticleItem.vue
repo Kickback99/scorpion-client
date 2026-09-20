@@ -42,7 +42,7 @@
                 <!-- ===== 右侧内容区域 ===== -->
                 <v-list-item-title class="title-category">
                   <h4 class="ma-0 title" :class="display.sm.value ? 'truncate-single' : 'truncate-multi'">{{ title }}</h4>
-                  <v-chip v-if="cateName && !display.xs.value" label density="comfortable" base-color="primary" size="small" class="category mt-1 mr-2">
+                  <v-chip v-if="cateName && !display.xs.value" label density="comfortable" base-color="primary" size="small" class="category mr-2">
                     {{ cateName }}
                   </v-chip>
                 </v-list-item-title>
@@ -233,7 +233,7 @@ const themeStore = useThemeStore()
 .title-category {
   display: flex;
   justify-content: space-between; /* 两端对齐，标题在左，分类在右 */
-  align-items: center; /* 垂直居中 */
+  align-items: flex-start; /* 顶部对齐：标题折成 2 行时分类 chip 不能被居中拉到中间 */
   gap: 16px; /* 防止内容紧贴 */
   width: 100%;
   /* 整行上移，让首行墨迹顶落在封面顶边上（不动布局；标题与 chip 一起移，不错位） */
@@ -248,6 +248,12 @@ const themeStore = useThemeStore()
     font-size: var(--article-title-fs);
     line-height: var(--article-title-lh);
   }
+}
+
+/* chip 顶边对齐标题首行的墨迹顶：20px 字号 / 27px 行高下，首行墨迹比行盒顶低 3.2px。
+   此前靠模板的 `mt-1`（4px）配合垂直居中，标题折成 2 行时 chip 会被居中拉到整块中间 */
+.category {
+  margin-top: 3.2px;
 }
 
 /* 对齐侧边栏「文章标签」chip：tonal 把文字染成 primary 对比度不足，改用 on-surface（须只覆盖内容区，动根节点底纹会跟着变） */
