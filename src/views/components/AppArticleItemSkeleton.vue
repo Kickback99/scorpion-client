@@ -74,6 +74,17 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 }
 
 // ============================================================
+// 文字栏：与 AppArticleItem 一样拉伸到行高
+// ============================================================
+// .v-list-item 是 grid + align-items: center，文字栏默认居中（不拉伸）：真卡片靠
+// align-self: stretch 撑满、日期行才能贴底。缺这条加载完成时文字栏会跳 13~14px
+.article-skeleton :deep(.v-list-item__content) {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch !important;
+}
+
+// ============================================================
 // Aggressive bone margin reset
 // ============================================================
 // Vuetify default: all bone types have margin: 16px. This inflates the card
@@ -85,7 +96,8 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   }
 
   :deep(.v-skeleton-loader__heading) {
-    margin: 0; /* 行间距统一交给各断点的 row-gap / 骨高控制，见文件末尾 */
+    margin: 0; /* 行间距交给 row-gap */
+    height: var(--article-title-fs); /* 骨高 = 字形高 = 标题字号 */
   }
 
   :deep(.v-skeleton-loader__text) {
@@ -106,6 +118,9 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   align-items: center;
   gap: 16px;
   width: 100%;
+  /* 跟随 .title-category 一起上移，否则加载完成时跳 2~3px */
+  position: relative;
+  top: calc(-1 * var(--article-title-lift));
 }
 
 .skeleton-title-area {
@@ -114,13 +129,30 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 }
 
 // Ensure skeleton loader fills title area
+// 骨高 = 字号、骨间距 = 行高 − 字号、上下留白各一半：两行骨合计正好等于真卡片标题盒高
+// （不能给 .skeleton-title 加 flex-direction——骨自带 flex 1 1 100%，竖排会被压成 0 高）
 .skeleton-title {
   width: 100%;
+  row-gap: calc(var(--article-title-lh) - var(--article-title-fs));
+  padding: calc((var(--article-title-lh) - var(--article-title-fs)) / 2) 0;
 }
 
 // Only the second heading bone (PC 2-line title) constrained to 75%
 .skeleton-title :deep(.v-skeleton-loader__heading:nth-child(2)) {
   max-width: 75%;
+}
+
+// chip 骨：镜像真卡片的分类 chip（22px 高 + 模板 mt-1 的 4px = 26px 外边距盒）。
+// 原来只落 Vuetify 默认尺寸（32px 高、宽 0）：高 32 把整行撑到 32px、标题骨被居中压低 3px；
+// 宽 0 则分类占位在骨架屏上根本看不见。两者都只影响 sm 档 —— md 的行高由标题骨主导，chip 不参与
+.skeleton-chip {
+  width: 44px;
+  margin-top: 4px;
+
+  :deep(.v-skeleton-loader__chip) {
+    width: 100%;
+    height: 22px;
+  }
 }
 
 // ============================================================
@@ -135,6 +167,8 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 // ============================================================
 .skeleton-meta {
   padding-top: 4px;
+  /* 覆盖模板上 .pb-1 的 4px：骨底要贴住盒底（= 封面底），与 AppArticleItem 的 .metadata 一致 */
+  padding-bottom: 0 !important;
   margin-top: auto;
 }
 
@@ -161,27 +195,11 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
     height: 100%;
   }
 
-  // 标题骨对齐真实标题的字形节奏：真实标题是 14px 字形 + 4.5px 字形间隙 = 18.5px 一行，
-  // 故骨高取 14px、骨间距取 4.5px，首个骨下移 2.5px 对应字形上留白，
-  // 合计 2.5 + 14 + 4.5 + 14 = 35px = AppArticleItem 的标题区高度
-  // 注意：不能改 .skeleton-title 的 flex-direction——骨自带 flex: 1 1 100%，
-  // 竖排时 flex-basis 会按容器高度算成 0；它本来就是 flex-wrap 换行布局，用 row-gap 即可
-  .skeleton-title {
-    row-gap: 4.5px;
-    padding-top: 2.5px;
-  }
-
-  .article-skeleton :deep(.v-skeleton-loader__heading) {
-    height: 14px;
-    margin: 0;
-  }
-
   // 日期行占位与 AppArticleItem 的 .metadata 完全对齐：盒高 32px、内边距上 12 下 0。
   // 骨高取 20px（= 真实日期行的行盒：图标 20px 撑满），骨底因此贴着盒底
   .skeleton-meta {
     height: 32px;
     padding-top: 12px;
-    padding-bottom: 0 !important; /* 覆盖 Vuetify .pb-1 的 !important */
   }
 
   .skeleton-meta :deep(.v-skeleton-loader__subtitle) {
@@ -189,19 +207,6 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   }
 }
 
-// ============================================================
-// sm 及以上（≥600px）：标题骨对齐真实标题的字形节奏
-// ============================================================
-// 真实标题是 16px 字形、24px 行高：骨高取 16px（= 字形高），上下各留 4px 行内留白。
-// sm 只有一行（row-gap 不生效）合计 24px；md 及以上两行加 8px 间距合计 48px
-@media (min-width: 600px) {
-  .skeleton-title {
-    row-gap: 8px;
-    padding: 4px 0;
-  }
-
-  .article-skeleton :deep(.v-skeleton-loader__heading) {
-    height: 16px;
-  }
-}
+// sm 及以上（≥600px）的骨尺寸与 xs 共用同一套派生规则，无额外覆盖：
+// sm 单行骨合计 = 行高 24px（真实单行标题高），md 两行加间距合计 = 48px（真实两行标题高）
 </style>

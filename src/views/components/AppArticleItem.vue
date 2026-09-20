@@ -169,7 +169,13 @@ const themeStore = useThemeStore()
    ============================================================ */
 .metadata{
     padding-top: 8px;
+    /* 去 Vuetify .pb-1 的 4px：内容底要贴住盒底（= 封面底） */
+    padding-bottom: 0 !important;
     margin-top: auto;
+    /* flex 行：行盒不再被本行 strut 降部占去 3.2px，图标/日期才能贴底对齐封面 */
+    display: flex;
+    align-items: center;
+    /* 不补偿图标字形自带的 2px 留白：压到 0 会让整行相对文字基线偏下（见 docs） */
     /* 日期/阅读量等元信息强制单行，避免窄屏下折行 */
     white-space: nowrap;
 }
@@ -230,11 +236,17 @@ const themeStore = useThemeStore()
   align-items: center; /* 垂直居中 */
   gap: 16px; /* 防止内容紧贴 */
   width: 100%;
+  /* 整行上移，让首行墨迹顶落在封面顶边上（不动布局；标题与 chip 一起移，不错位） */
+  position: relative;
+  top: calc(-1 * var(--article-title-lift));
   
   h4 {
     flex: 1; /* 标题占据剩余空间 */
     min-width: 0; /* 允许收缩 */
     margin: 0;
+    /* 字号/行高统一取 main.scss 的 --article-title-*（原 sm 及以上是隐式继承 1rem） */
+    font-size: var(--article-title-fs);
+    line-height: var(--article-title-lh);
   }
 }
 
@@ -250,14 +262,9 @@ const themeStore = useThemeStore()
    2) 图片去掉固定宽高比（见模板 :aspect-ratio），高度跟随文字栏
    两者配合保证：不论标题是否换行卡片高度一致，且图片与文字栏上下两端对齐 */
 @media (max-width: 599.98px) {
-  /* 标题盒固定 35px。CSS 无法只在换行时缩字号，故 xs 下标题统一 14px/18.5px；
-     2 行文字（2×18.5 = 37px）比盒子多 2px，多出的只是行距空白——
-     已用像素比对验证：35px 与 37px 渲染结果完全一致（10 张卡全过），不会切到字。
-     封顶后这 2px 不再溢出到日期行（此前正是它把日期上间距吃成了 2px） */
+  /* 标题盒定高 2 行（= 2 × lh）：1 行标题也占 2 行高 → 卡片恒高，且不会切到降部 */
   .title-category h4 {
-    height: 35px;
-    font-size: 14px;
-    line-height: 18.5px;
+    height: calc(var(--article-title-lh) * 2);
   }
 
   :deep(.v-list-item__prepend) {
@@ -276,7 +283,8 @@ const themeStore = useThemeStore()
   .metadata {
     height: 32px;
     padding-top: 12px;
-    padding-bottom: 0 !important; /* 覆盖 Vuetify .pb-1 的 !important */
+    /* 32px 盒比内容（图标 17.5px）高，内容压到底边，才能贴住封面底 */
+    align-items: flex-end;
   }
 }
 
