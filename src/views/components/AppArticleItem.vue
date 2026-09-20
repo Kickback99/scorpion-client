@@ -256,6 +256,17 @@ const themeStore = useThemeStore()
   margin-top: 3.2px;
 }
 
+/* sm 及以上（≥600px）：分类 chip 用 14px/26px。标题已是 20px/700，chip 若停在 Vuetify small 的
+   12px，会比日期、阅读量（14px）还小——全卡最小的字去承担分类标签，层级是反的。
+   xs（<600px）本就不渲染 chip（见模板 v-if），这里把边界写明确，不做隐式假设。
+   26px 是上限：再高（含 3.2px 上边距）就会顶破单行标题的 27px 行盒，把简介往下推 */
+@media (min-width: 600px) {
+  .category.v-chip {
+    height: 26px;
+    font-size: 14px;
+  }
+}
+
 /* 对齐侧边栏「文章标签」chip：tonal 把文字染成 primary 对比度不足，改用 on-surface（须只覆盖内容区，动根节点底纹会跟着变） */
 .category :deep(.v-chip__content) {
   color: rgb(var(--v-theme-on-surface));
