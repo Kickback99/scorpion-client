@@ -30,8 +30,8 @@
                     >
                     </v-overlay>
                         <v-card-title
-                            class="text-white text-h6 font-weight-bold"
-                            style="position: absolute; bottom: 16px; left: 16px; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"
+                            class="text-white text-h6 font-weight-bold text-truncate"
+                            style="position: absolute; bottom: 16px; left: 16px; right: 16px; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"
                         >
                             {{ item.title }}
                         </v-card-title>
