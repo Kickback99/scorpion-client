@@ -16,6 +16,16 @@
   font-family: inherit !important;
 }
 
+// ===== 正文行高：统一两套主题 =====
+// github 主题写死 1.5（面向拉丁，中文偏挤）、vuepress 1.7，切主题行高会跳变；统到中文惯例的 1.75，
+// 28px 行盒刚好容下行内代码 27.2px 的背景盒。td/th 一并纳入，否则表格单元格比段落紧一档且码块仍溢出。
+.v-md-editor-preview .github-markdown-body,
+.v-md-editor-preview .vuepress-markdown-body {
+  p, li, blockquote, td, th {
+    line-height: 1.75;
+  }
+}
+
 // ===== VuePress 主题：深色 =====
 .v-md-editor-preview.user-dark .vuepress-markdown-body {
   background: var(--v-theme-surface);
