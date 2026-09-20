@@ -30,7 +30,7 @@
     <AppBlogBox :title="titles.tags">
         <v-chip-group column class="pa-2" mandatory :model-value="selectedTagId">
         <v-chip label v-for="item in tagStore.list" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id"
-        base-color="primary"
+        base-color="primary" class="tag-chip"
         >{{ item.name }}</v-chip>
         </v-chip-group>
     </AppBlogBox>
@@ -634,6 +634,14 @@ onUnmounted(() => {
 // 在暗色 surface 上对比度不足；改用主题 on-surface 动态变量（深色模式浅色 / 亮色模式深色）保证可读性
 :deep(.v-chip__content) {
   color: rgb(var(--v-theme-on-surface));
+}
+
+// 标签 chip 抬到 14px/26px，与首页卡片的分类 chip 同一套规范（12px 比日期还小，标签感不足）。
+// 本组件由 AppLayout 以 `v-show="showSidebar && mdAndUp"` 挂载，只在 PC 端可见，故无需媒体查询；
+// 移动端的 AppMobileRelated「相关标签」保持原尺寸不动
+.tag-chip.v-chip {
+  height: 26px;
+  font-size: 14px;
 }
 
 // ============================================================
