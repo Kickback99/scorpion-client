@@ -115,7 +115,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 .skeleton-title-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* 与 .title-category 一致：标题 2 行时 chip 骨也要贴顶 */
   gap: 16px;
   width: 100%;
   /* 跟随 .title-category 一起上移，否则加载完成时跳 2~3px */
@@ -147,7 +147,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 // 宽 0 则分类占位在骨架屏上根本看不见。两者都只影响 sm 档 —— md 的行高由标题骨主导，chip 不参与
 .skeleton-chip {
   width: 44px;
-  margin-top: 4px;
+  margin-top: 3.2px; /* 与真卡片 .category 的偏移一致 */
 
   :deep(.v-skeleton-loader__chip) {
     width: 100%;
