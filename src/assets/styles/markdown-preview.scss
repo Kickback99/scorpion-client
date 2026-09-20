@@ -26,6 +26,15 @@
   }
 }
 
+// ===== 行内代码字号：与正文等大 =====
+// 库默认 85%（13.6px）偏小；JetBrains Mono 的 x-height（0.550em）与 Inter（0.545em）几乎重合，同字号下光学等大，
+// MDN 的 Inter + JetBrains Mono 组合也用 1em。放共享文件，让文章详情与通知/协议弹窗观感一致。
+.v-md-editor-preview {
+  code:not(pre code) {
+    font-size: 1em !important;
+  }
+}
+
 // ===== xs（< 600px）：把正文与代码块的横向空间要回来 =====
 // 原本 32px/侧（github 写死，vuepress 小屏 24px），375px 下正文每行仅 16.6 个汉字、代码块只占视口 70.8%；收到 16px
 // 后与 v-container 外边距同值。代码块再负 margin 出血一个 padding（学 VuePress 自己在 ≤419px 的做法），占视口 87.9%。

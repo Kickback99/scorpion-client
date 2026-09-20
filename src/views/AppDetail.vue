@@ -383,10 +383,7 @@ watch(() => isLoggedIn.value, () => {
   font-size: 18px;
 }
 
-/* 行内代码字号：与正文一致（库默认 85% 偏小，移动端尤甚） */
-:deep(.markdown-content code:not(pre code)) {
-  font-size: 1em !important;
-}
+/* 行内代码字号：已上移到 markdown-preview.scss（详情页与通知/协议弹窗共用同一档字号） */
 
 /* ============================================================
    xs（< 600px）：标题缩一档
