@@ -142,7 +142,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   max-width: 75%;
 }
 
-// chip 骨：镜像真卡片的分类 chip（22px 高 + 模板 mt-1 的 4px = 26px 外边距盒）。
+// chip 骨：镜像真卡片的分类 chip（22px 高 + 上边距 3.2px；md+ 抬到 26px / 29.2px，见下）。
 // 原来只落 Vuetify 默认尺寸（32px 高、宽 0）：高 32 把整行撑到 32px、标题骨被居中压低 3px；
 // 宽 0 则分类占位在骨架屏上根本看不见。两者都只影响 sm 档 —— md 的行高由标题骨主导，chip 不参与
 .skeleton-chip {
@@ -152,6 +152,18 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   :deep(.v-skeleton-loader__chip) {
     width: 100%;
     height: 22px;
+  }
+}
+
+// sm 及以上（≥600px）：跟随真卡片 .category 一起抬到 14px/26px（宽 42.5 → 46.2，取整 46），
+// 否则加载完成时分类 chip 会由 22px 跳变到 26px
+@media (min-width: 600px) {
+  .skeleton-chip {
+    width: 46px;
+
+    :deep(.v-skeleton-loader__chip) {
+      height: 26px;
+    }
   }
 }
 
