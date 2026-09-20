@@ -317,6 +317,20 @@ watch(() => isLoggedIn.value, () => {
   line-height: 44px;
 }
 
+/* 标题 / 副标题左右内边距对齐正文：正文根容器是 32px（xs 档 16px，见 markdown-preview.scss），
+ * 而 v-card-title 默认左右只有 16px，会让 H1 比正文靠左 16px；此处跟随正文取同档值。 */
+.v-card-title,
+.v-card-subtitle {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.detail-xs .v-card-title,
+.detail-xs .v-card-subtitle {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
 /* ============================================================
    骨架屏
    ============================================================ */
@@ -330,9 +344,14 @@ watch(() => isLoggedIn.value, () => {
   height: 44px;
 }
 
-/* 骨架屏：内容区 padding 对齐真实内容（左16卡片 + 右16卡片+20 markdown） */
+/* 骨架屏：内容区 padding 对齐真实正文（桌面 32px / xs 16px），与上方标题规则取同一档值 */
 .detail-skeleton-content {
-  padding: 8px 36px 16px 16px;
+  padding: 8px 32px 16px 32px;
+}
+
+.detail-xs .detail-skeleton-content {
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 /* ============================================================
