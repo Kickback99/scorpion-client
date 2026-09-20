@@ -54,7 +54,7 @@
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
         <!-- 骨架屏：加载中 -->
-        <v-list v-if="latestLoading && latestBlogs.length === 0">
+        <v-list v-if="latestLoading && latestBlogs.length === 0" class="sidebar-article-list">
             <v-list-item v-for="n in 10" :key="n" class="sidebar-skeleton-item">
                 <template v-slot:prepend>
                     <v-skeleton-loader type="image" width="90" height="50.625" class="sidebar-skeleton-img" />
@@ -69,7 +69,7 @@
         </v-list>
 
         <!-- 真实内容 -->
-        <v-list v-else>
+        <v-list v-else class="sidebar-article-list">
             <v-list-item
             v-for="(item, index) in latestBlogs"
             :key="item.id"
@@ -581,6 +581,23 @@ onUnmounted(() => {
 .sidebar-search-offset {
     margin-top: 45.6px;
 }
+
+// ============================================================
+// 最新发布 / 相关文章：文字栏顶部对齐封面（只调对齐，不改字号）
+// ============================================================
+// .v-list-item 是 grid + align-items: center，文字栏默认居中（align-self: center 且 display: block）：
+// 实测标题比封面顶低 8.3px。让文字栏拉伸到与封面等高（封面是行内最高项），再让它内部纵向排列，
+// 标题就自然贴到封面顶，日期紧跟标题下方
+.sidebar-article-list {
+  :deep(.v-list-item__content) {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch !important;
+  }
+}
+
+// 日期原先用 margin-top: auto 压到封面底做上下对齐，但那样日期紧贴下一项标题、分不出层次，
+// 现改为紧跟标题、把空白留在日期下方。骨架屏随之不再需要还原 3.6px 位移
 
 // ============================================================
 // Sidebar skeleton: aggressive bone margin reset
