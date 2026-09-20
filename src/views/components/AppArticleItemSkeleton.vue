@@ -147,7 +147,10 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 // 宽 0 则分类占位在骨架屏上根本看不见。两者都只影响 sm 档 —— md 的行高由标题骨主导，chip 不参与
 .skeleton-chip {
   width: 44px;
-  margin-top: 3.2px; /* 与真卡片 .category 的偏移一致 */
+  /* 镜像真卡片 .category 的两个外边距：上 3.2px 对齐标题首行墨迹顶，
+     右 8px 对应模板上的 mr-2（漏了会被顶到内容区右边界，比真 chip 靠右 8px） */
+  margin-top: 3.2px;
+  margin-right: 8px;
 
   :deep(.v-skeleton-loader__chip) {
     width: 100%;
