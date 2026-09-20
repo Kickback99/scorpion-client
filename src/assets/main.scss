@@ -82,6 +82,22 @@ html, body {
   --article-cover-radius: 2px;
 }
 
+/* ========== 首页列表卡片标题字号：唯一旋钮（改字号只动 --article-title-fs） ==========
+   骨架骨高/间距/留白、xs 标题盒高都由它 calc 派生；行高需 ≥ 字号 × 1.25，否则切降部 */
+:root {
+  --article-title-fs: 18px;   /* xs 档见下方媒体查询；原 16px */
+  --article-title-lh: 26px;
+  --article-title-lift: 4px;  /* 整行上移，让首行墨迹顶落在封面顶边上 */
+}
+
+@media (max-width: 599.98px) {
+  :root {
+    --article-title-fs: 16px; /* 原 14px */
+    --article-title-lh: 20px;
+    --article-title-lift: 2px;
+  }
+}
+
 /* ========== 图片懒加载占位：浅灰背景（骨架屏视觉），替代 coverRect 静态图 ========== */
 .lazy-img {
   background-color: rgba(var(--v-theme-on-surface), 0.08);
