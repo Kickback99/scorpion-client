@@ -26,6 +26,25 @@
   }
 }
 
+// ===== xs（< 600px）：把正文与代码块的横向空间要回来 =====
+// 原本 32px/侧（github 写死，vuepress 小屏 24px），375px 下正文每行仅 16.6 个汉字、代码块只占视口 70.8%；收到 16px
+// 后与 v-container 外边距同值。代码块再负 margin 出血一个 padding（学 VuePress 自己在 ≤419px 的做法），占视口 87.9%。
+// 下方两行 padding 的 !important 必要：主题 CSS 运行时加载，同优先级规则会输给它。
+@media (max-width: 599.98px) {
+  .v-md-editor-preview .github-markdown-body,
+  .v-md-editor-preview .vuepress-markdown-body {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+
+    // 出血量必须与上方 padding 同值，改一处两处一起改
+    div[class*='v-md-pre-wrapper-'] {
+      margin-left: -16px;
+      margin-right: -16px;
+      border-radius: 0;
+    }
+  }
+}
+
 // ===== VuePress 主题：深色 =====
 .v-md-editor-preview.user-dark .vuepress-markdown-body {
   background: var(--v-theme-surface);
