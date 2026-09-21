@@ -64,7 +64,7 @@
       >
         <v-list lines="two" class="bg-transparent">
           <template v-for="comment in commentList" :key="comment.id">
-            <v-list-item class="comment-item">
+            <v-list-item class="comment-item" :data-comment-id="comment.id">
               <template v-slot:prepend>
                 <v-avatar size="35">
                   <!-- 优先显示真实头像，没有则显示图标 -->
@@ -506,6 +506,14 @@ const refreshCommentChildren = async (rootId) => {
   initCommentChildren(comment)
 }
 
+// 平滑滚到指定评论（根评论与子评论都带 data-comment-id 锚点，id 全表唯一）。
+// block 默认居中；收起场景传 'nearest'，只做最小位移，配合 .comment-item 的 scroll-margin-top 避开吸顶导航
+const scrollToComment = (commentId, block = 'center') => {
+  document
+    .querySelector(`[data-comment-id="${commentId}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block })
+}
+
 // 回复后平滑滚到自己的那条回复：子评论倒序，新回复排在目标根评论的最前
 const scrollToMyReply = async (rootId, content) => {
   await nextTick()
@@ -515,10 +523,7 @@ const scrollToMyReply = async (rootId, content) => {
     child => child.createBy === myId && child.content === content
   )
   // 待审 / 被拦截 / 静默丢弃的回复不在列表里，找不到就不滚
-  if (!myReply) return
-  document
-    .querySelector(`.children-list [data-comment-id="${myReply.id}"]`)
-    ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  if (myReply) scrollToComment(myReply.id)
 }
 
 // 重置滚动状态
@@ -676,7 +681,7 @@ const expandChildren = async (comment) => {
 }
 
 // 收起子评论
-const collapseChildren = (comment) => {
+const collapseChildren = async (comment) => {
 
   // 保存当前显示的数据到缓存（用于后续恢复）
   if (comment.displayChildren && comment.displayChildren.length > 0) {
@@ -694,6 +699,11 @@ const collapseChildren = (comment) => {
     }
   }
   comment.isChildExpanded = false
+
+  // 子列表变矮不会自动补偿滚动，而收起按钮又在列表底部，这条评论常被甩出视口，滚回去。
+  // nextTick 之后高度已经缩完，位置才是最终位置；'nearest' 只做最小位移，本来就在视野内就完全不动
+  await nextTick()
+  scrollToComment(comment.id, 'nearest')
 }
 
 // 加载更多子评论
@@ -969,6 +979,8 @@ onMounted(() => {
 
 .comment-item {
   padding: 12px 16px !important;
+  /* 收起后按 'nearest' 对齐到视口顶部时，避开 64px 吸顶导航（+8px 间距） */
+  scroll-margin-top: 72px;
 }
 
 .comment-item:hover {
