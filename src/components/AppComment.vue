@@ -139,7 +139,7 @@
               <!-- 子评论列表容器 -->
               <div class="children-list">
                 <template v-for="child in comment.displayChildren" :key="child.id">
-                  <v-list-item class="child-comment-item">
+                  <v-list-item class="child-comment-item" :data-comment-id="child.id">
                     <template v-slot:prepend>
                       <v-avatar size="27">
                         <!-- 优先显示真实头像，没有则显示图标 -->
@@ -321,7 +321,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
@@ -449,6 +449,78 @@ const initCommentChildren = (comment) => {
   }
 }
 
+// 逐页拉取子评论直到覆盖 targetCount：首页覆盖已有数据，后续页追加（保持分页对齐）
+const loadChildrenUpTo = async (comment, targetCount) => {
+  comment.childLoading = true
+  try {
+    const pages = Math.ceil(targetCount / childPageSize.value)
+    for (let pageNum = 1; pageNum <= pages; pageNum++) {
+      const res = await getChildCommentsApi(comment.id, pageNum, childPageSize.value)
+      if (res.code !== 200 || !res.data) return
+      const { children, total, hasMore } = res.data
+      comment.childTotal = total
+      comment.hasMoreChild = hasMore
+      comment.displayChildren = pageNum === 1 ? (children || []) : comment.displayChildren.concat(children || [])
+      // 子评论被删光了，或已到底
+      if (!hasMore) return
+    }
+  } catch (error) {
+    console.error('加载子评论失败:', error)
+  } finally {
+    comment.childLoading = false
+  }
+}
+
+// 重载后恢复展开态：按展开时加载过的页数重新拉回
+const restoreExpandedChildren = async (expandedSnapshot) => {
+  const targets = commentList.value.filter(comment => {
+    const loadedCount = expandedSnapshot.get(comment.id)
+    return loadedCount > (comment.displayChildren?.length || 0)
+  })
+
+  await Promise.all(targets.map(comment => {
+    comment.isChildExpanded = true
+    return loadChildrenUpTo(comment, expandedSnapshot.get(comment.id))
+  }))
+}
+
+// 回复后定点刷新目标根评论的子评论：整体重载会清空列表，把视口钳到顶部并丢掉已加载的分页
+const refreshCommentChildren = async (rootId) => {
+  const comment = commentList.value.find(item => item.id === rootId)
+  // 目标不在当前列表，退回整体刷新
+  if (!comment) return loadComments()
+
+  // 展开态：拉回原有条数，保持展开。
+  // 下限取打底条数：这条原本 0 条子评论时 displayChildren 为空，页数算出来是 0，会一个请求都不发，
+  // 刚发的回复永远不显示（childTotal 也停在 0，子评论区块整个不渲染）
+  if (comment.isChildExpanded) {
+    return loadChildrenUpTo(comment, Math.max(comment.displayChildren.length, childCommentLimit.value, 1))
+  }
+
+  // 收起态：只重装打底数据，展示结构不变（子评论倒序，新回复本就是打底第 1 条）
+  const res = await getChildCommentsApi(comment.id, 1, Math.max(childCommentLimit.value, 1))
+  if (res.code !== 200 || !res.data) return
+  comment.children = res.data.children || []
+  comment.childTotal = res.data.total
+  comment.hasMoreChild = res.data.hasMore
+  initCommentChildren(comment)
+}
+
+// 回复后平滑滚到自己的那条回复：子评论倒序，新回复排在目标根评论的最前
+const scrollToMyReply = async (rootId, content) => {
+  await nextTick()
+  const comment = commentList.value.find(item => item.id === rootId)
+  const myId = userStore.user?.id
+  const myReply = comment?.displayChildren?.find(
+    child => child.createBy === myId && child.content === content
+  )
+  // 待审 / 被拦截 / 静默丢弃的回复不在列表里，找不到就不滚
+  if (!myReply) return
+  document
+    .querySelector(`.children-list [data-comment-id="${myReply.id}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+
 // 重置滚动状态
 const resetScrollState = () => {
   commentList.value = []
@@ -461,6 +533,13 @@ const resetScrollState = () => {
 const initLoadComments = async () => {
   if (!isCommentTypeEnabled()) return
   
+  // 重载前记录展开态：子评论按时间正序，重载后只剩打底条数，用户看不到刚发的回复
+  const expandedSnapshot = new Map(
+    commentList.value
+      .filter(comment => comment.isChildExpanded)
+      .map(comment => [comment.id, comment.displayChildren?.length || 0])
+  )
+
   loading.value = true
   resetScrollState()
   
@@ -483,6 +562,9 @@ const initLoadComments = async () => {
       commentList.value.forEach(comment => {
         initCommentChildren(comment)
       })
+
+      // 恢复重载前的展开态
+      await restoreExpandedChildren(expandedSnapshot)
     }
   } catch (error) {
     console.error('加载评论失败:', error)
@@ -662,9 +744,11 @@ const submitComment = async () => {
       type: commentTypeValue
     })
     if (res.code === 200) {
-      window.$snackbar?.success('评论发表成功')
+      // 口径同 submitReply：只承诺「已提交」，不承诺「已展示」
+      window.$snackbar?.success('评论已提交')
       commentContent.value = ''
-      // await loadComments()
+      // 未命中规则的评论已自动通过，刷新即可看到（与 submitReply 一致）；命中待审的不会出现在列表里
+      await loadComments()
     }
   } catch (error) {
     // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
@@ -704,23 +788,30 @@ const cancelReply = () => {
 
 const submitReply = async () => {
   if (!replyContent.value.trim() || !replyTarget.value) return
-  
+
+  // cancelReply 会清空 replyTarget 与 replyContent，先取出定位新回复所需的信息
+  const rootId = replyTarget.value.rootId
+  const content = replyContent.value
+
   replyLoading.value = true
   try {
     // 根据评论类型设置不同的 type 值（0为文章评论，1为友链评论）
     const commentTypeValue = props.commentType === 'friendLink' ? '1' : '0'
     const res = await addCommentApi({
       articleId: props.articleId,
-      content: replyContent.value,
+      content,
       type: commentTypeValue,
       rootId: replyTarget.value.rootId,
       toCommentId: replyTarget.value.id,
       toCommentUserId: replyTarget.value.createBy
     })
     if (res.code === 200) {
-      window.$snackbar?.success('回复成功')
+      // 只承诺「已提交」：后端对已通过/待审/被拦截/高危静默都返回成功，
+      // 承诺「已展示」会在后三种情况下落空（待审的连「我的评论」都查不到）
+      window.$snackbar?.success('回复已提交')
       cancelReply()
-      await loadComments()
+      await refreshCommentChildren(rootId)
+      await scrollToMyReply(rootId, content)
     }
   } catch (error) {
     // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
