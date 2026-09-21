@@ -93,6 +93,7 @@
                     size="x-small"
                     variant="text"
                     @click="startReply(comment)"
+                    :loading="replyTarget?.id === comment.id"
                     :title="`回复${comment.username || '匿名用户'}`"
                   >
                     <v-icon size="18">mdi-reply</v-icon>
@@ -184,6 +185,7 @@
                             size="x-small"
                             variant="text"
                             @click="startReply(child)"
+                            :loading="replyTarget?.id === child.id"
                             title="回复"
                           >
                             <v-icon size="16">mdi-reply</v-icon>
@@ -975,6 +977,13 @@ onMounted(() => {
 .comment-container {
   background-color: rgba(var(--v-theme-surface), 0.5);
   backdrop-filter: blur(2px);
+}
+
+/* v-btn 的加载圈没传 size，吃的是 v-progress-circular 默认值（实测 21px），
+   塞进 32px 的 x-small 图标按钮里比图标（18px）还大，统一收到 16px */
+:deep(.v-btn__loader .v-progress-circular) {
+  width: 16px;
+  height: 16px;
 }
 
 .comment-item {
