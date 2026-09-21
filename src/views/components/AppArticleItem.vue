@@ -145,7 +145,7 @@ const themeStore = useThemeStore()
 /* 移动端置顶图标按钮样式 */
 .top-btn-mobile {
   position: absolute;
-  top: 9px;
+  top: 4px;
   right: 5px;
   min-width: 24px;
   width: 24px;
