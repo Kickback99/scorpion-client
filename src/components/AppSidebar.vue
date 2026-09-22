@@ -522,6 +522,10 @@ const handleHotScroll = () => {
     if (!hotRef.value || !recRef.value) return
     if (mobile.value) return
 
+    // 弹窗锁滚动期间 Vuetify 会给 html 加这个类，window.pageYOffset 读数会变成 0，
+    // 但真实位置没变（挂在 --v-body-scroll-y 上）。不跳过会被当成「滚回顶部」把热门文章收回
+    if (document.documentElement.classList.contains('v-overlay-scroll-blocked')) return
+
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
     // 静态时持续更新「文章推荐」底部的文档坐标
