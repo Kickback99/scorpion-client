@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container :style="{ '--empty-state-scale': scale }">
 
       <!-- ===== 顶部进度条 ===== -->
     <div v-if="loading" class="loading-wrapper">
@@ -70,11 +70,12 @@
       </template>
 
       <!-- ===== 空状态 ===== -->
-      <v-card v-else-if="!loading && friendLinkList.length === 0">
+      <v-card v-else-if="!loading && friendLinkList.length === 0" class="pa-6">
         <v-empty-state
           icon="mdi-link-variant-off"
-          title="暂无友链"
+          headline="暂无友链"
           text="当前没有任何友情链接"
+          class="custom-empty-state"
         />
       </v-card>
 
@@ -104,6 +105,10 @@ const userStore = useUserStore()
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 import { useDisplay } from 'vuetify'
 import { getClientFriendLinkListApi } from '@/api/friendLink'
+import { useDialogFontScale } from '@/composables/useDialogFontScale'
+
+// 空状态字号缩放（移动端 0.8）
+const scale = useDialogFontScale()
 
 // ============================================================
 // 响应式断点

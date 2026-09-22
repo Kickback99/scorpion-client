@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container :style="{ '--empty-state-scale': scale }">
           <!-- ===== 加载中：进度条 + 骨架屏同时显示 ===== -->
          <template v-if="isLoading">
            <div class="loading-wrapper">
@@ -91,11 +91,12 @@
           </template>
 
             <!-- ===== 空状态显示 ===== -->
-             <v-card v-else>
+             <v-card v-else class="pa-6">
               <v-empty-state
                   icon="mdi-file-document-outline"
-                  title="暂无文章"
+                  headline="暂无文章"
                   text="当前没有找到任何文章内容"
+                  class="custom-empty-state"
               >
               </v-empty-state>
             </v-card>
@@ -110,6 +111,7 @@ import { ref,onMounted,watch, provide, computed } from 'vue'
 import { useDisplay } from 'vuetify';
 import { mdToPlainText } from '@/utils/useExtractText'
 import { useConfigStore } from '@/store/config';
+import { useDialogFontScale } from '@/composables/useDialogFontScale';
 
 // ============================================================
 // 数据
@@ -118,6 +120,9 @@ const configStore = useConfigStore()
 
 
 const {smAndUp} = useDisplay()
+
+// 空状态字号缩放（移动端 0.8）
+const scale = useDialogFontScale()
 
 
 const isLoading = ref(false)
