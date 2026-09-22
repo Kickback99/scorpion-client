@@ -160,8 +160,8 @@
           <!-- 前置图标插槽 -->
           <template #prepend>
             <slot name="card-prepend" :item="item">
-              <v-avatar size="40" color="grey-lighten-2">
-                <v-icon>mdi-file-document</v-icon>
+              <v-avatar :size="40 * handleFontScale" color="grey-lighten-2">
+                <v-icon :size="24 * handleFontScale">mdi-file-document</v-icon>
               </v-avatar>
             </slot>
           </template>
@@ -191,7 +191,7 @@
                 :loading="isDeleting(item)"
                 @click="handleDelete(item)"
               >
-                <v-icon size="18">{{ deleteIcon }}</v-icon>
+                <v-icon :size="18 * handleFontScale">{{ deleteIcon }}</v-icon>
               </v-btn>
             </slot>
           </template>

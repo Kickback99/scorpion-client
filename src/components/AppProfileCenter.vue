@@ -141,8 +141,8 @@
             >
                 <!-- 自定义前置图标 -->
               <template #card-prepend="{ item }">
-                <v-avatar size="40" color="grey-lighten-2">
-                  <v-icon>mdi-comment</v-icon>
+                <v-avatar :size="40 * handleFontScale" color="grey-lighten-2">
+                  <v-icon :size="24 * handleFontScale">mdi-comment</v-icon>
                 </v-avatar>
               </template>
 
@@ -170,7 +170,7 @@
                   color="red"
                   @click="commentListRef?.deleteItem?.(item)"
                 >
-                  <v-icon size="18">mdi-delete</v-icon>
+                  <v-icon :size="18 * handleFontScale">mdi-delete</v-icon>
                 </v-btn>
               </template>
             </AppContentList>
