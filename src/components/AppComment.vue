@@ -52,7 +52,8 @@
     </v-card-text>
 
     <v-card-text v-else-if="commentList.length === 0" class="text-center py-8 text-grey">
-      <v-icon size="48" icon="mdi-chat-outline"></v-icon>
+      <!-- PC 固定 48，移动端随 --comment-scale 缩到 38.4 -->
+      <v-icon :size="48 * scale" icon="mdi-chat-outline"></v-icon>
       <div class="mt-2">暂无评论，快来抢沙发吧~</div>
     </v-card-text>
 
