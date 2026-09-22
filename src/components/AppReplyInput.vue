@@ -7,6 +7,7 @@
       <div class="reply-input-flex">
         <v-textarea
           v-model="internalContent"
+          ref="replyInputRef"
           :placeholder="`回复 ${targetUsername || '匿名用户'}...`"
           rows="2"
           variant="outlined"
@@ -19,7 +20,9 @@
           class="reply-textarea"
         ></v-textarea>
         <div class="reply-actions">
+          <AppEmojiPicker v-model="internalContent" :input-el="replyInputRef" />
           <v-btn
+            class="ml-auto"
             size="x-small"
             variant="text"
             @click="handleCancel"
@@ -44,6 +47,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import AppEmojiPicker from './AppEmojiPicker.vue'
 
 // ============================================================
 // 数据
@@ -75,6 +79,9 @@ const emit = defineEmits(['submit', 'cancel', 'update:content'])
 
 // 内部内容状态
 const internalContent = ref(props.content)
+
+// 仅用于交给 AppEmojiPicker 读光标位置与 maxlength，本文件不碰表情逻辑
+const replyInputRef = ref(null)
 
 // ============================================================
 // 内容监听
@@ -149,6 +156,7 @@ const handleCancel = () => {
 
 .reply-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
