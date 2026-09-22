@@ -294,7 +294,7 @@
           <div class="text-body-1">确定要删除这条评论吗？</div>
         </v-card-text>
         
-        <v-card-actions class="pa-4">
+        <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             variant="text"
