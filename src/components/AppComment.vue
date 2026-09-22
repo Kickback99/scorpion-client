@@ -529,6 +529,18 @@ const scrollToMyReply = async (rootId, content) => {
   if (myReply) scrollToComment(myReply.id)
 }
 
+// 发表根评论后把新评论滚进视野：根评论倒序，新发的排在最前。
+// 用 nearest 只做最小位移 —— 输入框就在列表上方，多数时候它本来就在视野里，不必强行居中
+const scrollToMyComment = async (content) => {
+  await nextTick()
+  const myId = userStore.user?.id
+  const myComment = commentList.value.find(
+    comment => comment.createBy === myId && comment.content === content
+  )
+  // 待审 / 被拦截 / 静默丢弃的评论不在列表里，找不到就不滚
+  if (myComment) scrollToComment(myComment.id, 'nearest')
+}
+
 // 重置分页状态。不清空 commentList：保留旧内容继续渲染到新数据就绪，
 // 否则文档高度会瞬间塌到一屏高，整块闪一下、视口还会被钳到顶部
 const resetScrollState = () => {
@@ -764,6 +776,8 @@ const loadMoreChildren = async (comment) => {
 const submitComment = async () => {
   if (!commentContent.value.trim()) return
   
+  // 清空输入框前先留住内容，用于刷新后定位自己刚发的那条
+  const content = commentContent.value
   submitLoading.value = true
   try {
     // 根据评论类型设置不同的 type 值（0为文章评论，1为友链评论）
@@ -771,7 +785,7 @@ const submitComment = async () => {
 
     const res = await addCommentApi({
       articleId: props.articleId,
-      content: commentContent.value,
+      content,
       type: commentTypeValue
     })
     if (res.code === 200) {
@@ -780,6 +794,7 @@ const submitComment = async () => {
       commentContent.value = ''
       // 未命中规则的评论已自动通过，刷新即可看到（与 submitReply 一致）；命中待审的不会出现在列表里
       await loadComments()
+      await scrollToMyComment(content)
     }
   } catch (error) {
     // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
