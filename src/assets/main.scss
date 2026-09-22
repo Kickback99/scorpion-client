@@ -1,6 +1,8 @@
 html, body {
+  /* 防页面横向溢出只需 overflow-x: clip。不要加 touch-action: pan-y：
+     它的交集会一路算到视口，连带禁掉捏合缩放（Android Chrome 上整页无法放大），
+     而代码块等内部横滚容器本就不受它约束。 */
   overflow-x: clip;
-  touch-action: pan-y;
 }
 
 /* fade-slide */
