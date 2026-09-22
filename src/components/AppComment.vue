@@ -284,7 +284,7 @@
 
     <!-- ===== 删除确认对话框 ===== -->
     <v-dialog v-model="deleteDialogVisible" max-width="400" persistent>
-      <v-card>
+      <v-card class="delete-dialog-card" :style="{ '--dialog-scale': scale }">
         <v-card-title class="text-h6">
           <v-icon color="error" start>mdi-delete-outline</v-icon>
           确认删除
@@ -1129,6 +1129,29 @@ onMounted(() => {
     :deep(.v-list-item-title) {
       font-size: calc(0.875rem * var(--comment-scale)) !important;
     }
+  }
+}
+
+// ============================================================
+// 删除确认弹窗字号缩放
+// 弹窗被 teleport 到 body，量不到 --comment-scale，需单独挂 --dialog-scale
+// ============================================================
+.delete-dialog-card {
+  --dialog-scale: 1;
+
+  // 标题：确认删除
+  :deep(.v-card-title) {
+    font-size: calc(1.25rem * var(--dialog-scale)) !important;
+  }
+
+  // 正文：确定要删除这条评论吗？
+  :deep(.text-body-1) {
+    font-size: calc(1rem * var(--dialog-scale)) !important;
+  }
+
+  // 按钮：取消 / 确认删除
+  :deep(.v-btn) {
+    --v-btn-size: calc(0.875rem * var(--dialog-scale)) !important;
   }
 }
 </style>
