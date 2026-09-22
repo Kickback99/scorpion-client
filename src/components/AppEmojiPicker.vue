@@ -3,8 +3,10 @@
   <!-- ===== 表情选择面板 ===== -->
   <!-- 用 v-menu 不用 v-dialog：v-menu 的 scrollStrategy 是 reposition，不会加 v-overlay-scroll-blocked，
        避开「弹窗锁滚动导致热门文章提前收回」那个坑（见 docs/用户端评论刷新链路与视口治理.md） -->
+  <!-- close-on-content-click 关掉：面板统一由 handlePick 收起，鼠标点选与键盘回车走同一条路 -->
   <v-menu
     v-if="EMOJI_ENABLED"
+    v-model="menuOpen"
     location="bottom start"
     transition="slide-y-transition"
     :close-on-content-click="false"
@@ -28,12 +30,14 @@
 
     <v-sheet class="emoji-panel" :style="{ '--emoji-scale': scale }" elevation="4" rounded>
       <div class="emoji-grid">
-        <!-- 静态字符网格用原生 button，120 个 v-btn 的组件实例与 ripple 不值当 -->
+        <!-- 静态字符网格用原生 button，246 个 v-btn 的组件实例与 ripple 不值当；
+             mousedown.prevent 防止点选夺走输入框焦点（否则面板收起时焦点会被还到触发按钮） -->
         <button
           v-for="(emoji, i) in EMOJI_LIST"
           :key="i"
           type="button"
           class="emoji-cell"
+          @mousedown.prevent
           @click="handlePick(emoji)"
           @keydown.enter.prevent.stop="handlePick(emoji)"
         >{{ emoji }}</button>
@@ -67,6 +71,9 @@ const scale = useDialogFontScale()
 // 按下按钮那一刻记录的光标位置
 const caret = ref(null)
 
+// 面板开关：选中表情后主动收起
+const menuOpen = ref(false)
+
 // ============================================================
 // 事件处理
 // ============================================================
@@ -90,6 +97,7 @@ const handlePick = (emoji) => {
   emit('update:modelValue', props.modelValue.slice(0, at) + emoji + props.modelValue.slice(at))
 
   caret.value = at + emoji.length
+  menuOpen.value = false
   // v-model 回写 value 会把光标顶到末尾，必须等 DOM 更新后再设回去
   nextTick(() => {
     el?.focus()
