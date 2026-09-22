@@ -291,11 +291,7 @@
         </v-card-title>
         
         <v-card-text class="pt-4">
-          <div class="text-body-1 mb-2">确定要删除这条评论吗？</div>
-          <div class="text-caption text-grey">
-            <v-icon size="16" color="warning">mdi-alert</v-icon>
-            删除评论后，评论下所有回复都会被删除
-          </div>
+          <div class="text-body-1">确定要删除这条评论吗？</div>
         </v-card-text>
         
         <v-card-actions class="pa-4">
