@@ -32,6 +32,7 @@ const _groupKeys = {
     'comment.child_comment_limit',
     'comment.child_page_size',
     'comment.parent_page_size',
+    'comment.emoji_enabled',
     'nav.friend_link_enabled',
     'nav.about_enabled',
     'user.login_enabled',
@@ -133,7 +134,9 @@ export const useConfigStore = defineStore('config', {
         // 子评论分页大小
         child_page_size: 7,
         // 父评论分页大小
-        parent_page_size: 10
+        parent_page_size: 10,
+        // 评论表情显示（true开启，false禁用）
+        emoji_enabled: true
       },
 
       // 导航相关
@@ -380,6 +383,13 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     * 获取评论表情是否开启
+     */
+    getCommentEmojiEnabled(){
+      return this.getValue('comment.emoji_enabled') ?? true
+    },
+
+    /**
      * 获取我的反馈是否开启
      */
     getMyFeedbackEnabled(){
@@ -528,6 +538,7 @@ export const useConfigStore = defineStore('config', {
     childCommentLimit()       { return this.getValue('comment.child_comment_limit') ?? 3 },
     childPageSize()           { return this.getValue('comment.child_page_size') ?? 7 },
     parentPageSize()          { return this.getValue('comment.parent_page_size') ?? 10 },
+    isCommentEmojiEnabled()   { return this.getValue('comment.emoji_enabled') ?? true },
     isMyFeedbackEnabled()     { return this.getValue('profile.my_feedback_enabled') ?? true },
     isMyPublishesEnabled()    { return this.getValue('profile.my_publishes_enabled') ?? true },
     isMyCommentsEnabled()     { return this.getValue('profile.my_comments_enabled') ?? true },
