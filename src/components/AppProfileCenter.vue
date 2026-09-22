@@ -158,7 +158,7 @@
 
               <!-- 自定义副标题（时间 + 文章信息） -->
               <template #card-subtitle="{ item }">
-                发布于 {{ formatDate(item.createTime) }} · {{ item.type === '0' ? '文章' : '友链' }}
+                发布于 {{ item.createTime }}
               </template>
 
               <!-- 自定义操作按钮 -->
