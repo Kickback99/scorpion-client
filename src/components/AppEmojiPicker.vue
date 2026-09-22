@@ -5,7 +5,7 @@
        避开「弹窗锁滚动导致热门文章提前收回」那个坑（见 docs/用户端评论刷新链路与视口治理.md） -->
   <!-- close-on-content-click 关掉：面板统一由 handlePick 收起，鼠标点选与键盘回车走同一条路 -->
   <v-menu
-    v-if="EMOJI_ENABLED"
+    v-if="configStore.isCommentEmojiEnabled"
     v-model="menuOpen"
     location="bottom start"
     transition="slide-y-transition"
@@ -49,13 +49,13 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
+import { useConfigStore } from '@/store/config'
 import { EMOJI_LIST } from '@/utils/emojis.js'
 
 // ============================================================
 // 数据
 // ============================================================
-// 表情开关：后续接入配置中心时改为 configStore 的 comment.emoji_enabled
-const EMOJI_ENABLED = true
+const configStore = useConfigStore()
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
