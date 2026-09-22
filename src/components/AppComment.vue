@@ -13,6 +13,7 @@
     <v-card-text v-if="isLoggedIn">
       <v-textarea
         v-model="commentContent"
+        ref="commentInputRef"
         label="写下你的评论..."
         rows="3"
         variant="outlined"
@@ -20,8 +21,10 @@
         counter
         maxlength="500"
       ></v-textarea>
-      <div class="d-flex justify-end mt-2">
+      <div class="d-flex align-center mt-2">
+        <AppEmojiPicker v-model="commentContent" :input-el="commentInputRef" />
         <v-btn
+          class="ml-auto"
           color="primary"
           :loading="submitLoading"
           :disabled="!commentContent.trim()"
@@ -326,6 +329,7 @@ import { useConfigStore } from '@/store/config'
 import emitter from '@/utils/event-bus.js'
 
 import { getCommentsApi, addCommentApi, getChildCommentsApi, deleteCommentApi, getFriendLinkCommentApi } from '@/api/comment'
+import AppEmojiPicker from './AppEmojiPicker.vue'
 import AppReplyInput from './AppReplyInput.vue'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 
@@ -374,6 +378,8 @@ const currentPage = ref(1)
 const hasMore = ref(true)
 
 const commentContent = ref('')
+// 仅用于交给 AppEmojiPicker 读光标位置与 maxlength，本文件不碰表情逻辑
+const commentInputRef = ref(null)
 const submitLoading = ref(false)
 
 const replyTarget = ref(null)
