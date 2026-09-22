@@ -473,9 +473,10 @@ const loadChildrenUpTo = async (comment, targetCount) => {
   }
 }
 
-// 重载后恢复展开态：按展开时加载过的页数重新拉回
-const restoreExpandedChildren = async (expandedSnapshot) => {
-  const targets = commentList.value.filter(comment => {
+// 重载后恢复展开态：按展开时加载过的页数重新拉回。
+// 传数组而不是直接读 commentList：新数据要装配完才整体替换，此时它还没进 commentList
+const restoreExpandedChildren = async (expandedSnapshot, comments) => {
+  const targets = comments.filter(comment => {
     const loadedCount = expandedSnapshot.get(comment.id)
     return loadedCount > (comment.displayChildren?.length || 0)
   })
@@ -528,51 +529,69 @@ const scrollToMyReply = async (rootId, content) => {
   if (myReply) scrollToComment(myReply.id)
 }
 
-// 重置滚动状态
+// 重置分页状态。不清空 commentList：保留旧内容继续渲染到新数据就绪，
+// 否则文档高度会瞬间塌到一屏高，整块闪一下、视口还会被钳到顶部
 const resetScrollState = () => {
-  commentList.value = []
   currentPage.value = 1
   total.value = 0
   hasMore.value = true
 }
 
-// 初始化加载第一页
+// 初始化加载：按重载前已加载的页数逐页拉回
 const initLoadComments = async () => {
   if (!isCommentTypeEnabled()) return
-  
-  // 重载前记录展开态：子评论按时间正序，重载后只剩打底条数，用户看不到刚发的回复
+
+  // 重载前记录展开态：重载后只剩打底条数，用户看不到刚发的回复
   const expandedSnapshot = new Map(
     commentList.value
       .filter(comment => comment.isChildExpanded)
       .map(comment => [comment.id, comment.displayChildren?.length || 0])
   )
+  // 用户已经翻到第几页。只拉第 1 页会把列表截短（翻到第 3 页删一条就被打回第 1 页）；
+  // 换文章时由 watch 重置回 1
+  const loadedPages = currentPage.value
 
   loading.value = true
   resetScrollState()
-  
-  try {
-    let res
-    // 根据评论类型调用不同API
-    if (props.commentType === 'friendLink') {
-      res = await getFriendLinkCommentApi(currentPage.value, pageSize.value)
-    } else {
-      res = await getCommentsApi(currentPage.value, pageSize.value, props.articleId)
-    }
-    if (res.code === 200 && res.data) {
-      const newComments = res.data.items || []
-      commentList.value = newComments
-      total.value = res.data.total || 0
-      
-      hasMore.value = newComments.length >= pageSize.value && commentList.value.length < total.value
-      
-      // 初始化每个评论的子评论状态
-      commentList.value.forEach(comment => {
-        initCommentChildren(comment)
-      })
 
-      // 恢复重载前的展开态
-      await restoreExpandedChildren(expandedSnapshot)
+  try {
+    const newComments = []
+    let loadedTotal = 0
+    let lastPage = 1
+    let lastPageFull = false
+    let anyPageLoaded = false
+
+    for (let pageNum = 1; pageNum <= loadedPages; pageNum++) {
+      // 根据评论类型调用不同API
+      const res = props.commentType === 'friendLink'
+        ? await getFriendLinkCommentApi(pageNum, pageSize.value)
+        : await getCommentsApi(pageNum, pageSize.value, props.articleId)
+      if (res.code !== 200 || !res.data) break
+
+      anyPageLoaded = true
+      const items = res.data.items || []
+      newComments.push(...items)
+      loadedTotal = res.data.total || 0
+      lastPage = pageNum
+      lastPageFull = items.length >= pageSize.value
+      // 这一页没满说明已经到底，或已凑够总数，都不用再往下翻
+      if (!lastPageFull || newComments.length >= loadedTotal) break
     }
+
+    // 一页都没成功（接口异常）：保留旧列表，不把页面清空
+    if (!anyPageLoaded) return
+
+    // 先在新数组上装配好再一次性替换：中途不让 DOM 看到「打底态」，
+    // 只有一次 patch，避免先塌回打底再展开的来回抖
+    newComments.forEach(comment => {
+      initCommentChildren(comment)
+    })
+    await restoreExpandedChildren(expandedSnapshot, newComments)
+
+    commentList.value = newComments
+    total.value = loadedTotal
+    currentPage.value = lastPage
+    hasMore.value = lastPageFull && newComments.length < loadedTotal
   } catch (error) {
     console.error('加载评论失败:', error)
     window.$snackbar?.error('加载评论失败')
@@ -930,6 +949,10 @@ const confirmDelete = async () => {
 // ============================================================
 watch(() => props.articleId, () => {
   if (isCommentTypeEnabled()) {
+    // 换文章必须显式清空并回第 1 页：重载会按 currentPage 拉回已加载的页数，
+    // 不清会把上一篇的评论和页数带过来
+    commentList.value = []
+    currentPage.value = 1
     loadComments()
   }
 })
