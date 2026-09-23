@@ -324,6 +324,12 @@ export function enhanceHighlightedHtml(html, language) {
   const hasJsSection = html.includes(JS_SUBLANGUAGE)
   // 独立的 ```css / ```scss 块没有 .language-css 容器，整块就是 CSS
   const hasCssSection = CSS_LANGUAGES.has(language) || html.includes(CSS_SUBLANGUAGE)
+  // hljs 一个 token 都没产出 → 这块内容它没认出来（典型是 ```bash 里贴的 git 输出文本，
+  // bash 语法里没有能匹配 `3421957 (HEAD -> master) init` 的规则）。
+  // 此时再做任何补色，结果都是「整块全黑、只有括号有色」，比不补更难看，直接原样返回。
+  const hasNativeToken = html.includes('hljs-')
+  if (!hasNativeToken) return html
+
   // 快速短路：没有要补的标点、没有属性名要拆、也没有 CSS 段要分派角色，直接原样返回
   if (!hasCssSection && !/[{}()\[\]=|&]/.test(html) && !html.includes('hljs-attr')) return html
 
