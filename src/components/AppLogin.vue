@@ -454,6 +454,8 @@ const handleLogin = async () => {
 
             // 验证码（账号锁定后出现）：提交前统一校验 + 后端验证
             if (showLoginCaptcha.value) {
+                // 验证码是异步 chunk，未挂载完成时 ref 仍为 null，直接调用会抛原始 TypeError
+                if (!loginCaptchaRef.value) throw new Error('验证码加载中，请稍后重试')
                 loginModel.captchaVerifyToken = await loginCaptchaRef.value.verify()
             }
             // 登录请求
@@ -493,6 +495,9 @@ const handleLogin = async () => {
         // 账号锁定 → 需要验证码：内联弹出验证码组件，用户解完后重新提交
         if (error && error.code === 232) {
             showLoginCaptcha.value = true
+        } else if (error instanceof Error && !error.isAxiosError) {
+            // 客户端侧错误（未完成验证码 / 未填答案）不进拦截器，需在此补提示
+            window.$snackbar?.warning(error.message)
         }
     } finally {
         loading.value = false
@@ -536,6 +541,8 @@ const handleRegister = async () => {
         if (valid) {
             // 验证码（client_enabled 开启时）：提交前统一校验 + 后端验证
             if (configStore.getClientCaptchaEnabled()) {
+                // 验证码是异步 chunk，未挂载完成时 ref 仍为 null，直接调用会抛原始 TypeError
+                if (!registerCaptchaRef.value) throw new Error('验证码加载中，请稍后重试')
                 registerModel.captchaVerifyToken = await registerCaptchaRef.value.verify()
             }
             console.log('注册信息:', registerModel)
@@ -545,6 +552,8 @@ const handleRegister = async () => {
         }
     } catch (error) {
         console.error('注册失败:', error)
+        // 客户端侧错误（未完成验证码 / 未填答案）不进拦截器，需在此补提示
+        if (error instanceof Error && !error.isAxiosError) window.$snackbar?.warning(error.message)
     } finally {
         registerLoading.value = false
     }
