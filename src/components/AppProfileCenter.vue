@@ -46,31 +46,7 @@
 
           <!-- ===== 我的反馈 Tab ===== -->
           <v-tabs-window-item v-if="configStore.isMyFeedbackEnabled" value="feedback">
-            <v-sheet class="pa-6">
-              <v-data-table
-                :headers="feedbackHeaders"
-                :items="feedbackList"
-                :loading="feedbackLoading"
-                hover
-              >
-                <template v-slot:item.status="{ item }">
-                  <v-chip :color="getStatusColor(item.status)" size="small">
-                    {{ item.status }}
-                  </v-chip>
-                </template>
-                <template v-slot:item.createdAt="{ item }">
-                  {{ formatDate(item.createdAt) }}
-                </template>
-                <template v-slot:no-data>
-                  <v-empty-state
-                    class="custom-empty-state"
-                    headline="暂无反馈"
-                    text="你还没有提交任何反馈"
-                    icon="mdi-message-text-outline"
-                  ></v-empty-state>
-                </template>
-              </v-data-table>
-            </v-sheet>
+            <AppFeedbackList />
           </v-tabs-window-item>
 
           <!-- ===== 我的发布 Tab ===== -->
@@ -236,14 +212,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { useDisplay } from 'vuetify'
 import { watch } from 'vue'
 import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentApi } from '@/api/user'
-import AppContentList from './AppContentList.vue'
 import { articleDetailApi, articleListApi } from '@/api/article'
 import { useConfigStore } from '@/store/config.js'
 import AppProfile from './AppProfile.vue'
+
+// 重型 tab 内容按需加载：两者都含 VDataTable 家族（AppContentList 自身 + 反馈表格），
+// 静态引入会把整个家族拖进本路由首屏，耽误默认 tab「个人资料」的渲染
+const AppContentList = defineAsyncComponent(() => import('./AppContentList.vue'))
+const AppFeedbackList = defineAsyncComponent(() => import('./AppFeedbackList.vue'))
 
 const configStore = useConfigStore()
 
@@ -277,16 +257,6 @@ const commentHeaders = [
 // Tab 值
 const tab = ref('profile')
 
-// 反馈数据
-const feedbackHeaders = [
-  { title: '标题', key: 'title', align: 'start' },
-  { title: '内容', key: 'content' },
-  { title: '状态', key: 'status' },
-  { title: '提交时间', key: 'createdAt' }
-]
-const feedbackList = ref([])
-const feedbackLoading = ref(false)
-
 // 发布数据
 const postHeaders = [
   { title: '标题', key: 'title', align: 'start', width: '220px' },
@@ -306,39 +276,9 @@ const favoriteHeaders = [
 ]
 
 // ============================================================
-// 工具方法
-// ============================================================
-const getStatusColor = (status) => {
-  const colors = {
-    '待处理': 'warning',
-    '处理中': 'info',
-    '已解决': 'success',
-    '已关闭': 'grey'
-  }
-  return colors[status] || 'default'
-}
-
-const formatDate = (date) => {
-  if (!date) return ''
-  return new Date(date).toLocaleString('zh-CN')
-}
-
-// ============================================================
 // Tab 数据加载
 // ============================================================
 // TODO: 加载各 tab 数据的方法
-const loadFeedback = async () => {
-  feedbackLoading.value = true
-  try {
-    // TODO: 调用接口获取数据
-    feedbackList.value = [
-      { id: 1, title: '建议增加Python课程', content: '希望增加更多Python实战内容', status: '待处理', createdAt: '2024-01-15' }
-    ]
-  } finally {
-    feedbackLoading.value = false
-  }
-}
-
 /* const loadPosts = async () => {
   postLoading.value = true
   try {
@@ -362,9 +302,6 @@ const favoriteListRef = ref(null)
 // 监听 tab 切换，加载数据
 watch(tab, (newTab) => {
   switch (newTab) {
-    case 'feedback':
-      if (feedbackList.value.length === 0) loadFeedback()
-      break
     case 'posts':
       if (configStore.isMyPublishesEnabled) {
         postListRef.value?.loadData()
