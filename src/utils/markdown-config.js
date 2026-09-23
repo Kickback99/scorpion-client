@@ -53,12 +53,40 @@ export async function createMarkdownPreview(theme = 'github') {
   } else {
     const [{ default: githubTheme }, { default: hljs }, { enhanceHighlightedHtml }] = await Promise.all([
       import('@kangc/v-md-editor/lib/theme/github.js'),
-      import('highlight.js'),
+      // 只取 core，不取全量入口 —— 全量入口会把 386 种语言一起打进 chunk
+      import('highlight.js/lib/core'),
       // hljs 高亮结果的补充处理（补 class / 拆 token）单独成文件，并且放在这里
       // 动态加载 —— 只有 github 主题用得上，本文件又被 AppSidebar 静态引用，
       // 静态 import 会把它拖进首屏包
       import('./highlight-enhancer.js'),
     ]);
+    // 按需注册语言，以后用到新语言在表里加一行即可。
+    // 每个都写字面量 import，构建才能给每种语言拆出独立 chunk。
+    // 前三个是硬依赖不能删：下面把 vue 借道 xml 高亮，而 xml 的 <script> / <style> 段
+    // 由 subLanguage 引用 javascript / css（markdown 语言也引了 xml），
+    // 缺任何一个对应段落会静默掉色 —— hljs 对未注册的 subLanguage 是原样输出、不报错
+    const hljsLanguages = {
+      xml: () => import('highlight.js/lib/languages/xml'),
+      javascript: () => import('highlight.js/lib/languages/javascript'),
+      css: () => import('highlight.js/lib/languages/css'),
+      typescript: () => import('highlight.js/lib/languages/typescript'),
+      scss: () => import('highlight.js/lib/languages/scss'),
+      json: () => import('highlight.js/lib/languages/json'),
+      yaml: () => import('highlight.js/lib/languages/yaml'),
+      markdown: () => import('highlight.js/lib/languages/markdown'),
+      bash: () => import('highlight.js/lib/languages/bash'),
+      java: () => import('highlight.js/lib/languages/java'),
+      sql: () => import('highlight.js/lib/languages/sql'),
+      nginx: () => import('highlight.js/lib/languages/nginx'),
+      python: () => import('highlight.js/lib/languages/python'),
+      diff: () => import('highlight.js/lib/languages/diff'),
+    }
+    // 重复注册只是覆盖，主题切换时会再走一遍，无需去重
+    await Promise.all(
+      Object.entries(hljsLanguages).map(async ([name, load]) => {
+        hljs.registerLanguage(name, (await load()).default)
+      })
+    );
     await import('@kangc/v-md-editor/lib/theme/style/github.css');
     // 包一层 hljs：只改写 highlight() 的返回值，补上 hljs 自己不发 class 的那些 token。
     // 用 Object.create 而非展开，保证 getLanguage / registerLanguage 等方法照常可用
