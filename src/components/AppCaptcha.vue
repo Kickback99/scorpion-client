@@ -58,7 +58,10 @@
                 <v-btn v-if="backgroundLoaded" icon variant="text" size="x-small" color="primary" :class="['captcha-click-refresh', 'app-icon-btn']" @click="generate">
                     <v-icon>mdi-refresh</v-icon>
                 </v-btn>
-                <div v-if="backgroundLoaded" class="captcha-click-hint text-caption text-grey">请在图中依次点击提示文字（{{ clickPoints.length }}/{{ CLICK_COUNT }}）</div>
+                <div v-if="backgroundLoaded" class="captcha-click-hint text-caption text-grey">
+                    <template v-if="verifying">校验中...</template>
+                    <template v-else>请在图中依次点击提示文字（{{ clickPoints.length }}/{{ CLICK_COUNT }}）</template>
+                </div>
             </div>
         </template>
 
@@ -100,7 +103,7 @@
                 <div v-if="backgroundLoaded" class="captcha-slider-track">
                     <div class="captcha-slider-fill" :style="{ width: fillWidth + 'px' }"></div>
                     <span class="captcha-slider-hint" :class="{ 'is-success': verified }">
-                        {{ verified ? '验证成功!' : (isDragging ? '' : '按住滑块，拖动到最右侧') }}
+                        {{ verified ? '验证成功!' : (verifying ? '校验中...' : (isDragging ? '' : '按住滑块，拖动到最右侧')) }}
                     </span>
                     <div class="captcha-slider-btn" :style="{ left: btnLeft + 'px' }" @pointerdown="onPointerDown">
                         <v-icon>mdi-arrow-right</v-icon>
