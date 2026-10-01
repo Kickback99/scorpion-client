@@ -15,13 +15,13 @@
 
       <v-list-item-title class="skeleton-title-row">
         <div class="skeleton-title-area">
-          <!-- xs / md+：2 行标题（xs 下 AppArticleItem 预留 2 行以保证卡片恒高） -->
+          <!-- xs / md+：2 行标题骨（取视口上限：xs 真卡片标题盒定死 2 行，md+ 的 line-clamp 也是 2 行） -->
           <v-skeleton-loader
             v-if="!display.sm.value"
             type="heading, heading"
             class="skeleton-title"
           />
-          <!-- sm：1 行标题 -->
+          <!-- sm：1 行标题骨（真卡片单行截断） -->
           <v-skeleton-loader
             v-else
             type="heading"
@@ -32,9 +32,9 @@
         <v-skeleton-loader v-if="!display.xs.value" type="chip" class="skeleton-chip" />
       </v-list-item-title>
 
-      <!-- PC: 2-line description -->
+      <!-- PC: 3-line description（对齐 AppArticleItem 简介的 line-clamp: 3） -->
       <v-list-item-subtitle v-if="display.mdAndUp.value" class="skeleton-desc">
-        <v-skeleton-loader type="sentences" />
+        <v-skeleton-loader type="paragraph" />
       </v-list-item-subtitle>
 
       <!-- Metadata row -->
@@ -137,7 +137,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   padding: calc((var(--article-title-lh) - var(--article-title-fs)) / 2) 0;
 }
 
-// Only the second heading bone (PC 2-line title) constrained to 75%
+// Only the second heading bone (xs / md+ 2-line title) constrained to 75%
 .skeleton-title :deep(.v-skeleton-loader__heading:nth-child(2)) {
   max-width: 75%;
 }
@@ -175,6 +175,11 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 // ============================================================
 .skeleton-desc {
   margin-top: 10px;
+
+  /* 12px 骨 + 上下各 2px = 16px 行距，3 行合计 48px 与真简介等高 */
+  :deep(.v-skeleton-loader__text) {
+    margin: 2px 0;
+  }
 }
 
 // ============================================================
