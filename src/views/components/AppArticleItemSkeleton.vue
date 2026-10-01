@@ -98,7 +98,7 @@ const titleType = computed(() => {
 
   :deep(.v-skeleton-loader__heading) {
     margin: 0; /* 行间距交给 row-gap */
-    height: var(--article-title-fs); /* 骨高 = 字形高 = 标题字号 */
+    height: calc(var(--article-title-fs) + 2px); /* 骨高 = 字号 + 加厚量（xs +2、≥600px 见下） */
   }
 
   :deep(.v-skeleton-loader__text) {
@@ -130,12 +130,28 @@ const titleType = computed(() => {
 }
 
 // Ensure skeleton loader fills title area
-// 骨高 = 字号、骨间距 = 行高 − 字号、上下留白各一半：两行骨合计正好等于真卡片标题盒高
+// 骨高 = 字号 + 加厚量、骨距 = 上留白 = 行高 − 字号 − 加厚量、下留白 0：两行骨合计仍等于真卡片标题盒高
 // （不能给 .skeleton-title 加 flex-direction——骨自带 flex 1 1 100%，竖排会被压成 0 高）
 .skeleton-title {
   width: 100%;
-  row-gap: calc(var(--article-title-lh) - var(--article-title-fs));
-  padding: calc((var(--article-title-lh) - var(--article-title-fs)) / 2) 0;
+  row-gap: calc(var(--article-title-lh) - var(--article-title-fs) - 2px);
+  padding: calc(var(--article-title-lh) - var(--article-title-fs) - 2px) 0 0;
+  /* 墨迹顶比行盒中心高 0.5px（Inter 升部比中文字形高 1px）：整块上移，骨才贴住墨迹 */
+  position: relative;
+  top: -0.5px;
+}
+
+/* sm 及以上（≥600px）：加厚量 2 → 4px（骨 18 → 22），与简介骨（14px）、日期骨（16px）拉开层次；
+   xs 行距只有 4px，加到 2px 到顶，再厚两行骨会粘在一起 */
+@media (min-width: 600px) {
+  .skeleton-title {
+    row-gap: calc(var(--article-title-lh) - var(--article-title-fs) - 4px);
+    padding: calc(var(--article-title-lh) - var(--article-title-fs) - 4px) 0 0;
+  }
+
+  .article-skeleton :deep(.v-skeleton-loader__heading) {
+    height: calc(var(--article-title-fs) + 4px);
+  }
 }
 
 // 第二根标题骨（xs 固定 2 行、md+ 旋钮设为 2 时才有）收窄到 75%
@@ -177,9 +193,10 @@ const titleType = computed(() => {
 .skeleton-desc {
   margin-top: 10px;
 
-  /* 12px 骨 + 上下各 2px = 16px 行距，3 行合计 48px 与真简介等高 */
+  /* 骨高 = 字号（14px，与标题骨同规则）：配上下各 1px = 真简介的 16px 行距，3 行 48px 等高 */
   :deep(.v-skeleton-loader__text) {
-    margin: 2px 0;
+    height: 14px;
+    margin: 1px 0;
   }
 }
 
