@@ -2,33 +2,35 @@
     <div class="app-captcha" :class="{ 'is-verified': verified }">
         <!-- ===== 文本验证码（算术/中文/英文/数字/混合/GIF） ===== -->
         <template v-if="isTextType">
-            <div class="d-flex align-center mb-1">
-                <img
-                    v-if="vo.backgroundImage"
-                    :src="vo.backgroundImage"
-                    class="captcha-text-img"
-                    alt="验证码"
-                    title="点击刷新"
-                    @load="backgroundLoaded = true"
-                    @click="generate"
-                >
-                <v-btn v-if="backgroundLoaded" icon variant="text" size="small" color="primary" class="app-icon-btn" @click="generate">
-                    <v-icon>mdi-refresh</v-icon>
-                </v-btn>
+            <!-- 输入框占剩余宽度，验证码图片 + 刷新按钮靠右；容器过窄时改回图片在上的上下布局 -->
+            <div class="captcha-text-row d-flex" :class="{ 'has-image': backgroundLoaded }">
+                <v-text-field
+                    color="primary"
+                    variant="outlined"
+                    density="compact"
+                    ref="answerFieldRef"
+                    v-model="answer"
+                    label="请输入验证码"
+                    :rules="answerRules"
+                    :maxlength="answerMaxLength"
+                    prepend-inner-icon="mdi-shield-check"
+                    :loading="verifying"
+                ></v-text-field>
+                <div class="captcha-text-aside d-flex align-center">
+                    <img
+                        v-if="vo.backgroundImage"
+                        :src="vo.backgroundImage"
+                        class="captcha-text-img"
+                        alt="验证码"
+                        title="点击刷新"
+                        @load="backgroundLoaded = true"
+                        @click="generate"
+                    >
+                    <v-btn v-if="backgroundLoaded" icon variant="text" size="small" color="primary" class="app-icon-btn" @click="generate">
+                        <v-icon>mdi-refresh</v-icon>
+                    </v-btn>
+                </div>
             </div>
-            <v-text-field
-                color="primary"
-                variant="outlined"
-                density="compact"
-                ref="answerFieldRef"
-                v-model="answer"
-                label="请输入验证码"
-                :rules="answerRules"
-                :maxlength="answerMaxLength"
-                prepend-inner-icon="mdi-shield-check"
-                :class="{ 'mb-2 mt-4': backgroundLoaded }"
-                :loading="verifying"
-            ></v-text-field>
         </template>
 
         <!-- ===== 点选验证码 ===== -->
@@ -313,7 +315,8 @@ const verify = async () => {
         verifying.value = false
     }
 }
-defineExpose({ verify })
+// 对外暴露：isTextType 供宿主判断文本类（下边距等样式需按类型区分）
+defineExpose({ verify, isTextType })
 
 const handleSliderVerify = async () => {
     verifying.value = true
@@ -372,6 +375,8 @@ const handleClickVerify = async () => {
 .app-captcha {
     position: relative;
     width: 100%;
+    // 作为容器查询上下文：文本类的上下/左右布局按组件自身宽度切换，而非视口
+    container-type: inline-size;
 
     // 加载态：主题色背景 + spinner（覆盖在行为类验证码背景上，占位宽高比 600/240）
     .captcha-loading {
@@ -386,13 +391,57 @@ const handleClickVerify = async () => {
     }
 
     // ============================================================
-    // 文本验证码
+    // 文本验证码（左输入框 / 右图片 + 刷新）
     // ============================================================
-    .captcha-text-img {
-        height: 48px;
-        cursor: pointer;
-        border: 1px solid var(--v-border-color, #e0e0e0);
-        border-radius: 4px;
+    .captcha-text-row {
+        gap: 8px;
+
+        // 不设上边距（同其它输入框，间距由上一字段的下边距提供），下方沿用 mb-2
+        &.has-image {
+            margin-bottom: 8px;
+        }
+
+        // .v-input 自带 flex:1 1 auto，占满剩余宽度；min-width 归零保证能被压缩
+        .v-input {
+            min-width: 0;
+        }
+
+        // 图片 + 刷新按钮整体不压缩，剩余宽度全给输入框
+        .captcha-text-aside {
+            flex: 0 0 auto;
+            // 顶对齐（而非行内居中），使图片上下边与输入框边框齐平
+            align-self: flex-start;
+        }
+
+        // 高度同 compact 密度输入框（40px），两者上下边正好对齐
+        .captcha-text-img {
+            height: 40px;
+            cursor: pointer;
+            border: 1px solid var(--v-border-color, #e0e0e0);
+            border-radius: 4px;
+        }
+    }
+
+    // 容器过窄（输入框剩不下多少宽度）时，改回图片在上、输入框整宽的上下布局，
+    // 间距复刻改版前旧版式：图片与输入框 16px
+    @container (max-width: 299.98px) {
+        .captcha-text-row {
+            flex-direction: column;
+            gap: 16px;
+
+            // 堆叠后不再受输入框高度牵制，恢复旧版式的 48px
+            .captcha-text-img {
+                height: 48px;
+            }
+
+            .v-input {
+                order: 2;
+            }
+
+            .captcha-text-aside {
+                order: 1;
+            }
+        }
     }
 
     // ============================================================
