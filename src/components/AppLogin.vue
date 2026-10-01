@@ -60,7 +60,7 @@
                                 </v-text-field>
 
                                 <!-- 验证码（账号锁定后出现） -->
-                                <AppCaptcha v-if="showLoginCaptcha" ref="loginCaptchaRef" :type="loginCaptchaType" class="mb-8" />
+                                <AppCaptcha v-if="showLoginCaptcha" ref="loginCaptchaRef" :type="loginCaptchaType" :class="loginCaptchaIsText ? 'mb-4' : 'mb-8'" />
 
                                 <!-- 条款与协议 -->
                                 <!-- <v-checkbox
@@ -317,6 +317,8 @@ const loginCaptchaType = computed(() => configStore.getCaptchaType('login'))
 const registerCaptchaType = computed(() => configStore.getCaptchaType('register'))
 const loginCaptchaRef = ref(null)
 const registerCaptchaRef = ref(null)
+// 登录验证码是否为文本类（子组件未挂载时按非文本类处理），类型判定复用 AppCaptcha 暴露的 isTextType
+const loginCaptchaIsText = computed(() => loginCaptchaRef.value?.isTextType ?? false)
 
 const dialogVisible = ref(false)
 
