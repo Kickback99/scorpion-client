@@ -38,15 +38,17 @@
 <script setup>
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useConfigStore } from '@/store/config'
 
 // ============================================================
 // 数据
 // ============================================================
 const display = useDisplay()
+const configStore = useConfigStore()
 
-// 标题骨行数：唯一旋钮（1 = 单行标题骨，默认；2 = 双行标题骨）。只管 md+，xs/sm 跟真卡片走
+// 标题骨行数：走配置项 article_list.title_bone_count（1 = 单行标题骨，默认；2 = 双行标题骨）。只管 md+，xs/sm 跟真卡片走
 // 押 1 行与「单行标题」的卡逐像素对齐，押 2 行与「双行标题」的卡对齐，按站点标题实际长短选
-const titleBones = 1
+const titleBones = computed(() => configStore.titleBoneCount)
 
 // ============================================================
 // 计算属性
@@ -58,7 +60,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 const titleType = computed(() => {
   if (display.xs.value) return 'heading, heading'
   if (display.sm.value) return 'heading'
-  return titleBones === 2 ? 'heading, heading' : 'heading'
+  return titleBones.value === 2 ? 'heading, heading' : 'heading'
 })
 </script>
 
