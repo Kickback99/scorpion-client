@@ -51,6 +51,7 @@ const _groupKeys = {
     'article_list.load_mode',
     'article_list.scroll_page_size',
     'article_list.pagination_page_size',
+    'article_list.title_bone_count',
     'notice.enabled',
     'notice.sse_enabled',
     'notice.dismissed_level'
@@ -178,7 +179,8 @@ export const useConfigStore = defineStore('config', {
         comment_enabled: true,
         load_mode: 'scroll',
         scroll_page_size: 10,
-        pagination_page_size: 7
+        pagination_page_size: 7,
+        title_bone_count: 1
       },
     
       // 公告相关
@@ -489,6 +491,13 @@ export const useConfigStore = defineStore('config', {
     },
 
     /**
+     * 获取骨架屏标题占位行数
+     */
+    getListTitleBoneCount(){
+      return this.getValue('article_list.title_bone_count') ?? 1
+    },
+
+    /**
      *
      * 获取 websocket 连接
      */
@@ -553,6 +562,7 @@ export const useConfigStore = defineStore('config', {
     currentListLoadMode()     { return this.getValue('article_list.load_mode') === 'scroll' ? 'scroll' : 'pagination' },
     scrollPageSize()          { return this.getValue('article_list.scroll_page_size') ?? 10 },
     paginationPageSize()      { return this.getValue('article_list.pagination_page_size') ?? 7 },
+    titleBoneCount()          { return this.getValue('article_list.title_bone_count') ?? 1 },
     isWebsocketEnabled()      { return this.getValue('websocket.enabled') ?? true },
     isWebsocketBackendEnabled()      { return this.getValue('websocket.backend_enabled') === true },
     isNoticeEnabled()         { return this.getValue('notice.enabled') ?? true },
