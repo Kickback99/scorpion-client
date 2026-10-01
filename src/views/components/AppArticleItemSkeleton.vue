@@ -15,18 +15,8 @@
 
       <v-list-item-title class="skeleton-title-row">
         <div class="skeleton-title-area">
-          <!-- xs / md+：2 行标题骨（取视口上限：xs 真卡片标题盒定死 2 行，md+ 的 line-clamp 也是 2 行） -->
-          <v-skeleton-loader
-            v-if="!display.sm.value"
-            type="heading, heading"
-            class="skeleton-title"
-          />
-          <!-- sm：1 行标题骨（真卡片单行截断） -->
-          <v-skeleton-loader
-            v-else
-            type="heading"
-            class="skeleton-title"
-          />
+          <!-- 骨行数见 titleType：xs 固定 2 行、sm 固定 1 行，md+ 跟 titleBones 旋钮 -->
+          <v-skeleton-loader :type="titleType" class="skeleton-title" />
         </div>
         <!-- xs：AppArticleItem 隐藏分类 chip -->
         <v-skeleton-loader v-if="!display.xs.value" type="chip" class="skeleton-chip" />
@@ -54,11 +44,22 @@ import { useDisplay } from 'vuetify'
 // ============================================================
 const display = useDisplay()
 
+// 标题骨行数：唯一旋钮（1 = 单行标题骨，默认；2 = 双行标题骨）。只管 md+，xs/sm 跟真卡片走
+// 押 1 行与「单行标题」的卡逐像素对齐，押 2 行与「双行标题」的卡对齐，按站点标题实际长短选
+const titleBones = 1
+
 // ============================================================
 // 计算属性
 // ============================================================
 const coverWidth = computed(() => (display.xs.value ? 110 : display.smAndDown.value ? 150 : 250))
 const coverHeight = computed(() => (coverWidth.value * 9) / 16)
+
+// xs 标题盒被真卡片定死 2 行、sm 单行截断，这两档不跟旋钮
+const titleType = computed(() => {
+  if (display.xs.value) return 'heading, heading'
+  if (display.sm.value) return 'heading'
+  return titleBones === 2 ? 'heading, heading' : 'heading'
+})
 </script>
 
 <style scoped lang="scss">
@@ -137,7 +138,7 @@ const coverHeight = computed(() => (coverWidth.value * 9) / 16)
   padding: calc((var(--article-title-lh) - var(--article-title-fs)) / 2) 0;
 }
 
-// Only the second heading bone (xs / md+ 2-line title) constrained to 75%
+// 第二根标题骨（xs 固定 2 行、md+ 旋钮设为 2 时才有）收窄到 75%
 .skeleton-title :deep(.v-skeleton-loader__heading:nth-child(2)) {
   max-width: 75%;
 }
