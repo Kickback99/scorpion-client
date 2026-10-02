@@ -10,7 +10,7 @@
                   :alt="title"
                   class="cover-image lazy-img"
                   :width="display.xs.value ? 110 : display.smAndDown.value ? 150 : 250"
-                  :aspect-ratio="display.xs.value ? undefined : 16/9"
+                  :aspect-ratio="display.smAndDown.value ? undefined : 16/9"
                   cover
                 />
 
@@ -47,7 +47,7 @@
                   </v-chip>
                 </v-list-item-title>
   
-                <v-list-item-subtitle class="description d-none d-md-block">
+                <v-list-item-subtitle class="description d-none d-sm-block">
                   <p class="ma-0 truncate-multi">{{ description }}</p>
                 </v-list-item-subtitle>
   
@@ -187,11 +187,22 @@ const themeStore = useThemeStore()
   /* background: coral; */
 }
 
-/* 描述块只在 md+ 可见（p 上是 d-none d-md-block），
-   10px 间距因此也只在 md+ 占位，xs/sm 下不再白留这段死空间 */
-@media (min-width: 960px) {
+/* 描述块只在 sm+ 可见（p 上是 d-none d-sm-block），
+   这段间距因此也只在 sm+ 占位，xs 下不再白留死空间。
+   取 3px 而非 10px：标题行盒被分类 chip 撑到 29.2px（h4 只有 26px）、h4 又被
+   --article-title-lift 上移 4px，这两截空隙都叠在简介上方，10px 会把「标题→简介」
+   的墨迹间距推到 22.5~25.7px（两站实测只要 16~18.4px） */
+@media (min-width: 600px) {
   :deep(.v-list-item__content) .description {
-    margin-top: 10px;
+    margin-top: 3px;
+  }
+}
+
+/* sm（600–959.98px）这一档是内容驱动（封面跟随文字栏高）：简介块定高 2 行，
+   简介不满 2 行的卡才不会单独变矮，卡片才能恒高（同 xs 档标题盒定高的思路） */
+@media (min-width: 600px) and (max-width: 959.98px) {
+  :deep(.v-list-item__content) .description {
+    height: calc(var(--article-desc-lh) * 2);
   }
 }
 
@@ -274,17 +285,11 @@ const themeStore = useThemeStore()
 }
 
 /* ============================================================
-   xs（<600px）：卡片恒高
+   xs / sm（<960px）：图片高度跟随文字栏
    ============================================================
-   1) 标题预留 2 行——1 行标题的卡片也占 2 行的高度
-   2) 图片去掉固定宽高比（见模板 :aspect-ratio），高度跟随文字栏
-   两者配合保证：不论标题是否换行卡片高度一致，且图片与文字栏上下两端对齐 */
-@media (max-width: 599.98px) {
-  /* 标题盒定高 2 行（= 2 × lh）：1 行标题也占 2 行高 → 卡片恒高，且不会切到降部 */
-  .title-category h4 {
-    height: calc(var(--article-title-lh) * 2);
-  }
-
+   图片去掉固定宽高比（见模板 :aspect-ratio）后拉伸到与文字栏等高，
+   保证图片与文字栏上下两端对齐；md+ 由 16:9 封面驱动，不需要这条 */
+@media (max-width: 959.98px) {
   :deep(.v-list-item__prepend) {
     align-self: stretch;
   }
@@ -292,6 +297,18 @@ const themeStore = useThemeStore()
   .cover-container,
   .cover-image {
     height: 100%;
+  }
+}
+
+/* ============================================================
+   xs（<600px）：卡片恒高
+   ============================================================
+   标题预留 2 行——1 行标题的卡片也占 2 行的高度，配合上面的图片拉伸，
+   保证不论标题是否换行卡片高度一致 */
+@media (max-width: 599.98px) {
+  /* 标题盒定高 2 行（= 2 × lh）：1 行标题也占 2 行高 → 卡片恒高，且不会切到降部 */
+  .title-category h4 {
+    height: calc(var(--article-title-lh) * 2);
   }
 
   /* 日期行：盒高 32px（与骨架屏 .skeleton-meta 同值），在其内部把上下重分配为
