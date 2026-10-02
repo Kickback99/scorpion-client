@@ -68,8 +68,8 @@ const dialogMaxWidth = computed(() => display.mobile.value ? '92%' : 600)
 
 // 骨架屏：Markdown 是否加载完成
 const markdownReady = ref(false)
-// 骨架屏内容行组数：移动端 4 组，PC 6 组
-const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6))
+// 骨架屏内容行组数：移动端 2 组，PC 3 组
+const skeletonLineGroups = computed(() => (display.mobile.value ? 2 : 3))
 // 骨架屏额外停留时长候选（秒）：条款/协议为本地常量、加载较快，
 // 内容就绪后随机取一个元素作为停留时长，让骨架屏展示时长略有变化、不显呆板
 const SKELETON_DELAY_SECONDS = [1, 1.5, 2]
