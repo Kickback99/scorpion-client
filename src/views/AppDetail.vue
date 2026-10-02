@@ -117,9 +117,9 @@ const isFavorite = ref(false);
 const favoriteLoading = ref(false);
 // 骨架屏：加载状态
 const isLoading = ref(true);
-// 骨架屏内容行组数：移动端 4 组，PC 6 组
+// 骨架屏内容行组数：移动端 2 组，PC 3 组
 const display = useDisplay();
-const skeletonLineGroups = computed(() => (display.mobile.value ? 4 : 6));
+const skeletonLineGroups = computed(() => (display.mobile.value ? 2 : 3));
 // xs（< 600px）：标题缩一档的开关，尺寸见样式区 .detail-xs
 const { xs } = useDisplay();
 // 文章详情是否真正加载完毕：isLoading=false 且已拿到文章数据（覆盖路由切换中 / 文章不存在等路径）
@@ -347,6 +347,9 @@ watch(() => isLoggedIn.value, () => {
 /* 骨架屏：内容区 padding 对齐真实正文（桌面 32px / xs 16px），与上方标题规则取同一档值 */
 .detail-skeleton-content {
   padding: 8px 32px 16px 32px;
+  /* 骨数减半后卡片只剩约 200px，左栏会比右侧栏矮一大截、加载完成时又突然长出来。
+     撑到首屏底部（减去顶栏 64px、面包屑与卡片标题），让加载前后的首屏高度基本一致 */
+  min-height: calc(100vh - 250px);
 }
 
 .detail-xs .detail-skeleton-content {
