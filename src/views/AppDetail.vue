@@ -303,7 +303,7 @@ watch(() => isLoggedIn.value, () => {
 /* ============================================================
    标题
    ============================================================ */
-/* 文章标题：用 h1 拿语义（全页唯一主标题，故正文须从 ## 起），字号字重显式定（32px/44px、600），不跟 Vuetify 的 h1 默认值（40px、700）；
+/* 文章标题：用 h1 拿语义（全页唯一主标题，故正文须从 ## 起），字号字重显式定（28px/38px、600），不跟 Vuetify 的 h1 默认值（40px、700）；
  * clamp 限 2 行，须放在无 padding 的内层元素上，否则会被 v-card-title 的 overflow 连底部 padding 一起裁掉。 */
 .detail-title-text {
   display: -webkit-box;
@@ -312,9 +312,9 @@ watch(() => isLoggedIn.value, () => {
   line-clamp: 2;
   overflow: hidden;
   white-space: normal;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 600;
-  line-height: 44px;
+  line-height: 38px;
 }
 
 /* 标题 / 副标题左右内边距对齐正文：正文根容器是 32px（xs 档 16px，见 markdown-preview.scss），
@@ -334,14 +334,14 @@ watch(() => isLoggedIn.value, () => {
 /* ============================================================
    骨架屏
    ============================================================ */
-/* 骨架屏：标题骨对齐标题单行行高（桌面 44px / xs 34px），全宽 */
+/* 骨架屏：标题骨对齐标题单行行高（桌面 38px / xs 34px），全宽 */
 .detail-skeleton-title {
   width: 100%;
 }
 
 .detail-skeleton-title :deep(.v-skeleton-loader__heading) {
   margin: 0;
-  height: 44px;
+  height: 38px;
 }
 
 /* 骨架屏：内容区 padding 对齐真实正文（桌面 32px / xs 16px），与上方标题规则取同一档值 */
