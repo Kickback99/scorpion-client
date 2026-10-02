@@ -9,7 +9,7 @@
                   :lazy-src="coverRect"
                   :alt="title"
                   class="cover-image lazy-img"
-                  :width="display.xs.value ? 110 : display.smAndDown.value ? 150 : 250"
+                  :width="display.xs.value ? 110 : display.smAndDown.value ? 150 : 235"
                   :aspect-ratio="display.smAndDown.value ? undefined : 16/9"
                   cover
                 />
@@ -195,13 +195,9 @@ const themeStore = useThemeStore()
 @media (min-width: 600px) {
   :deep(.v-list-item__content) .description {
     margin-top: 3px;
-  }
-}
-
-/* sm（600–959.98px）这一档是内容驱动（封面跟随文字栏高）：简介块定高 2 行，
-   简介不满 2 行的卡才不会单独变矮，卡片才能恒高（同 xs 档标题盒定高的思路） */
-@media (min-width: 600px) and (max-width: 959.98px) {
-  :deep(.v-list-item__content) .description {
+    /* 简介块定高 2 行。sm 档卡片是内容驱动，不满 2 行的简介会让卡单独变矮（同 xs 档
+       标题盒定高的思路）；md+ 是封面驱动、对卡高无影响，但要钉住 ≥1920px —— 那里
+       容器变宽、150 字简介只占 1 行，不定高简介块会缩成 22px，而骨架恒为 2 根骨 44px */
     height: calc(var(--article-desc-lh) * 2);
   }
 }
@@ -230,8 +226,10 @@ const themeStore = useThemeStore()
   word-break: break-word;
 }
 
-/* 简介单独收窄到 2 行并给显式行高：md 上标题最多 2 行，2 行标题 + 2 行简介 = 131.5px，
-   仍在封面高度 140.6px 之内，卡片才能保持等高（余量 9.13px）；行高见 --article-desc-lh */
+/* 简介单独收窄到 2 行并给显式行高：md 上标题最多 2 行，2 行标题 + 2 行简介 = 124.5px，
+   仍在封面高度 132.19px（= 235 × 9/16）之内，卡片才能保持等高（余量 7.69px）；
+   封面宽本身也是照这条定的 —— 低于 222（= 124.5 × 16/9）就会让「2 行标题」的卡
+   变内容驱动、出现两种卡高。行高见 --article-desc-lh */
 .v-list-item-subtitle .truncate-multi {
   -webkit-line-clamp: 2;
   line-height: var(--article-desc-lh);
