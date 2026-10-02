@@ -7,7 +7,7 @@
           <v-skeleton-loader
             type="image"
             :width="coverWidth"
-            :height="display.xs.value ? undefined : coverHeight"
+            :height="display.smAndDown.value ? undefined : coverHeight"
             class="skeleton-cover"
           />
         </div>
@@ -22,8 +22,8 @@
         <v-skeleton-loader v-if="!display.xs.value" type="chip" class="skeleton-chip" />
       </v-list-item-title>
 
-      <!-- PC: 2-line description（对齐 AppArticleItem 简介的 line-clamp: 2） -->
-      <v-list-item-subtitle v-if="display.mdAndUp.value" class="skeleton-desc">
+      <!-- sm+: 2-line description（对齐 AppArticleItem 简介的 line-clamp: 2） -->
+      <v-list-item-subtitle v-if="display.smAndUp.value" class="skeleton-desc">
         <v-skeleton-loader type="text@2" />
       </v-list-item-subtitle>
 
@@ -190,10 +190,10 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Description (matches AppArticleItem .description { margin-top: 10px })
+// Description (matches AppArticleItem .description { margin-top: 3px })
 // ============================================================
 .skeleton-desc {
-  margin-top: 10px;
+  margin-top: 3px;
 
   /* 骨高 = 字号（14px，与标题骨同规则）：上下留白各 (行高 − 14) / 2，骨顶因此落在真实墨迹顶
      （14px 档墨迹顶距行盒顶 = (行高 − 16) / 2 + 1 = (行高 − 14) / 2），2 行合计 44px = 真简介块高 */
@@ -204,13 +204,19 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Metadata (matches AppArticleItem .metadata { padding-top: 4px })
+// Metadata (matches AppArticleItem .metadata { padding-top: 8px })
 // ============================================================
 .skeleton-meta {
-  padding-top: 4px;
+  padding-top: 8px;
   /* 覆盖模板上 .pb-1 的 4px：骨底要贴住盒底（= 封面底），与 AppArticleItem 的 .metadata 一致 */
   padding-bottom: 0 !important;
   margin-top: auto;
+
+  /* 骨高取真卡片日期行的高度 17.5px（= mdi 图标撑起的行盒）：盒高因此是 8 + 17.5 = 25.5，
+     与真卡片 .metadata 相等。sm 档卡片是内容驱动，这一项直接决定卡片高，对不上加载完会跳 */
+  :deep(.v-skeleton-loader__subtitle) {
+    height: 17.5px;
+  }
 }
 
 // ============================================================
@@ -222,10 +228,10 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// xs（<600px）：对齐 AppArticleItem 的恒高适配
+// xs / sm（<960px）：图片高度跟随文字栏
 // ============================================================
-// AppArticleItem 在 xs 下标题预留 2 行、图片去掉宽高比并拉伸到与文字栏等高
-@media (max-width: 599.98px) {
+// AppArticleItem 在 <960px 下图片去掉宽高比并拉伸到与文字栏等高，骨架同款
+@media (max-width: 959.98px) {
   // 图片占位块跟随文字栏高度拉伸（AppArticleItem 同款 align-self: stretch）
   :deep(.v-list-item__prepend) {
     align-self: stretch;
@@ -235,7 +241,13 @@ const titleType = computed(() => {
   .skeleton-cover {
     height: 100%;
   }
+}
 
+// ============================================================
+// xs（<600px）：对齐 AppArticleItem 的恒高适配
+// ============================================================
+// AppArticleItem 在 xs 下标题预留 2 行（图片拉伸见上）
+@media (max-width: 599.98px) {
   // 日期行占位与 AppArticleItem 的 .metadata 完全对齐：盒高 32px、内边距上 12 下 0。
   // 骨高取 20px（= 真实日期行的行盒：图标 20px 撑满），骨底因此贴着盒底
   .skeleton-meta {
