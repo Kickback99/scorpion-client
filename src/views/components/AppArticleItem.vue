@@ -184,6 +184,9 @@ const themeStore = useThemeStore()
   display: flex;
   align-self: stretch !important;
   flex-direction: column;
+  /* Vuetify 的 overflow:hidden 会切掉高出内容区顶边 2.8px 的 chip；横向仍 clip 住元信息行溢出 */
+  overflow-x: clip;
+  overflow-y: visible;
   /* background: coral; */
 }
 
@@ -249,6 +252,8 @@ const themeStore = useThemeStore()
   /* 整行上移，让首行墨迹顶落在封面顶边上（不动布局；标题与 chip 一起移，不错位） */
   position: relative;
   top: calc(-1 * var(--article-title-lift));
+  /* 同理放开 .v-list-item-title 的 overflow（标题自身的截断/省略由 h4 的 truncate-* 承担） */
+  overflow: visible;
   
   h4 {
     flex: 1; /* 标题占据剩余空间 */
@@ -260,16 +265,16 @@ const themeStore = useThemeStore()
   }
 }
 
-/* chip 顶边对齐标题首行的墨迹顶：20px 字号 / 27px 行高下，首行墨迹比行盒顶低 3.2px。
-   此前靠模板的 `mt-1`（4px）配合垂直居中，标题折成 2 行时 chip 会被居中拉到整块中间 */
+/* chip 上边距：-3.5px 能让标签与标题墨迹顶精确齐平，但胶囊顶边会贴到卡片顶边（只剩 2.5px）；
+   取 1.2px 折中（标签低 4.7px、胶囊距顶边 7.2px）。原 3.2px 对齐的是胶囊顶边而非其中的字 */
 .category {
-  margin-top: 3.2px;
+  margin-top: 1.2px;
 }
 
-/* sm 及以上（≥600px）：分类 chip 用 14px/26px。标题已是 20px/700，chip 若停在 Vuetify small 的
+/* sm 及以上（≥600px）：分类 chip 用 14px/26px。标题已是 18px/700，chip 若停在 Vuetify small 的
    12px，会比日期、阅读量（14px）还小——全卡最小的字去承担分类标签，层级是反的。
    xs（<600px）本就不渲染 chip（见模板 v-if），这里把边界写明确，不做隐式假设。
-   26px 是上限：再高（含 3.2px 上边距）就会顶破单行标题的 27px 行盒，把简介往下推 */
+   26px 是高度上限：chip 底边 = 1.2px 上边距 + 高度，再高就顶破单行标题的 26px 行盒、把简介往下推 */
 @media (min-width: 600px) {
   .category.v-chip {
     height: 26px;
