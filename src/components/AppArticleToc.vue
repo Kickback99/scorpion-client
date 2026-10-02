@@ -40,7 +40,7 @@
       </div>
 
       <!-- 目录列表 -->
-      <v-list density="compact" v-model:selected="selectedTocItem">
+      <v-list density="compact" v-model:selected="selectedTocItem" class="pt-4">
         <template v-for="(anchor, index) in tocAnchors" :key="`anchor-${index}`">
           <v-list-item
             :value="anchor"
