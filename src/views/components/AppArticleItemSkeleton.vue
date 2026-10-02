@@ -22,9 +22,9 @@
         <v-skeleton-loader v-if="!display.xs.value" type="chip" class="skeleton-chip" />
       </v-list-item-title>
 
-      <!-- PC: 3-line description（对齐 AppArticleItem 简介的 line-clamp: 3） -->
+      <!-- PC: 2-line description（对齐 AppArticleItem 简介的 line-clamp: 2） -->
       <v-list-item-subtitle v-if="display.mdAndUp.value" class="skeleton-desc">
-        <v-skeleton-loader type="paragraph" />
+        <v-skeleton-loader type="text@2" />
       </v-list-item-subtitle>
 
       <!-- Metadata row -->
@@ -195,10 +195,11 @@ const titleType = computed(() => {
 .skeleton-desc {
   margin-top: 10px;
 
-  /* 骨高 = 字号（14px，与标题骨同规则）：配上下各 1px = 真简介的 16px 行距，3 行 48px 等高 */
+  /* 骨高 = 字号（14px，与标题骨同规则）：上下留白各 (行高 − 14) / 2，骨顶因此落在真实墨迹顶
+     （14px 档墨迹顶距行盒顶 = (行高 − 16) / 2 + 1 = (行高 − 14) / 2），2 行合计 44px = 真简介块高 */
   :deep(.v-skeleton-loader__text) {
     height: 14px;
-    margin: 1px 0;
+    margin: calc((var(--article-desc-lh) - 14px) / 2) 0;
   }
 }
 
