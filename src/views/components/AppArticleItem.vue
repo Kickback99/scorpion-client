@@ -219,10 +219,11 @@ const themeStore = useThemeStore()
   word-break: break-word;
 }
 
-/* 简介单独放宽到 3 行：md 上标题最多 2 行，2 行标题 + 3 行简介 = 137.9px，
-   仍在封面高度 140.6px 之内，卡片才能保持等高；放宽到 4 行就会把卡片撑高 */
+/* 简介单独收窄到 2 行并给显式行高：md 上标题最多 2 行，2 行标题 + 2 行简介 = 131.5px，
+   仍在封面高度 140.6px 之内，卡片才能保持等高（余量 9.13px）；行高见 --article-desc-lh */
 .v-list-item-subtitle .truncate-multi {
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-height: var(--article-desc-lh);
 }
 
 
