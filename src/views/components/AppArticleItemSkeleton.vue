@@ -53,7 +53,7 @@ const titleBones = computed(() => configStore.titleBoneCount)
 // ============================================================
 // 计算属性
 // ============================================================
-const coverWidth = computed(() => (display.xs.value ? 110 : display.smAndDown.value ? 150 : 250))
+const coverWidth = computed(() => (display.xs.value ? 110 : display.smAndDown.value ? 150 : 235))
 const coverHeight = computed(() => (coverWidth.value * 9) / 16)
 
 // xs 标题盒被真卡片定死 2 行、sm 单行截断，这两档不跟旋钮
