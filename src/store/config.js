@@ -59,6 +59,7 @@ const _groupKeys = {
 
   admin: [
     'article.carousel_limit',
+    'article.tag_limit',
     'captcha.client_enabled',
     'captcha.client_register_type',
     'captcha.client_login_type',
@@ -196,6 +197,8 @@ export const useConfigStore = defineStore('config', {
       article: {
         // 轮播数量
         carousel_limit: 3,
+        // 标签数量
+        tag_limit: 16,
       },
       captcha: {
         // 用户端验证码总开关
@@ -268,6 +271,13 @@ export const useConfigStore = defineStore('config', {
      */
     getCarouselLimit(){
       return this.getValue('article.carousel_limit') ?? 3
+    },
+
+    /**
+     * 获取标签数量上限（0 表示不展示标签）
+     */
+    getTagLimit(){
+      return this.getValue('article.tag_limit') ?? 16
     },
 
     /**
@@ -538,6 +548,7 @@ export const useConfigStore = defineStore('config', {
 
   getters: {
     carouselLimit()          { return this.getValue('article.carousel_limit') ?? 3 },
+    tagLimit()               { return this.getValue('article.tag_limit') ?? 16 },
     isNavFriendLinkEnabled()  { return this.getValue('nav.friend_link_enabled') === true },
     isNavAboutEnabled()       { return this.getValue('nav.about_enabled') === true },
     isUserLoginEnabled()      { return this.getValue('user.login_enabled') === true },
