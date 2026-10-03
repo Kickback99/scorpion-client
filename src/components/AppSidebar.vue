@@ -27,7 +27,7 @@
     </AppBlogBox>
 
     <!-- ===== 文章标签 ===== -->
-    <AppBlogBox :title="titles.tags">
+    <AppBlogBox v-if="configStore.tagLimit > 0" :title="titles.tags">
         <v-chip-group column class="pa-2" mandatory :model-value="selectedTagId">
         <v-chip label v-for="item in tagStore.list" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id"
         base-color="primary" class="tag-chip"
