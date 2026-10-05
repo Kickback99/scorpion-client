@@ -207,3 +207,11 @@ html, body {
     font-size: 16px !important;
   }
 }
+
+/* ========== outlined 输入框聚焦描边收细 ==========
+   Vuetify 默认 focus 时描边由 1px 跳到 2px，配近白的 on-surface 显得过厚，收到 1.5px。
+   注意 DPR=1 下 1.5px 会被吸附成 1 个设备像素（与 hover 等宽），仅 DPR≥2 才有 1.5px 的实际粗细。
+   !important 必要：vite-plugin-vuetify 的组件 CSS 排在全局表之后，同特异性下靠顺序赢不了。 */
+.v-field--variant-outlined.v-field--focused .v-field__outline {
+  --v-field-border-width: 1.5px !important;
+}
