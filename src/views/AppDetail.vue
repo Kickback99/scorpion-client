@@ -182,13 +182,18 @@ const renderArticleItem = async() => {
   isFavorite.value = res.data.isFavorite || false;
   cateArticles.value = res.data.cateArticles;
   tags.value = res.data.tags;
+
+  // 异步预加载正文 Markdown（markdownReady 驱动骨架屏 → 标题与正文一起出现）
+  await loadMarkdown();
+
+  // 正文就绪后才发相关文章：侧栏只认这个事件，早发会让它先于正文落位（刷新详情页时最明显）
+  // 等待期间路由可能又切走，故再查一次代次，否则会把这篇的相关文章写到别的页面
+  if (String(id) !== String(route.params.id)) return
+
   emitter.emit('detail-data', {
     cateArticles: cateArticles.value,
     tags: tags.value
   });
-
-  // 异步预加载正文 Markdown（markdownReady 驱动骨架屏 → 标题与正文一起出现）
-  loadMarkdown();
 
   nextTick(() => {
     tocRef.value?.generateAnchors();
