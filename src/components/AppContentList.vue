@@ -24,7 +24,7 @@
     <div v-if="contentType === 'table'">
       <!-- 数据加载中，显示 loading -->
       <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
-        <v-progress-circular indeterminate color="primary" size="40" />
+        <v-progress-circular indeterminate color="primary" :size="display.mobile.value ? 32 : 40" />
         <span class="mt-3 text-grey text-caption">加载中...</span>
       </div>
 
@@ -89,7 +89,7 @@
       
       <!-- 数据加载之前，使用 loading -->
       <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
-        <v-progress-circular indeterminate color="primary" size="40" />
+        <v-progress-circular indeterminate color="primary" :size="display.mobile.value ? 32 : 40" />
         <span class="mt-3 text-grey text-caption">加载中...</span>
       </div>
 
@@ -145,7 +145,7 @@
 
       <!-- 数据加载之前，使用 loading -->
       <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
-        <v-progress-circular indeterminate color="primary" size="40" />
+        <v-progress-circular indeterminate color="primary" :size="display.mobile.value ? 32 : 40" />
         <span class="mt-3 text-grey text-caption">加载中...</span>
       </div>
 
