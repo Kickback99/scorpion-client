@@ -1,7 +1,7 @@
 <template>
     <!-- ===== 骨架屏 ===== -->
     <v-container v-if="isLoading">
-        <v-card style="position: relative;">
+        <v-card class="carousel-card" style="position: relative;">
             <v-skeleton-loader type="image" height="250" class="carousel-skeleton" />
             <v-skeleton-loader
                 type="heading"
@@ -13,7 +13,7 @@
 
     <!-- ===== 真实轮播 ===== -->
     <v-container v-else-if="carouselItems.length > 0">
-        <v-card>
+        <v-card class="carousel-card">
             <v-carousel
                 height="250px" hide-delimiters show-arrows theme="scorpion-dark" style="cursor: pointer;">
                 <v-carousel-item
@@ -94,6 +94,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 轮播与骨架屏共用卡片承载圆角：卡片自带 overflow: hidden，圆角落在卡上即可同时裁住
+   轮播图和骨架骨块，无需再给骨块单独设圆角 */
+.carousel-card {
+  border-radius: var(--carousel-radius);
+}
+
 /* 骨架屏：image 填满 250px + 移除默认 margin + 透明背景 */
 .carousel-skeleton {
   background: transparent !important;
