@@ -327,10 +327,17 @@ const renderHotList = async() => {
     hotBlogs.value =  res.data
 }
 
+// 详情页写入「相关文章」后接管这张卡片，全局「最新发布」不再参与，否则会把「相关文章」顶掉
+let detailOwnsArticles = false
+
 const renderLatestList = async() => {
+    // 详情页已接管：连请求都不必发（详情数据后到时全局请求才排上队，靠下面那次判断拦不住）
+    if (detailOwnsArticles) return
     latestLoading.value = true
     try {
         const res = await latestListApi()
+        // 期间详情页接管了这张卡片：本次结果作废
+        if (detailOwnsArticles) return
         titles.value.articles = '最新发布'
         latestBlogs.value = res.data
     } finally {
@@ -358,9 +365,12 @@ const renderTagList = async() =>{
 const handleDetailData = (data) => {
     // 如果有分类文章数据，更新分类文章；无相关文章则回退全局「最新发布」
     if (data.cateArticles && data.cateArticles.length > 0) {
+        detailOwnsArticles = true
         titles.value.articles = '相关文章'
         latestBlogs.value = data.cateArticles
     } else {
+        // 无分类文章：交还给全局「最新发布」
+        detailOwnsArticles = false
         renderLatestList()
     }
     // 如果有标签数据，更新标签数据；无标签则回退全局「文章标签」
@@ -412,6 +422,8 @@ watch(() => route.path,(newPath) => {
     // 隐藏态只在首页有效：进详情页不会再拉最新发布，标志位留着会让标签/热门一直被藏
     if(newPath !== '/') sidebarBooting.value = false
     if(!newPath.includes('/detail')){
+        // 离开详情页：卡片交还全局「最新发布」，否则会被详情页的接管标志拦住不再更新
+        detailOwnsArticles = false
         renderHotList()
         renderLatestList()
         renderTagList()
