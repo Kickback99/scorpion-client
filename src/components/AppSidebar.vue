@@ -27,7 +27,7 @@
     </AppBlogBox>
 
     <!-- ===== 文章标签 ===== -->
-    <AppBlogBox v-if="configStore.tagLimit > 0" :title="titles.tags">
+    <AppBlogBox v-if="!sidebarBooting && configStore.tagLimit > 0" :title="titles.tags">
         <v-chip-group column class="pa-2" mandatory :model-value="selectedTagId">
         <v-chip label v-for="item in tagStore.list" :key="item.id" @click="onSearch('tag',item.id)"  density="comfortable" size="small" :value="item.id"
         base-color="primary" class="tag-chip"
@@ -36,7 +36,7 @@
     </AppBlogBox>
 
     <!-- ===== 热门文章 ===== -->
-    <div ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
+    <div v-if="!sidebarBooting" ref="hotRef" class="hot-section" :class="{ 'is-fixed': isHotFixed }" :style="isHotFixed ? hotFixedStyle : {}">
     <AppBlogBox title="热门文章">
         <v-list>
             <v-list-item v-for="(item, index) in hotBlogs" :key="item.id"  :value="item.id" density=compact :to="{name:'detail',params:{id:item.id}}">
@@ -54,7 +54,7 @@
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
         <!-- 骨架屏：加载中 -->
-        <v-list v-if="latestLoading && latestBlogs.length === 0" class="sidebar-article-list">
+        <v-list v-if="latestBlogs.length === 0 && (latestLoading || sidebarBooting)" class="sidebar-article-list">
             <v-list-item v-for="n in 10" :key="n" class="sidebar-skeleton-item">
                 <template v-slot:prepend>
                     <v-skeleton-loader type="image" width="90" height="50.625" class="sidebar-skeleton-img" />
@@ -289,6 +289,8 @@ const user = ref({
 const hotBlogs = ref([])
 const latestBlogs = ref([])
 const latestLoading = ref(false)
+// 首页刷新首屏：先藏起标签/热门，让最新发布上移到它们的位置并露骨架屏，数据落位后再放行
+const sidebarBooting = ref(route.path === '/')
 
 // ============================================================
 // 搜索
@@ -333,6 +335,13 @@ const renderLatestList = async() => {
         latestBlogs.value = res.data
     } finally {
         latestLoading.value = false
+        // 首屏收尾：等最新发布的 DOM 落位再放行标签/热门；放行后重新判定热门文章的滚动固定状态
+        if (sidebarBooting.value) {
+            await nextTick()
+            sidebarBooting.value = false
+            await nextTick()
+            handleHotScroll()
+        }
     }
 }
 
@@ -400,6 +409,8 @@ onUnmounted(() => {
 // ============================================================
 // 监听路由地址变化
 watch(() => route.path,(newPath) => {
+    // 隐藏态只在首页有效：进详情页不会再拉最新发布，标志位留着会让标签/热门一直被藏
+    if(newPath !== '/') sidebarBooting.value = false
     if(!newPath.includes('/detail')){
         renderHotList()
         renderLatestList()
