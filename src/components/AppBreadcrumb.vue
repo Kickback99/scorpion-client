@@ -179,11 +179,11 @@ const items = computed(() => {
         }
         case 'tag': {
           const tagName = tagMap.value[Number(param)] || param
-          result.push({ title: `标签：${tagName}`, disabled: true })
+          result.push({ title: tagName, disabled: true })
           break
         }
         case 'keyword':
-          result.push({ title: `搜索：${param}`, disabled: true })
+          result.push({ title: param, disabled: true })
           break
       }
     } else {
