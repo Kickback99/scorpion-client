@@ -200,9 +200,11 @@ const handleClose = () => { visible.value = false }
   --dialog-scale: 1;
   --heading-scale: 1;
 
-  // 弹窗标题对齐详情页 h1（桌面 28px / xs 24px），两档都要大于正文里的 h2（桌面 24、移动 16）
+  /* 弹窗标题对齐详情页 h1：桌面 28px / xs 24px + 字重 600。
+     Vuetify 的 .v-card-title 默认 500，比正文 h2 的 600 还轻，层次是倒挂的 */
   :deep(.v-card-title) {
     font-size: 28px !important;
+    font-weight: 600 !important;
 
     @media (max-width: 599.98px) {
       font-size: 24px !important;
