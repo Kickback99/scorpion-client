@@ -275,9 +275,4 @@ const handleItemClick = (item) => {
 :deep(.v-field__input) {
   font-size: 12px !important;
 }
-
-:deep(.v-field--focused .v-field__outline),
-:deep(.v-field--focused:hover .v-field__outline) {
-  color: rgb(var(--v-theme-primary)) !important;
-}
 </style>
