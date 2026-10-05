@@ -1,7 +1,7 @@
 <template>
   <!-- ===== Dialog ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
-    <v-card :style="{ '--dialog-scale': scale }">
+    <v-card :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
@@ -39,6 +39,8 @@ import { useConfigStore } from '@/store/config'
 // ============================================================
 const display = useDisplay()
 const scale = useDialogFontScale()
+// 移动端 h2 = 1.5rem × 2/3 = 16px（桌面 24px，正文 14px 见样式区）
+const headingScale = useDialogFontScale(2 / 3)
 const visible = ref(false)
 const configStore = useConfigStore()
 const themeStore = useThemeStore()
@@ -113,9 +115,15 @@ const handleCopyClick = (e) => {
 // ============================================================
 .v-card {
   --dialog-scale: 1;
+  --heading-scale: 1;
 
+  // 弹窗标题对齐详情页 h1（桌面 28px / xs 24px），两档都要大于正文里的 h2（桌面 24、移动 16）
   :deep(.v-card-title) {
-    font-size: calc(1rem * var(--dialog-scale)) !important;
+    font-size: 28px !important;
+
+    @media (max-width: 599.98px) {
+      font-size: 24px !important;
+    }
   }
 
   .text-caption {
@@ -124,6 +132,22 @@ const handleCopyClick = (e) => {
 
   :deep(.detail-panel) {
     font-size: calc(1rem * var(--dialog-scale));
+  }
+
+  // 移动端 h2 收到 16px（桌面 24px），比正文大一档
+  :deep(.detail-panel h2) {
+    font-size: calc(1.5rem * var(--heading-scale)) !important;
+  }
+}
+
+/* 移动端正文 14px（桌面 16px）：主题给 .github-markdown-body 写死 16px、--dialog-scale 压不动，只能按元素盖；
+   不整层盖是为了不连 h2 一起打成 14px（h2 那条规则特异性更低） */
+@media (max-width: 959.98px) {
+  .detail-panel :deep(.github-markdown-body),
+  .detail-panel :deep(.vuepress-markdown-body) {
+    p, li, blockquote, td, th {
+      font-size: 14px !important;
+    }
   }
 }
 </style>
