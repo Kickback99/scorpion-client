@@ -54,9 +54,9 @@
     <!-- ===== 文章列表（最新发布 / 相关文章） ===== -->
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
-        <!-- 骨架屏：加载中（详情页这段卡片内容由详情接口决定，落位前同样先露骨架屏） -->
+        <!-- 骨架屏：详情页这段内容由详情接口决定，落位前同样先露；条数取 7 条，与相关文章常见的上界对齐 -->
         <v-list v-if="articlesPending || (latestBlogs.length === 0 && (latestLoading || sidebarBooting))" class="sidebar-article-list">
-            <v-list-item v-for="n in 10" :key="n" class="sidebar-skeleton-item">
+            <v-list-item v-for="n in 7" :key="n" class="sidebar-skeleton-item">
                 <template v-slot:prepend>
                     <v-skeleton-loader type="image" width="90" height="50.625" class="sidebar-skeleton-img" />
                 </template>
@@ -321,9 +321,9 @@ const onSearch = (type,param) => {
 // ============================================================
 // 列表渲染
 // ============================================================
-// 动态标题状态
+// 动态标题状态：详情页先按「相关文章」起手，确实没有时再翻成「最新发布」
 const titles = ref({
-    articles:'最新发布',
+    articles: isDetailPage() ? '相关文章' : '最新发布',
     tags:'文章标签'
 })
 
@@ -375,7 +375,8 @@ const handleDetailData = (data) => {
         // 相关文章落位即首屏收尾；无相关文章那支交给 renderLatestList 收尾
         releaseBoot()
     } else {
-        // 无分类文章：这张卡片没有归属，回退全局「最新发布」兜底
+        // 无分类文章：回退全局「最新发布」兜底，标题同时改口
+        titles.value.articles = '最新发布'
         renderLatestList()
     }
     // 卡片内容已定：撤骨架屏（兜底那次由 latestLoading 顶住）
@@ -436,8 +437,9 @@ watch(() => route.path,(newPath) => {
         renderLatestList()
         renderTagList()
     } else {
-        // 进详情页：卡片换成这篇的相关文章，落位前先露骨架屏
+        // 进详情页：卡片换成相关文章，落位前先露骨架屏，标题也先按「相关文章」起手
         articlesPending.value = true
+        titles.value.articles = '相关文章'
     }
 })
 
