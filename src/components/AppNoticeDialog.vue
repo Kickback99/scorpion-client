@@ -1,7 +1,11 @@
 <template>
   <!-- ===== Dialog ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
-    <v-card class="notice-dialog-card" :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
+    <v-card
+      class="notice-dialog-card"
+      :class="[`md-${mdTheme}`, themeStore.isDark ? 'md-dark' : 'md-light']"
+      :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }"
+    >
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
@@ -67,6 +71,9 @@ const emit = defineEmits(['update:modelValue'])
 // 响应式 max-width
 // ============================================================
 const dialogMaxWidth = computed(() => display.mobile.value ? '85%' : 600)
+
+// 当前 markdown 主题：标题色要跟着它走（vuepress 与 github 的正文色不同）
+const mdTheme = computed(() => configStore.getArticleTheme())
 
 // ============================================================
 // Markdown 预览组件（跟随主题）
@@ -137,9 +144,11 @@ const handleCopyClick = (e) => {
   --dialog-scale: 1;
   --heading-scale: 1;
 
-  // 弹窗标题对齐详情页 h1（桌面 28px / xs 24px），两档都要大于正文里的 h2（桌面 24、移动 16）
+  /* 弹窗标题对齐详情页 h1：桌面 28px / xs 24px + 字重 600。
+     Vuetify 的 .v-card-title 默认 500，比正文 h2 的 600 还轻，层次是倒挂的 */
   :deep(.v-card-title) {
     font-size: 28px !important;
+    font-weight: 600 !important;
 
     @media (max-width: 599.98px) {
       font-size: 24px !important;
@@ -157,6 +166,15 @@ const handleCopyClick = (e) => {
   // 移动端 h2 收到 16px（桌面 24px），比正文大一档
   :deep(.detail-panel h2) {
     font-size: calc(1.5rem * var(--heading-scale)) !important;
+  }
+
+  /* 标题色跟随 md 主题的正文色：vuepress 主题把正文写成纯黑/纯白（markdown-preview.scss），
+     标题留在 on-surface 0.87 会比正文浅；github 下正文与标题本就同为 0.87，无需覆盖 */
+  &.md-vuepress :deep(.v-card-title) {
+    color: #000 !important;
+  }
+  &.md-vuepress.md-dark :deep(.v-card-title) {
+    color: #fff !important;
   }
 }
 
