@@ -379,10 +379,11 @@ watch(() => isLoggedIn.value, () => {
  .detail-skeleton-content :deep(.v-skeleton-loader__text:first-child) {
   max-width: 70%;
 }
-/* 骨高 = 正文字号 + 4、骨距 = (行高 30.4 − 20) / 2 = 5.2px：节距与真实正文逐行对齐，加载完才不跳 */
+/* 骨高取正文字号 16px（骨代表字形墨迹、不代表行盒）；骨距 = (行高 30.4 − 16) / 2 = 7.2px，
+   节距与真实正文逐行对齐，加载完才不跳 */
 .detail-skeleton-content :deep(.v-skeleton-loader__text) {
-  height: 20px;
-  margin: 5.2px 0;
+  height: 16px;
+  margin: 7.2px 0;
 }
 
 /* ============================================================
