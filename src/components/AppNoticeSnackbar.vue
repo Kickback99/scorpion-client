@@ -119,8 +119,9 @@ const handleAction = () => {
 .notice-snackbar {
   --snackbar-scale: 1;
 
+  /* 标题由 1rem 抬到 1.125rem（18px）：原来只比正文 `text-body-2`（14px）高 2px，层次拉不开 */
   .text-subtitle-1 {
-    font-size: calc(1rem * var(--snackbar-scale)) !important;
+    font-size: calc(1.125rem * var(--snackbar-scale)) !important;
   }
 
   .text-body-2 {
