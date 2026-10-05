@@ -328,10 +328,17 @@ const renderHotList = async() => {
     hotBlogs.value =  res.data
 }
 
+// 是否详情页：这张卡片在详情页归「相关文章」，全局「最新发布」不参与
+const isDetailPage = () => route.path.includes('/detail')
+
 const renderLatestList = async() => {
+    // 记下发起点：详情数据回来后会切「相关文章」，这份在途结果就不能再写
+    const startedAt = route.path
     latestLoading.value = true
     try {
         const res = await latestListApi()
+        // 发起后路由已变（如首页点进详情页）：丢弃，别把「相关文章」顶成「最新发布」
+        if (route.path !== startedAt) return
         titles.value.articles = '最新发布'
         latestBlogs.value = res.data
     } finally {
@@ -362,6 +369,7 @@ const handleDetailData = (data) => {
         titles.value.articles = '相关文章'
         latestBlogs.value = data.cateArticles
     } else {
+        // 无分类文章：这张卡片没有归属，回退全局「最新发布」兜底
         renderLatestList()
     }
     // 如果有标签数据，更新标签数据；无标签则回退全局「文章标签」
@@ -387,7 +395,8 @@ onMounted(()=>{
     // 次要数据（热门/最新/标签）延后到浏览器空闲时加载，避免与首屏关键请求（分类+文章）抢带宽
     const loadSecondary = () => {
       renderHotList()
-      renderLatestList()
+      // 详情页不拉全局「最新发布」；无相关文章时由 handleDetailData 的 else 兜底
+      if (!isDetailPage()) renderLatestList()
       renderTagList()
     }
     if ('requestIdleCallback' in window) {
