@@ -8,10 +8,11 @@
             label="请输入标题/内容"
             variant="outlined"
             density="compact"
+            hide-details
             append-inner-icon="mdi-magnify"
             @click:append-inner="onSearch('keyword',keyword)"
             @keyup.enter="onSearch('keyword',keyword)"
-            class="px-2"
+            class="px-2 mb-3"
             >
             </v-text-field>
         </AppBlogBox>
