@@ -14,12 +14,21 @@
       <!-- 内容：Markdown 渲染 -->
       <v-card-text>        
         <div class="detail-panel" @click="handleCopyClick">
-          <component
-            :is="MarkdownPreview"
-            :text="content"
-            :key="configStore.article_detail?.theme"
-            :class="themeStore.isDark ? 'user-dark' : 'user-light'"
-          />
+          <!-- 懒加载期间交给 Suspense 兜底，否则弹窗先空一截、加载完再撑开 -->
+          <Suspense>
+            <component
+              :is="MarkdownPreview"
+              :text="content"
+              :key="configStore.article_detail?.theme"
+              :class="themeStore.isDark ? 'user-dark' : 'user-light'"
+            />
+            <template #fallback>
+              <div class="dialog-loading">
+                <v-progress-circular indeterminate color="primary" size="40" />
+                <span>加载中...</span>
+              </div>
+            </template>
+          </Suspense>
         </div>
       </v-card-text>
     </v-card>
@@ -108,6 +117,17 @@ const handleCopyClick = (e) => {
   :deep(.vuepress-markdown-body) {
     padding: 0 !important;
   }
+}
+
+/* 懒加载兜底：撑住高度，否则加载完成时弹窗从 36px 一下弹开 */
+.dialog-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 180px;
+  color: rgba(var(--v-theme-on-surface), 0.6);
 }
 
 // ============================================================
