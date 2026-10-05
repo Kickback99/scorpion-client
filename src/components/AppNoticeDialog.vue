@@ -1,7 +1,7 @@
 <template>
   <!-- ===== Dialog ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
-    <v-card :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
+    <v-card class="notice-dialog-card" :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
@@ -178,5 +178,18 @@ const handleCopyClick = (e) => {
 // ============================================================
 .v-overlay__scrim {
   opacity: 0.6 !important;
+}
+
+/* Vuetify 给对话框直系 v-card 开了 overflow:auto，而卡片自己的滚动条不受自己圆角裁剪，
+   方角会盖住右侧圆角（左角没滚动条，所以只有右边看着是直的）。由父层补一刀裁剪；
+   投影会被父层的 overflow 一并裁掉，故从卡片挪到父层，视觉不变 */
+.v-overlay__content:has(> .notice-dialog-card) {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 11px 15px -7px rgba(0, 0, 0, .2), 0 24px 38px 3px rgba(0, 0, 0, .14), 0 9px 46px 8px rgba(0, 0, 0, .12);
+
+  > .notice-dialog-card {
+    box-shadow: none;
+  }
 }
 </style>
