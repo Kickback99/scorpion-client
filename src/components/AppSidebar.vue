@@ -630,7 +630,9 @@ onUnmounted(() => {
   border-radius: var(--article-cover-radius);
 }
 
-.sidebar-skeleton-img {
+// 与 AppArticleItemSkeleton 同理：Vuetify 的 `.v-skeleton-loader__image` 自带 border-radius: 0，
+// 落在根节点上的圆角传不到骨块，得直接给骨块
+.sidebar-skeleton-img :deep(.v-skeleton-loader__image) {
   border-radius: var(--article-cover-radius);
 }
 

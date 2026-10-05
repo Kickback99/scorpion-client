@@ -72,7 +72,9 @@ const titleType = computed(() => {
   margin: 0 20px 0 12px;
 }
 
-.skeleton-cover {
+// 圆角必须落在骨块上：Vuetify 的 `.v-skeleton-loader__image` 自带 border-radius: 0，
+// 与 `.v-skeleton-loader__bone` 的 inherit 同优先级、靠源码顺序压制，根节点上的圆角传不下来
+.skeleton-cover :deep(.v-skeleton-loader__image) {
   border-radius: var(--article-cover-radius);
 }
 
@@ -161,14 +163,14 @@ const titleType = computed(() => {
   max-width: 75%;
 }
 
-// chip 骨：镜像真卡片的分类 chip（22px 高 + 上边距 3.2px；md+ 抬到 26px / 29.2px，见下）。
+// chip 骨：镜像真卡片的分类 chip（22px 高 + 上边距 1.2px；md+ 抬到 26px / 27.2px，见下）。
 // 原来只落 Vuetify 默认尺寸（32px 高、宽 0）：高 32 把整行撑到 32px、标题骨被居中压低 3px；
 // 宽 0 则分类占位在骨架屏上根本看不见。两者都只影响 sm 档 —— md 的行高由标题骨主导，chip 不参与
 .skeleton-chip {
   width: 44px;
-  /* 镜像真卡片 .category 的两个外边距：上 3.2px 对齐标题首行墨迹顶，
+  /* 镜像真卡片 .category 的两个外边距：上 1.2px（真卡同值，见 AppArticleItem 的 .category），
      右 8px 对应模板上的 mr-2（漏了会被顶到内容区右边界，比真 chip 靠右 8px） */
-  margin-top: 3.2px;
+  margin-top: 1.2px;
   margin-right: 8px;
 
   :deep(.v-skeleton-loader__chip) {

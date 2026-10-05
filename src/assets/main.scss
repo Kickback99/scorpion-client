@@ -81,7 +81,7 @@ html, body {
 
 /* ========== 文章封面图 & 骨架屏 统一圆角（组件内通过 var() 引用，改这里即可全局生效） ========== */
 :root {
-  --article-cover-radius: 2px;
+  --article-cover-radius: 5px;
 }
 
 /* ========== 首页列表卡片标题字号：唯一旋钮（改字号只动 --article-title-fs） ==========
