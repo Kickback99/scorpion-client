@@ -12,6 +12,7 @@
       <v-card-text class="terms-content">
         <!-- 骨架屏：Markdown 加载中 -->
         <div v-if="!markdownReady" class="terms-skeleton">
+          <v-skeleton-loader type="heading" class="terms-skeleton-title" />
           <v-skeleton-loader
             v-for="n in skeletonLineGroups"
             :key="n"
@@ -47,7 +48,8 @@ import { createMarkdownPreview } from '@/utils/markdown-config'
 // ============================================================
 const display = useDisplay()
 const scale = useDialogFontScale()
-const headingScale = useDialogFontScale(0.55)
+// 移动端 h2 = 1.5rem × 2/3 = 16px（桌面 24px，正文 14px 见样式区）
+const headingScale = useDialogFontScale(2 / 3)
 const visible = ref(false)
 const configStore = useConfigStore()
 const themeStore = useThemeStore()
@@ -139,7 +141,33 @@ const handleClose = () => { visible.value = false }
   max-width: 100%;
 }
 .terms-skeleton :deep(.v-skeleton-loader__text) {
-  margin: 4px 0;
+  height: 20px;
+  margin: 5.2px 0;
+}
+
+// ============================================================
+// 骨架屏：标题骨（真实内容首行是 h2，之前只有内容骨、缺这一根）
+// ============================================================
+/* 高 38px = 真实 h2 行盒（30px 行高 + 8px 下边框/内边距）；下间距 10.8 = h2 下外边距 16 − 内容骨 5.2 */
+.terms-skeleton-title {
+  margin-bottom: 10.8px;
+}
+.terms-skeleton-title :deep(.v-skeleton-loader__heading) {
+  margin: 0;
+  height: 38px;
+}
+/* 移动端（< 960px，同 display.mobile）：h2 16px → 标题骨 25.6 / 间距 11.7，正文 14px → 内容骨 18 / 骨距 4.3 */
+@media (max-width: 959.98px) {
+  .terms-skeleton-title {
+    margin-bottom: 11.7px;
+  }
+  .terms-skeleton-title :deep(.v-skeleton-loader__heading) {
+    height: 25.6px;
+  }
+  .terms-skeleton :deep(.v-skeleton-loader__text) {
+    height: 18px;
+    margin: 4.3px 0;
+  }
 }
 
 // ============================================================
@@ -180,9 +208,20 @@ const handleClose = () => { visible.value = false }
     font-size: calc(1rem * var(--dialog-scale));
   }
 
-  // 移动端 h2 标题缩小至 h4 视觉层级
+  // 移动端 h2 收到 16px（桌面 24px），比正文大一档
   :deep(.detail-panel h2) {
     font-size: calc(1.5rem * var(--heading-scale)) !important;
+  }
+}
+
+/* 移动端正文 14px（桌面 16px）：主题给 .github-markdown-body 写死 16px、--dialog-scale 压不动，只能按元素盖；
+   不整层盖是为了不连 h2 一起打成 14px（h2 那条规则特异性更低） */
+@media (max-width: 959.98px) {
+  .detail-panel :deep(.github-markdown-body),
+  .detail-panel :deep(.vuepress-markdown-body) {
+    p, li, blockquote, td, th {
+      font-size: 14px !important;
+    }
   }
 }
 </style>
