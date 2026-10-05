@@ -87,6 +87,10 @@ const titleType = computed(() => {
   display: flex;
   flex-direction: column;
   align-self: stretch !important;
+  /* Vuetify 默认 overflow: hidden 会切掉高出内容区顶边 0.5px 的 chip 骨（同 AppArticleItem 的写法）；
+     横向仍 clip 住元信息骨溢出 */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 // ============================================================
@@ -162,31 +166,30 @@ const titleType = computed(() => {
   max-width: 75%;
 }
 
-// chip 骨：镜像真卡片的分类 chip（22px 高 + 上边距 1.2px；md+ 抬到 26px / 27.2px，见下）。
-// 原来只落 Vuetify 默认尺寸（32px 高、宽 0）：高 32 把整行撑到 32px、标题骨被居中压低 3px；
-// 宽 0 则分类占位在骨架屏上根本看不见。两者都只影响 sm 档 —— md 的行高由标题骨主导，chip 不参与
+// chip 骨：与标题骨同为 22px 且顶底齐平（真 chip 是 26px，矮 4px 是刻意的视觉取舍）。
+// 只管 sm 档：Vuetify 默认骨是 32px 高 / 0 宽，会把整行撑到 32px 且把分类占位藏没
 .skeleton-chip {
   width: 44px;
-  /* 镜像真卡片 .category 的两个外边距：上 1.2px（真卡同值，见 AppArticleItem 的 .category），
-     右 8px 对应模板上的 mr-2（漏了会被顶到内容区右边界，比真 chip 靠右 8px） */
-  margin-top: 1.2px;
-  margin-right: 8px;
+  /* 比真卡片 .category 的 1.2px 多 2.3px —— 骨块与标题骨同高，加这 2.3px 两块顶边才齐平 */
+  margin-top: 3.5px;
+  margin-right: 8px; /* 对应模板的 mr-2，漏了比真 chip 靠右 8px */
+  /* 骨矮到 22px 后撑不住整行（27.2 塌成 26），sm 档卡高会比真卡少 1.2px 造成加载跳动；
+     垫 1.7px 补回 27.2 = 真 chip 的 1.2px 外边距 + 26px 高 */
+  padding-bottom: 1.7px;
 
   :deep(.v-skeleton-loader__chip) {
     width: 100%;
     height: 22px;
+    /* 镜像真卡片 label chip 的 8px 圆角：默认继承 16px 会被钳成整颗胶囊，顶上多圆一截 */
+    border-radius: 8px;
   }
 }
 
-// sm 及以上（≥600px）：跟随真卡片 .category 一起抬到 14px/26px（宽 42.5 → 46.2，取整 46），
-// 否则加载完成时分类 chip 会由 22px 跳变到 26px
+// sm 及以上（≥600px）：宽度取真卡片 chip 的实测值 46.21（取整 46）。骨高不再分档覆盖，恒为
+// 22px —— 比真 chip 的 26px 矮，是刻意的视觉取舍，加载完成时分类块会由 22 长到 26
 @media (min-width: 600px) {
   .skeleton-chip {
     width: 46px;
-
-    :deep(.v-skeleton-loader__chip) {
-      height: 26px;
-    }
   }
 }
 
