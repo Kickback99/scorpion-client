@@ -1,5 +1,5 @@
 <template>
-  <div class="breadcrumb-wrapper py-2" v-if="items.length > 1 || smAndDown">
+  <div class="breadcrumb-wrapper py-2" :class="{ 'breadcrumb-mobile': smAndDown }" v-if="items.length > 1 || smAndDown">
     <div class="d-flex align-center">
       <!-- ===== 面包屑 ===== -->
       <v-breadcrumbs
@@ -16,7 +16,7 @@
           <v-breadcrumbs-item
             :disabled="item.disabled"
             @click="handleItemClick(item)"
-            :class="[smAndUp ? 'text-body-2' : 'text-caption', item.to && !item.disabled ? 'breadcrumb-link' : '']"
+            :class="[smAndUp ? 'text-body-2' : 'text-caption', item.to && !item.disabled ? 'breadcrumb-link' : '', item.isSubCate ? 'breadcrumb-sub' : '']"
           >
             {{ item.title }}
           </v-breadcrumbs-item>
@@ -172,7 +172,9 @@ const items = computed(() => {
             result.push({
               title: cate.name,
               to: isLast ? undefined : { path: '/', query: { type: 'cate', param: cate.id } },
-              disabled: isLast
+              disabled: isLast,
+              // index 0 是顶级分类，其余为子级分类（移动端要按宽度截断）
+              isSubCate: index > 0
             })
           })
           break
@@ -226,6 +228,16 @@ const handleItemClick = (item) => {
   &:hover {
     opacity: 0.8;
   }
+}
+
+/* 移动端子级分类名按宽度封顶，72px 即「JavaScript」的渲染宽；条目本身是 display:flex，
+ * 不改 block 的话 text-overflow 不生效 */
+.breadcrumb-mobile .breadcrumb-sub {
+  display: block;
+  max-width: 72px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 // ============================================================
