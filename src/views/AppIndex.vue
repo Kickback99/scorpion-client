@@ -44,7 +44,8 @@
 
                 <template v-slot:loading>
                   <div class="text-center py-4">
-                      <v-progress-circular indeterminate size="32" color="primary"></v-progress-circular>
+                      <!-- 圈径与 AppContentList 的加载圈同档：移动端 32，桌面 40 -->
+                      <v-progress-circular indeterminate :size="mobile ? 32 : 40" color="primary"></v-progress-circular>
                       <div class="text-caption text-grey mt-2">加载更多文章中...</div>
                   </div>
                 </template>
@@ -119,7 +120,7 @@ import { useDialogFontScale } from '@/composables/useDialogFontScale';
 const configStore = useConfigStore()
 
 
-const {smAndUp} = useDisplay()
+const {smAndUp, mobile} = useDisplay()
 
 // 空状态字号缩放（移动端 0.8）
 const scale = useDialogFontScale()
