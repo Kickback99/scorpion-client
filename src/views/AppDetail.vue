@@ -374,8 +374,10 @@ watch(() => isLoggedIn.value, () => {
  .detail-skeleton-content :deep(.v-skeleton-loader__text:first-child) {
   max-width: 70%;
 }
+/* 骨高 = 正文字号 + 4、骨距 = (行高 30.4 − 20) / 2 = 5.2px：节距与真实正文逐行对齐，加载完才不跳 */
 .detail-skeleton-content :deep(.v-skeleton-loader__text) {
-  margin: 4px 0;
+  height: 20px;
+  margin: 5.2px 0;
 }
 
 /* ============================================================
