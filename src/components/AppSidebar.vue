@@ -54,8 +54,8 @@
     <!-- ===== 文章列表（最新发布 / 相关文章） ===== -->
     <div ref="recRef">
     <AppBlogBox :title="titles.articles">
-        <!-- 骨架屏：加载中 -->
-        <v-list v-if="latestBlogs.length === 0 && (latestLoading || sidebarBooting)" class="sidebar-article-list">
+        <!-- 骨架屏：加载中（详情页这段卡片内容由详情接口决定，落位前同样先露骨架屏） -->
+        <v-list v-if="articlesPending || (latestBlogs.length === 0 && (latestLoading || sidebarBooting))" class="sidebar-article-list">
             <v-list-item v-for="n in 10" :key="n" class="sidebar-skeleton-item">
                 <template v-slot:prepend>
                     <v-skeleton-loader type="image" width="90" height="50.625" class="sidebar-skeleton-img" />
@@ -131,6 +131,8 @@ import { useRoute } from 'vue-router';
 import { useSearch } from '@/utils/useSearch';
 import coverRect from '@/assets/images/cover-rect.png';
 const route = useRoute()
+// 是否详情页：这张卡片在详情页归「相关文章」，全局「最新发布」不参与
+const isDetailPage = () => route.path.includes('/detail')
 
 const {triggerSearch} = useSearch()
 
@@ -292,6 +294,8 @@ const latestBlogs = ref([])
 const latestLoading = ref(false)
 // 首页刷新首屏：先藏起标签/热门，让最新发布上移到它们的位置并露骨架屏，数据落位后再放行
 const sidebarBooting = ref(route.path === '/')
+// 详情页这张卡片正文待定：先露骨架屏，别显示上一页残留的列表
+const articlesPending = ref(isDetailPage())
 
 // ============================================================
 // 搜索
@@ -327,9 +331,6 @@ const renderHotList = async() => {
     const res = await hotListApi()
     hotBlogs.value =  res.data
 }
-
-// 是否详情页：这张卡片在详情页归「相关文章」，全局「最新发布」不参与
-const isDetailPage = () => route.path.includes('/detail')
 
 const renderLatestList = async() => {
     // 记下发起点：详情数据回来后会切「相关文章」，这份在途结果就不能再写
@@ -372,6 +373,8 @@ const handleDetailData = (data) => {
         // 无分类文章：这张卡片没有归属，回退全局「最新发布」兜底
         renderLatestList()
     }
+    // 卡片内容已定：撤骨架屏（兜底那次由 latestLoading 顶住）
+    articlesPending.value = false
     // 如果有标签数据，更新标签数据；无标签则回退全局「文章标签」
     if (data.tags && data.tags.length > 0) {
         titles.value.tags = '标签'
@@ -422,9 +425,14 @@ watch(() => route.path,(newPath) => {
     // 隐藏态只在首页有效：进详情页不会再拉最新发布，标志位留着会让标签/热门一直被藏
     if(newPath !== '/') sidebarBooting.value = false
     if(!newPath.includes('/detail')){
+        // 离开详情页：一并清掉骨架屏标志，详情接口失败（不 emit detail-data）时不留一个一直转的骨架
+        articlesPending.value = false
         renderHotList()
         renderLatestList()
         renderTagList()
+    } else {
+        // 进详情页：卡片换成这篇的相关文章，落位前先露骨架屏
+        articlesPending.value = true
     }
 })
 
