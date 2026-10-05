@@ -47,6 +47,7 @@
       :color="isFavorite ? 'red' : 'grey'"
       @click="handleFavoriteToggle"
       :loading="favoriteLoading"
+      class="detail-favorite-btn"
       stacked
     >
       <v-icon size="15" class="mb-1">
@@ -387,6 +388,17 @@ watch(() => isLoggedIn.value, () => {
 }
 
 /* 行内代码字号：已上移到 markdown-preview.scss（详情页与通知/协议弹窗共用同一档字号） */
+
+/* ============================================================
+   底部操作栏
+   ============================================================ */
+/* 收藏按钮：stacked 默认 72×72，激活遮罩跟着整块变大；宽度只能靠改写 min-width 收窄
+ * （--v-btn-width 与 padding 都改不动它）。宽高固定，避免收藏数从无到有时盒子撑宽跳动 */
+.detail-favorite-btn.v-btn {
+  min-width: 56px;
+  height: 44px;
+  padding: 0 8px;
+}
 
 /* ============================================================
    xs（< 600px）：标题缩一档
