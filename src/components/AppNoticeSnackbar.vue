@@ -1,5 +1,5 @@
 <template>
-  <!-- ===== Snackbar ===== -->
+  <!-- ===== 提示条 ===== -->
   <v-snackbar
     v-model="visible"
     z-index="9999"
