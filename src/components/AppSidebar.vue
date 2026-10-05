@@ -64,7 +64,7 @@
                     <v-skeleton-loader type="subtitle" />
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                    <v-skeleton-loader type="subtitle" class="sidebar-skeleton-date" />
+                    <v-skeleton-loader type="subtitle" />
                 </v-list-item-subtitle>
             </v-list-item>
         </v-list>
@@ -647,11 +647,13 @@ onUnmounted(() => {
   :deep(.v-skeleton-loader__text) {
     margin: 1px 0;
   }
-}
 
-// Date subtitle narrower than title
-.sidebar-skeleton-date :deep(.v-skeleton-loader__text) {
-  max-width: 50%;
+  // 标题条顶到内容区右边；宽度卡在 Vuetify 的 max-width: 70% 上，改 max-width 才有效
+  :deep(.v-list-item-title .v-skeleton-loader__subtitle) {
+    max-width: 100%;
+  }
+
+  // 日期条不另设尺寸：与列表页日期骨同源的原生值（宽 70%、高 16px），自定义宽度会让它比列表页短一截
 }
 
 // ============================================================
@@ -716,7 +718,9 @@ onUnmounted(() => {
   width: 16px !important; /* 调整为更小的值 */
 }
 
-:deep(.customImg+.v-list-item__spacer){
+/* 骨架图没有 customImg 类，spacer 会落在默认 16px，把内容列推右 6px —— 与真实图一起压到 10px */
+:deep(.customImg+.v-list-item__spacer),
+:deep(.sidebar-skeleton-img+.v-list-item__spacer){
     width: 10px !important; /* 调整为更小的值 */
 }
 
