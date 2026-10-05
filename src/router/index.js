@@ -1,6 +1,6 @@
 import AppIndex from '@/views/AppIndex.vue'
 import AppLayout from '@/views/AppLayout.vue'
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHistory, START_LOCATION} from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
 
@@ -36,7 +36,15 @@ const routes = [
 
 const router = createRouter({
     history:createWebHistory(import.meta.env.VITE_ROUTER_URL), //采用 html5 路由模式
-    routes
+    routes,
+    // 传了 scrollBehavior，vue-router 才置 scrollRestoration = manual 并接管滚动；
+    // 不传则刷新时由浏览器恢复位置，afterEach 里的 scrollTo 拦不住
+    scrollBehavior(to, from, savedPosition) {
+      // 首次导航（F5、直接开链接）回顶，不认浏览器的恢复点
+      if (from === START_LOCATION) return { top: 0 }
+      // 回退/前进恢复离开前的位置，其余跳转回顶
+      return savedPosition || { top: 0 }
+    }
 })
 
 // 配置管理
@@ -130,12 +138,6 @@ router.beforeEach(async(to, from, next) => {
   }
 
   next()
-})
-
-// 路由守卫完成后的回调 - 可以在页面加载后执行一些操作
-router.afterEach(() => {
-  // 滚动到顶部
-  window.scrollTo(0, 0)
 })
 
 // 暴露 loadClientConfig 供根组件等待配置就绪
