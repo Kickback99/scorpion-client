@@ -200,8 +200,13 @@ const handleClose = () => { visible.value = false }
   --dialog-scale: 1;
   --heading-scale: 1;
 
+  // 弹窗标题对齐详情页 h1（桌面 28px / xs 24px），两档都要大于正文里的 h2（桌面 24、移动 16）
   :deep(.v-card-title) {
-    font-size: calc(1rem * var(--dialog-scale)) !important;
+    font-size: 28px !important;
+
+    @media (max-width: 599.98px) {
+      font-size: 24px !important;
+    }
   }
 
   :deep(.detail-panel) {
