@@ -610,18 +610,9 @@ onUnmounted(() => {
 }
 
 // ============================================================
-// 最新发布 / 相关文章：文字栏顶部对齐封面（只调对齐，不改字号）
+// 最新发布 / 相关文章：文字栏顶部对齐封面
 // ============================================================
-// .v-list-item 是 grid + align-items: center，文字栏默认居中（align-self: center 且 display: block）：
-// 实测标题比封面顶低 8.3px。让文字栏拉伸到与封面等高（封面是行内最高项），再让它内部纵向排列，
-// 标题就自然贴到封面顶，日期紧跟标题下方
-.sidebar-article-list {
-  :deep(.v-list-item__content) {
-    display: flex;
-    flex-direction: column;
-    align-self: stretch !important;
-  }
-}
+// 规则已抽到 main.scss 的 .sidebar-article-list，AppSidebar / AppMobileRelated 共用一份
 
 // 日期原先用 margin-top: auto 压到封面底做上下对齐，但那样日期紧贴下一项标题、分不出层次，
 // 现改为紧跟标题、把空白留在日期下方。骨架屏随之不再需要还原 3.6px 位移

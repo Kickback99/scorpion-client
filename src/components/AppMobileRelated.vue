@@ -113,17 +113,9 @@ watch(() => props.articles, (val) => {
 }
 
 // ============================================================
-// 相关文章：文字栏顶部对齐封面（同 AppSidebar f25652e3，只调对齐，不改字号）
+// 相关文章：文字栏顶部对齐封面
 // ============================================================
-// .v-list-item 是 grid + align-items: center，文字栏默认居中（align-self: center 且 display: block）：
-// 实测标题比封面顶低 8.3px。让文字栏拉伸到与封面等高，再让它内部纵向排列，标题就自然贴到封面顶
-.sidebar-article-list {
-  :deep(.v-list-item__content) {
-    display: flex;
-    flex-direction: column;
-    align-self: stretch !important;
-  }
-}
+// 规则在 main.scss 的 .sidebar-article-list，与 AppSidebar 共用一份
 
 // ============================================================
 // 移动端标题字号缩放（与 AppComment 评论区标题保持一致）
