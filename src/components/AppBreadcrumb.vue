@@ -249,6 +249,25 @@ const handleItemClick = (item) => {
   align-self: center !important;
 }
 
+/* 搜索框压到 32px：density="compact" 已是最矮档（40px），--v-input-control-height 改不动它。
+ * 内部三层要一起撑满并去掉垂直 padding，否则图标与输入框会悬在顶部 */
+.mobile-search :deep(.v-field) {
+  height: 32px;
+}
+
+.mobile-search :deep(.v-field__field),
+.mobile-search :deep(.v-field__append-inner) {
+  height: 100%;
+  min-height: 0;
+}
+
+.mobile-search :deep(.v-field__input) {
+  height: 100%;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 :deep(.v-text-field .v-label) {
   font-size: 10px !important;
 }
