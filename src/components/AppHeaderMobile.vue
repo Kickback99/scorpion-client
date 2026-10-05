@@ -65,8 +65,9 @@
     <!-- ===== 移动端主题切换按钮（图标按钮） ===== -->
     <v-btn
       size="small"
-      @click="handleToggleTheme"
       icon
+      @click="handleToggleTheme"
+      class="app-icon-btn"
     >
       <v-icon>{{ themeStore.isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}</v-icon>
     </v-btn>
@@ -76,7 +77,7 @@
       size="small"
       icon
       @click="drawer = !drawer"
-      class="ml-auto"
+      class="ml-auto app-icon-btn"
     >
       <v-icon>mdi-menu</v-icon>
     </v-btn>
