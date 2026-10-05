@@ -292,8 +292,8 @@ const user = ref({
 const hotBlogs = ref([])
 const latestBlogs = ref([])
 const latestLoading = ref(false)
-// 首页刷新首屏：先藏起标签/热门，让最新发布上移到它们的位置并露骨架屏，数据落位后再放行
-const sidebarBooting = ref(route.path === '/')
+// 整页刷新首屏：先藏标签/热门，让这张卡片上移并露骨架屏，内容落位后放行
+const sidebarBooting = ref(route.path === '/' || isDetailPage())
 // 详情页这张卡片正文待定：先露骨架屏，别显示上一页残留的列表
 const articlesPending = ref(isDetailPage())
 
@@ -332,6 +332,15 @@ const renderHotList = async() => {
     hotBlogs.value =  res.data
 }
 
+// 首屏收尾：等卡片 DOM 落位再放行标签/热门，并重判热门文章的固定态
+const releaseBoot = async () => {
+    if (!sidebarBooting.value) return
+    await nextTick()
+    sidebarBooting.value = false
+    await nextTick()
+    handleHotScroll()
+}
+
 const renderLatestList = async() => {
     // 记下发起点：详情数据回来后会切「相关文章」，这份在途结果就不能再写
     const startedAt = route.path
@@ -344,13 +353,7 @@ const renderLatestList = async() => {
         latestBlogs.value = res.data
     } finally {
         latestLoading.value = false
-        // 首屏收尾：等最新发布的 DOM 落位再放行标签/热门；放行后重新判定热门文章的滚动固定状态
-        if (sidebarBooting.value) {
-            await nextTick()
-            sidebarBooting.value = false
-            await nextTick()
-            handleHotScroll()
-        }
+        releaseBoot()
     }
 }
 
@@ -369,6 +372,8 @@ const handleDetailData = (data) => {
     if (data.cateArticles && data.cateArticles.length > 0) {
         titles.value.articles = '相关文章'
         latestBlogs.value = data.cateArticles
+        // 相关文章落位即首屏收尾；无相关文章那支交给 renderLatestList 收尾
+        releaseBoot()
     } else {
         // 无分类文章：这张卡片没有归属，回退全局「最新发布」兜底
         renderLatestList()
@@ -422,7 +427,7 @@ onUnmounted(() => {
 // ============================================================
 // 监听路由地址变化
 watch(() => route.path,(newPath) => {
-    // 隐藏态只在首页有效：进详情页不会再拉最新发布，标志位留着会让标签/热门一直被藏
+    // 上移只在整页刷新时算数；SPA 跳进详情页要立刻放开
     if(newPath !== '/') sidebarBooting.value = false
     if(!newPath.includes('/detail')){
         // 离开详情页：一并清掉骨架屏标志，详情接口失败（不 emit detail-data）时不留一个一直转的骨架
