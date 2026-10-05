@@ -157,18 +157,27 @@ const loadMarkdown = async (force = false) => {
 // 文章详情
 // ============================================================
 const renderArticleItem = async() => {
+  // 请求代次：详情页之间跳转或中途离开时会有多个请求在飞，只有最新一次可被采纳
+  const id = props.id
   isLoading.value = true
   let res
   try {
-    res = await articleDetailApi(props.id);
+    res = await articleDetailApi(id);
   } catch (e) {
     // 资源不存在（后端 405，如 detail/1、detail/sssw 无对应文章）：直接跳 404，不弹提示
     // 其余错误（网络超时/断网/服务异常）已由 http.js 拦截器统一提示，回首页兜底
     router.replace(e?.code === 405 ? '/404' : '/')
     return
   } finally {
-    isLoading.value = false
+    // 过期响应不得提前收起骨架屏：期间已切到别的文章/离开详情页时，交给那次请求收尾
+    if (String(id) === String(route.params.id)) isLoading.value = false
   }
+  // 更新文章浏览量到redis（article.id 值是对外 url_id，后端解析为真实 id）
+  updateViewCountApi(res.data.articleItem.id).catch(err => console.error('更新浏览量失败', err))
+
+  // 期间路由已切走：本次结果作废，不覆盖正文也不 emit，否则会把这篇的相关文章写到别的页面
+  if (String(id) !== String(route.params.id)) return
+
   article.value = res.data.articleItem;
   isFavorite.value = res.data.isFavorite || false;
   cateArticles.value = res.data.cateArticles;
@@ -177,9 +186,6 @@ const renderArticleItem = async() => {
     cateArticles: cateArticles.value,
     tags: tags.value
   });
-
-  // 更新文章浏览量到redis（article.id 值是对外 url_id，后端解析为真实 id）
-  updateViewCountApi(article.value.id).catch(err => console.error('更新浏览量失败', err))
 
   // 异步预加载正文 Markdown（markdownReady 驱动骨架屏 → 标题与正文一起出现）
   loadMarkdown();
