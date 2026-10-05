@@ -1,5 +1,5 @@
 <template>
-  <!-- ===== Dialog ===== -->
+  <!-- ===== 弹窗 ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
     <v-card :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
       <!-- 标题栏 -->

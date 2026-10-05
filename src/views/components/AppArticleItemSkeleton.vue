@@ -27,7 +27,7 @@
         <v-skeleton-loader type="text@2" />
       </v-list-item-subtitle>
 
-      <!-- Metadata row -->
+      <!-- 元信息行 -->
       <v-list-item-subtitle class="skeleton-meta pb-1">
         <v-skeleton-loader type="subtitle" />
       </v-list-item-subtitle>
@@ -66,7 +66,7 @@ const titleType = computed(() => {
 
 <style scoped lang="scss">
 // ============================================================
-// Container matching AppArticleItem
+// 容器与 AppArticleItem 对齐
 // ============================================================
 .skeleton-cover-wrap {
   margin: 0 20px 0 12px;
@@ -90,14 +90,13 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Aggressive bone margin reset
+// 骨块外边距清零
 // ============================================================
-// Vuetify default: all bone types have margin: 16px. This inflates the card
-// by ~128px of wasted space. We reset to minimal values.
+// Vuetify 骨块默认 margin: 16px，一张卡片白吃 ~128px 空隙，这里压到最小
 .article-skeleton {
   :deep(.v-skeleton-loader__image) {
     margin: 0;
-    height: 100%; // fill explicit height from props
+    height: 100%; // 撑满 props 传入的显式高度
   }
 
   :deep(.v-skeleton-loader__heading) {
@@ -115,7 +114,7 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Title row
+// 标题行
 // ============================================================
 .skeleton-title-row {
   display: flex;
@@ -133,7 +132,7 @@ const titleType = computed(() => {
   min-width: 0;
 }
 
-// Ensure skeleton loader fills title area
+// 保证骨架撑满标题区
 // 骨高 = 字号 + 加厚量、骨距 = 上留白 = 行高 − 字号 − 加厚量、下留白 0：两行骨合计仍等于真卡片标题盒高
 // （不能给 .skeleton-title 加 flex-direction——骨自带 flex 1 1 100%，竖排会被压成 0 高）
 .skeleton-title {
@@ -192,7 +191,7 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Description (matches AppArticleItem .description { margin-top: 3px })
+// 简介块（对齐 AppArticleItem 的 .description margin-top: 3px）
 // ============================================================
 .skeleton-desc {
   margin-top: 3px;
@@ -206,7 +205,7 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Metadata (matches AppArticleItem .metadata { padding-top: 8px })
+// 元信息块（对齐 AppArticleItem 的 .metadata padding-top: 8px）
 // ============================================================
 .skeleton-meta {
   padding-top: 8px;
@@ -222,7 +221,7 @@ const titleType = computed(() => {
 }
 
 // ============================================================
-// Match AppArticleItem list-item vertical padding
+// 上下内边距对齐 AppArticleItem 的 list-item
 // ============================================================
 :deep(.v-list-item) {
   padding-bottom: 10px !important;

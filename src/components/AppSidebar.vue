@@ -636,12 +636,12 @@ onUnmounted(() => {
 // 现改为紧跟标题、把空白留在日期下方。骨架屏随之不再需要还原 3.6px 位移
 
 // ============================================================
-// Sidebar skeleton: aggressive bone margin reset
+// 侧栏骨架：骨块外边距清零
 // ============================================================
 .sidebar-skeleton-item {
   :deep(.v-skeleton-loader__image) {
     margin: 0;
-    height: 100%; // fill explicit height from props (50px), override default 150px
+    height: 100%; // 撑满 props 传入的 50px，覆盖默认 150px
   }
 
   :deep(.v-skeleton-loader__text) {
