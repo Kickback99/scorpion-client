@@ -427,11 +427,16 @@ onUnmounted(() => {
 // 路由监听
 // ============================================================
 // 监听路由地址变化
-watch(() => route.path,(newPath) => {
+watch(() => route.path,(newPath, oldPath) => {
     // 上移只在整页刷新时算数；SPA 跳进详情页要立刻放开
     if(newPath !== '/') sidebarBooting.value = false
     if(!newPath.includes('/detail')){
-        // 离开详情页：一并清掉骨架屏标志，详情接口失败（不 emit detail-data）时不留一个一直转的骨架
+        // 从详情页回来：先撤掉旧的相关文章再拉，否则旧标题旧列表会挂到新数据回来
+        if (oldPath.includes('/detail')) {
+            titles.value.articles = '最新发布'
+            latestBlogs.value = []
+        }
+        // 清掉骨架屏标志：详情接口失败（不 emit）时不留一个一直转的骨架
         articlesPending.value = false
         renderHotList()
         renderLatestList()
