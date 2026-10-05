@@ -2,7 +2,7 @@
   <div v-if="smAndDown && (tagList.length > 0 || articleList.length > 0)" class="mt-5" :style="{ '--related-scale': scale }">
     <!-- 相关文章 — 完全复用 AppSidebar 样式 -->
     <AppBlogBox v-if="articleList.length > 0" :title="titles.articles">
-      <v-list>
+      <v-list class="sidebar-article-list">
         <v-list-item
           v-for="(item, index) in articleList"
           :key="item.id"
@@ -110,6 +110,19 @@ watch(() => props.articles, (val) => {
 // 相关标签 chip：同 AppSidebar，深色模式下文本改用主题 on-surface 保证可读性
 :deep(.v-chip__content) {
   color: rgb(var(--v-theme-on-surface));
+}
+
+// ============================================================
+// 相关文章：文字栏顶部对齐封面（同 AppSidebar f25652e3，只调对齐，不改字号）
+// ============================================================
+// .v-list-item 是 grid + align-items: center，文字栏默认居中（align-self: center 且 display: block）：
+// 实测标题比封面顶低 8.3px。让文字栏拉伸到与封面等高，再让它内部纵向排列，标题就自然贴到封面顶
+.sidebar-article-list {
+  :deep(.v-list-item__content) {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch !important;
+  }
 }
 
 // ============================================================
