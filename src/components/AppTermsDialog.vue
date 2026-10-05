@@ -140,33 +140,35 @@ const handleClose = () => { visible.value = false }
 .terms-skeleton :deep(.v-skeleton-loader__text + .v-skeleton-loader__text) {
   max-width: 100%;
 }
+/* 骨高取正文字号 16px（骨代表字形墨迹、不代表行盒），与详情页同一套；
+   骨距 = (行高 30.4 − 16) / 2 = 7.2px，节距与真实正文逐行对齐 */
 .terms-skeleton :deep(.v-skeleton-loader__text) {
-  height: 20px;
-  margin: 5.2px 0;
+  height: 16px;
+  margin: 7.2px 0;
 }
 
 // ============================================================
 // 骨架屏：标题骨（真实内容首行是 h2，之前只有内容骨、缺这一根）
 // ============================================================
-/* 高 38px = 真实 h2 行盒（30px 行高 + 8px 下边框/内边距）；下间距 10.8 = h2 下外边距 16 − 内容骨 5.2 */
+/* 高 38px = 真实 h2 行盒（30px 行高 + 8px 下边框/内边距）；下间距 8.8 = h2 下外边距 16 − 内容骨上边距 7.2 */
 .terms-skeleton-title {
-  margin-bottom: 10.8px;
+  margin-bottom: 8.8px;
 }
 .terms-skeleton-title :deep(.v-skeleton-loader__heading) {
   margin: 0;
   height: 38px;
 }
-/* 移动端（< 960px，同 display.mobile）：h2 16px → 标题骨 25.6 / 间距 11.7，正文 14px → 内容骨 18 / 骨距 4.3 */
+/* 移动端（< 960px，同 display.mobile）：h2 16px → 标题骨 25.6 / 间距 9.7，正文 14px → 内容骨 14 / 骨距 6.3 */
 @media (max-width: 959.98px) {
   .terms-skeleton-title {
-    margin-bottom: 11.7px;
+    margin-bottom: 9.7px;
   }
   .terms-skeleton-title :deep(.v-skeleton-loader__heading) {
     height: 25.6px;
   }
   .terms-skeleton :deep(.v-skeleton-loader__text) {
-    height: 18px;
-    margin: 4.3px 0;
+    height: 14px;
+    margin: 6.3px 0;
   }
 }
 
