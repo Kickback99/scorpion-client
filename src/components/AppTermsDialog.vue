@@ -5,7 +5,7 @@
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
-        <v-btn icon="mdi-close" variant="text" density="compact" size="small" @click="handleClose" />
+        <v-btn icon="mdi-close" variant="text" class="app-icon-btn-lg" @click="handleClose" />
       </v-card-title>
 
       <!-- 内容：Markdown 渲染 -->

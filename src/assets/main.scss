@@ -143,6 +143,17 @@ html, body {
   }
 }
 
+/* ========== 大图标按钮（48px 按钮 / 24px 图标）：沿用「四周留 6px」口径，圆放大到 36px ========== */
+.app-icon-btn-lg {
+  .v-btn__overlay,
+  .v-ripple__container {
+    width: 36px;
+    height: 36px;
+    top: 6px;
+    left: 6px;
+  }
+}
+
 /* ========== 主题切换防闪：卡片 / 按钮底色不参与过渡 ==========
    Vuetify 的 .v-card / .v-btn 把 background 放进了 transition-property
    （$card-transition-property: box-shadow, opacity, background；
