@@ -4,8 +4,6 @@
             <div class="dialog-container" :style="{ '--login-scale': handleFontScale }">
                 <v-btn
                     icon
-                    color="primary"
-                    active="primary"
                     variant="text"
                     size="0"
                     class="dialog-close-btn"
