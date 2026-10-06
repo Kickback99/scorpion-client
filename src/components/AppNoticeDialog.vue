@@ -193,6 +193,13 @@ const handleCopyClick = (e) => {
   &.md-vuepress.md-dark :deep(.v-card-title) {
     color: #fff !important;
   }
+  /* 关闭图标走同一条口径：它读按钮的 color、不跟标题走，vuepress 下会比标题浅一档 */
+  &.md-vuepress :deep(.v-card-title .v-btn) {
+    color: #000 !important;
+  }
+  &.md-vuepress.md-dark :deep(.v-card-title .v-btn) {
+    color: #fff !important;
+  }
 
   /* 卡片自己滚会把标题一起滚走（实测卡片 952px、内容 2568px）；改卡片不滚、滚动下放到正文区，只有标题常驻 */
   overflow: hidden;

@@ -1,7 +1,10 @@
 <template>
   <!-- ===== 弹窗 ===== -->
   <v-dialog v-model="visible" :max-width="dialogMaxWidth" @update:model-value="handleClose">
-    <v-card :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }">
+    <v-card
+      :class="[`md-${mdTheme}`, themeStore.isDark ? 'md-dark' : 'md-light']"
+      :style="{ '--dialog-scale': scale, '--heading-scale': headingScale }"
+    >
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         {{ title }}
@@ -53,6 +56,8 @@ const headingScale = useDialogFontScale(2 / 3)
 const visible = ref(false)
 const configStore = useConfigStore()
 const themeStore = useThemeStore()
+// 当前 markdown 主题：标题与关闭图标的颜色要跟着它走（vuepress 与 github 的正文色不同）
+const mdTheme = computed(() => configStore.getArticleTheme())
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -208,6 +213,15 @@ const handleClose = () => { visible.value = false }
     @media (max-width: 599.98px) {
       font-size: 24px !important;
     }
+  }
+
+  /* 标题与关闭图标色跟随 md 主题的正文色：vuepress 把正文写成纯黑/纯白，
+     留在 on-surface 0.87 会比正文浅；github 下两者本就同色，无需覆盖 */
+  &.md-vuepress :deep(.v-card-title, .v-card-title .v-btn) {
+    color: #000 !important;
+  }
+  &.md-vuepress.md-dark :deep(.v-card-title, .v-card-title .v-btn) {
+    color: #fff !important;
   }
 
   :deep(.detail-panel) {
