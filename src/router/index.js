@@ -3,6 +3,7 @@ import AppLayout from '@/views/AppLayout.vue'
 import {createRouter, createWebHistory, START_LOCATION} from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useConfigStore } from '@/store/config'
+import { startRouteLoading, stopRouteLoading } from '@/composables/useRouteLoading'
 
 // 非首屏路由懒加载：详情页引用的 Markdown 编辑器（v-md-editor + highlight.js + prismjs 等重型依赖）
 // 只有访问到对应页面时才下载对应 chunk，避免拖慢首页首屏
@@ -25,7 +26,8 @@ const routes = [
             name: 'Profile',
             component: AppProfileCenter,
             // 需登录访问：守卫按 meta 判定，不再比较 path 字面量
-            meta: { requiresAuth: true }
+            // routeLoading：懒加载 chunk + 守卫 await verifyLogin 期间无任何反馈
+            meta: { requiresAuth: true, routeLoading: true }
         },
         {path:"/detail/:id",name:'detail',component:AppDetail,props:true},
         {path:'/:pathMatch(.*)*',redirect:'/404'},
@@ -95,6 +97,14 @@ const loadClientConfig = async (forceRefresh = false) => {
  * @param {import('vue-router').RouteLocationNormalized} route
  */
 export const requiresLogin = (route) => route.matched.some(record => record.meta.requiresAuth)
+
+// 注册在业务守卫之前，窗口要连 loadClientConfig 那段一起盖住
+router.beforeEach((to) => {
+  if (to.meta.routeLoading) startRouteLoading()
+})
+// afterEach 不按 meta 判定：未登录重定向后 to 已是 '/'，会漏停
+router.afterEach(() => stopRouteLoading())
+router.onError(() => stopRouteLoading())
 
 // 添加路由守卫
 router.beforeEach(async(to, from, next) => {

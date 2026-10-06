@@ -5,12 +5,16 @@
 <!-- 全局对话框组件 -->
 <AppDialog/>
 
+<!-- 路由级 loading：必须挂在路由组件之外，导航 confirm 前它还没创建 -->
+<AppRouteLoading/>
+
 <router-view></router-view>
 </template>
 
 <script setup>
 import AppSnackbar from './components/AppSnackbar.vue';
 import AppDialog from './components/AppDialog.vue';
+import AppRouteLoading from './components/AppRouteLoading.vue';
 import {useWebSocket} from '@/server/useWebSocket'
 import { onMounted } from 'vue'
 import { useConfigStore } from './store/config.js';
