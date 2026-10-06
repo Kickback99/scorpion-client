@@ -11,13 +11,12 @@
         <span class="notice-dialog-title">{{ title }}</span>
         <v-btn icon="mdi-close" variant="text" class="app-icon-btn-lg" @click="handleClose" />
       </v-card-title>
-      <!-- 推送时间放在滚动区「内部」，随正文滚走；与管理端 NoticeBell 一致，常驻的只有标题 -->
+      <v-card-subtitle>
+        <v-divider color="primary" opacity=".7" gradient><span class="text-caption" style="flex-shrink: 0;">推送于 {{ pushTime || '-' }}</span></v-divider>
+      </v-card-subtitle>
+
+      <!-- 内容：Markdown 渲染 -->
       <v-card-text>
-        <!-- 外边距必须加在外层：v-divider 的 class 透传到内层 <hr>，而 wrapper 是 flex + align-items:center，
-             居中算的是 hr 的边距盒，给 hr 加 mb 会把线顶高错位 -->
-        <div class="mb-4">
-          <v-divider color="primary" opacity=".7" gradient><span class="text-caption" style="flex-shrink: 0;">推送于 {{ pushTime || '-' }}</span></v-divider>
-        </div>
         <div class="detail-panel" @click="handleCopyClick">
           <!-- 懒加载期间交给 Suspense 兜底，否则弹窗先空一截、加载完再撑开 -->
           <Suspense>
@@ -150,7 +149,7 @@ const handleCopyClick = (e) => {
   :deep(.v-card-title) {
     font-size: 28px !important;
     font-weight: 600 !important;
-    // 标题与关闭按钮之间必须留白：标题会吃满可用宽度，justify-space-between 无剩余空间可分
+    // 标题会吃满可用宽度，space-between 无剩余空间可分，得手动留白
     gap: 8px;
 
     @media (max-width: 599.98px) {
@@ -158,13 +157,12 @@ const handleCopyClick = (e) => {
     }
   }
 
-  /* 标题必须包在元素里：裸文本节点当 flex 子项时 min-width 是 auto，且 Vuetify 的 .v-card-title
-     是 nowrap，长标题不可收缩会撑破弹窗、把 × 挤出屏幕（实测标题 2208px vs 卡片 600px） */
+  /* 裸文本节点做 flex 子项时 min-width 是 auto，配 nowrap 无法收缩，长标题会撑破弹窗把 × 挤出去 */
   .notice-dialog-title {
     min-width: 0;
     line-height: 1.4;
 
-    /* 最多两行；nowrap 要显式改回 normal 才换得了行 */
+    /* Vuetify 的 nowrap 要先改回 normal，下面才截得了两行 */
     white-space: normal;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -201,18 +199,15 @@ const handleCopyClick = (e) => {
     color: #fff !important;
   }
 
-  /* 卡片自己滚会把标题一起滚走（实测卡片 952px、内容 2568px）；改卡片不滚、滚动下放到正文区，只有标题常驻 */
-  overflow: hidden;
-
-  // 只钉标题；推送时间已移入 .v-card-text，随正文滚走
+  /* 卡片自己滚 + 标题 sticky，subtitle 里的推送时间才能跟正文一起滚走；
+     若改成卡片不滚、正文内滚，subtitle 是滚动区的兄弟节点，会被连标题一起钉住 */
   :deep(.v-card-title) {
-    flex-shrink: 0;
-  }
-
-  :deep(.v-card-text) {
-    overflow-y: auto;
-    // flex 子项默认 min-height: auto，不归零就不会收缩、滚不起来
-    min-height: 0;
+    position: sticky;
+    top: 0;
+    /* 要压过正文里的定位元素（代码块 z-index 1、行号到 4），同值会被 DOM 更靠后的它们盖住；
+       background 不能省，否则正文从标题底下透出来 */
+    z-index: 10;
+    background: inherit;
   }
 }
 
