@@ -219,11 +219,20 @@ import { deleteFavoriteApi, userFavoritesApi, getUserCommentsApi,deleteCommentAp
 import { articleDetailApi, articleListApi } from '@/api/article'
 import { useConfigStore } from '@/store/config.js'
 import AppProfile from './AppProfile.vue'
+import AppTabLoading from './AppTabLoading.vue'
 
 // 重型 tab 内容按需加载：两者都含 VDataTable 家族（AppContentList 自身 + 反馈表格），
 // 静态引入会把整个家族拖进本路由首屏，耽误默认 tab「个人资料」的渲染
-const AppContentList = defineAsyncComponent(() => import('./AppContentList.vue'))
-const AppFeedbackList = defineAsyncComponent(() => import('./AppFeedbackList.vue'))
+const AppContentList = defineAsyncComponent({
+  loader: () => import('./AppContentList.vue'),
+  loadingComponent: AppTabLoading,
+  delay: 200, // 命中缓存时几乎立即返回，不延迟会闪一下占位
+})
+const AppFeedbackList = defineAsyncComponent({
+  loader: () => import('./AppFeedbackList.vue'),
+  loadingComponent: AppTabLoading,
+  delay: 200,
+})
 
 const configStore = useConfigStore()
 
@@ -322,6 +331,15 @@ watch(tab, (newTab) => {
 </script>
 
 <style scoped>
+/* ============================================================
+   异步 tab 加载
+   ============================================================ */
+/* 空内容会随 .v-window__container 自带的 0.3s 高度过渡塌到 0（实测 584→0→213），下限必须加这层 */
+/* 要盖住列表 tab 空态的自然高（实测 213，移动端 186），低于它占位与空态之间会露高度差 */
+:deep(.v-tabs-window .v-window__container) {
+  min-height: 230px;
+}
+
 /* ============================================================
    移动端字号缩放
    ============================================================ */
