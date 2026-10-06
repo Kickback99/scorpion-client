@@ -9,7 +9,7 @@
       <!-- 标题栏 -->
       <v-card-title class="d-flex align-center justify-space-between">
         <span class="notice-dialog-title">{{ title }}</span>
-        <v-btn icon="mdi-close" variant="text" density="compact" size="small" @click="handleClose" />
+        <v-btn icon="mdi-close" variant="text" class="app-icon-btn-lg" @click="handleClose" />
       </v-card-title>
       <!-- 推送时间放在滚动区「内部」，随正文滚走；与管理端 NoticeBell 一致，常驻的只有标题 -->
       <v-card-text>
