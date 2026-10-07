@@ -1,6 +1,7 @@
 <template>
   <!-- ===== 底部页脚 ===== -->
-  <v-footer class="app-footer" color="transparent" :style="{ '--footer-scale': scale }">
+  <!-- 内容骨架屏期间不渲染：详情页骨架恰好撑到首屏底部，页脚会露出半截、加载完又被推走 -->
+  <v-footer v-if="!skeletonVisible" class="app-footer" color="transparent" :style="{ '--footer-scale': scale }">
     <v-container class="py-3">
       <v-divider />
       <div class="footer-text text-medium-emphasis text-center mt-3">powered by scorpioncode</div>
@@ -10,12 +11,16 @@
 
 <script setup>
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
+import { usePageSkeleton } from '@/composables/usePageSkeleton'
 
 // ============================================================
 // 数据
 // ============================================================
 // 移动端字号缩放系数（复用 4cfe2ff 引入的 composable）
 const scale = useDialogFontScale(0.8)
+
+// 页面骨架屏（详情页 / 首页列表）期间隐藏页脚
+const skeletonVisible = usePageSkeleton()
 </script>
 
 <style scoped lang="scss">

@@ -113,6 +113,7 @@ import { useDisplay } from 'vuetify';
 import { mdToPlainText } from '@/utils/useExtractText'
 import { useConfigStore } from '@/store/config';
 import { useDialogFontScale } from '@/composables/useDialogFontScale';
+import { usePageSkeletonReporter } from '@/composables/usePageSkeleton';
 
 // ============================================================
 // 数据
@@ -128,6 +129,9 @@ const scale = useDialogFontScale()
 
 const isLoading = ref(false)
 const scrollLoading = ref(false) // 滚动加载状态
+
+// 列表骨架屏期间隐藏页脚
+usePageSkeletonReporter(isLoading)
 
 import { useRoute, useRouter } from 'vue-router';
 
