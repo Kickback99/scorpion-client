@@ -127,7 +127,7 @@ const handleClose = () => { visible.value = false }
 // ============================================================
 .terms-content {
   max-height: 60vh;
-  // 与 max-height 同值：加载中(骨架)与加载后(内容)容器同高，
+  // 与 max-height 同值：加载中（骨架）与加载后（内容）容器同高，
   // 避免骨架屏切换为真实内容时因高度不一致导致上下跳动
   min-height: 60vh;
   overflow-y: auto;

@@ -119,7 +119,7 @@ class WebSocketManager {
   handleReconnect(userId, role) {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      console.log(`🔄 后台服务不可用，自动重连中 (第${this.reconnectAttempts}/${this.maxReconnectAttempts}次)，${this.reconnectInterval / 1000}s 后重试`)
+      console.log(`🔄 后台服务不可用，自动重连中（第${this.reconnectAttempts}/${this.maxReconnectAttempts}次），${this.reconnectInterval / 1000}s 后重试`)
       this.clearReconnectTimer()
       this.reconnectTimer = setTimeout(() => {
         this.init(userId, role)
