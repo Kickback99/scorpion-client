@@ -28,7 +28,7 @@ const themeBgScript = `;(function () {
 export default defineConfig(({ mode }) => {
   // 获取各种环境下的对应的变量
   let env = loadEnv(mode, process.cwd())
-  // 生产环境用 terser 剔除 console/debugger，其余环境（dev/local-cookie/test）保留日志
+  // 生产用 terser 只剔调试日志：error/warn 必须留 —— 本仓没接错误上报，线上排查就靠它
   const isProd = mode === 'production'
   return {
     base: env.VITE_BASE_URL,
@@ -36,7 +36,10 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: isProd,
+          drop_console: false,
+          pure_funcs: isProd
+            ? ['console.log', 'console.info', 'console.debug', 'console.trace']
+            : [],
           drop_debugger: isProd,
         },
       },

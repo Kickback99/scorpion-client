@@ -108,6 +108,12 @@ instance.interceptors.response.use(
             message = '服务异常，请稍后重试'
         }
         window.$snackbar?.error(message)
+        // 原始 axios error 带着 config.data（登录/改密的明文口令）与 authorization 头，
+        // 生产保留 console.error 后会被业务 catch 打进控制台，reject 前先摘掉
+        if (err.config) {
+            delete err.config.data
+            delete err.config.headers
+        }
         return Promise.reject(err)
     }
 )
