@@ -60,11 +60,9 @@ export async function createMarkdownPreview(theme = 'github') {
       // 静态 import 会把它拖进首屏包
       import('./highlight-enhancer.js'),
     ]);
-    // 按需注册语言，以后用到新语言在表里加一行即可。
-    // 每个都写字面量 import，构建才能给每种语言拆出独立 chunk。
-    // 前三个是硬依赖不能删：下面把 vue 借道 xml 高亮，而 xml 的 <script> / <style> 段
-    // 由 subLanguage 引用 javascript / css（markdown 语言也引了 xml），
-    // 缺任何一个对应段落会静默掉色 —— hljs 对未注册的 subLanguage 是原样输出、不报错
+    // 按需注册：每种语言一个字面量 import，构建才能各拆独立 chunk，新语言在表里加一行即可。
+    // xml/javascript/css 是硬依赖不能删 —— vue 借道 xml，xml 的 script/style 段又引用 javascript/css，
+    // 缺一个对应段落就静默掉色（hljs 对未注册的 subLanguage 原样输出、不报错）
     const hljsLanguages = {
       xml: () => import('highlight.js/lib/languages/xml'),
       javascript: () => import('highlight.js/lib/languages/javascript'),
