@@ -1,7 +1,7 @@
 <template>
   <v-container :class="{ 'detail-xs': xs }">
   <!-- ===== 骨架屏：加载中 ===== -->
-  <v-card v-if="isLoading || !markdownReady" variant="flat">
+  <v-card v-if="showSkeleton" variant="flat">
     <v-card-title>
       <v-skeleton-loader type="heading" class="detail-skeleton-title" />
     </v-card-title>
@@ -95,6 +95,7 @@ import AppComment from '@/components/AppComment.vue'
 import AppMobileRelated from '@/components/AppMobileRelated.vue'
 import AppArticleToc from '@/components/AppArticleToc.vue'
 import AppBackToTop from '@/components/AppBackToTop.vue'
+import { usePageSkeletonReporter } from '@/composables/usePageSkeleton';
 
 // ============================================================
 // 数据
@@ -128,6 +129,11 @@ const isArticleLoaded = computed(() => !isLoading.value && !!article.value.id);
 // 正文是否加载完成：手动预加载 Markdown（异步），完成后置 true；
 // 骨架屏持续到此时，标题与正文一起出现，相关文章/标签/收藏也随之同步
 const markdownReady = ref(false);
+// 标题 + 正文骨架屏是否可见：正文就绪前一直显示
+const showSkeleton = computed(() => isLoading.value || !markdownReady.value);
+// 骨架屏期间隐藏页脚
+usePageSkeletonReporter(showSkeleton);
+
 // 系统配置
 const configStore = useConfigStore()
 
