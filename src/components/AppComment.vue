@@ -407,9 +407,9 @@ const shouldShowChildActions = (comment) => {
 
 // 初始化配置
 const initConfig = () => {
-  // 从配置中获取子评论显示数量(使用 getter)
+  // 从配置中获取子评论显示数量（使用 getter）
   childCommentLimit.value = configStore.childCommentLimit
-  // 从配置中获取子评论分页大小(使用 getter)
+  // 从配置中获取子评论分页大小（使用 getter）
   childPageSize.value = configStore.childPageSize
 }
 

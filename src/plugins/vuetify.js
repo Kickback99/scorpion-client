@@ -13,6 +13,6 @@ export default {
       
     },
     display: {
-      mobileBreakpoint: 'md', // 只有md以下(不包含)才为移动设备
+      mobileBreakpoint: 'md', // 只有md以下（不包含）才为移动设备
     },
   }
