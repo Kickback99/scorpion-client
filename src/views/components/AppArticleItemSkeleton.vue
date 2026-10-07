@@ -199,7 +199,7 @@ const titleType = computed(() => {
 .skeleton-desc {
   margin-top: 3px;
 
-  /* 骨高 = 字号（14px，与标题骨同规则）：上下留白各 (行高 − 14) / 2，骨顶因此落在真实墨迹顶
+  /* 骨高 = 字号（14px，与标题骨同规则）：上下留白各（行高 − 14） / 2，骨顶因此落在真实墨迹顶
      （14px 档墨迹顶距行盒顶 = (行高 − 16) / 2 + 1 = (行高 − 14) / 2），2 行合计 44px = 真简介块高 */
   :deep(.v-skeleton-loader__text) {
     height: 14px;

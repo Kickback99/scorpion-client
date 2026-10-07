@@ -135,8 +135,8 @@ const cols = computed(() => {
   if (bp === 'sm') return 6       // 2列
   if (bp === 'md') return 4       // 3列
   if (bp === 'lg') return 3       // 4列
-  if (bp === 'xl') return 2.4     // 5列 (12/5)
-  return 2                        // xxl: 6列 (12/6)
+  if (bp === 'xl') return 2.4     // 5列（12/5）
+  return 2                        // xxl: 6列（12/6）
 })
 
 const sm = computed(() => {
