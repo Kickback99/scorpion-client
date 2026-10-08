@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => {
       exclude: [
         'markdown-it-toc-done-right', // 明确排除这个包
         // 排除 vuetify 预构建：避免 optimizeDeps(esbuild) 预构建与 vite-plugin-vuetify 的
-        // virtual sass 模块(resolveId 异步写入 / load 同步读取 tempFiles)在冷启动时竞态，导致 404
+        // virtual sass 模块（resolveId 异步写入 / load 同步读取 tempFiles）在冷启动时竞态，导致 404
         'vuetify',
       ]
     },

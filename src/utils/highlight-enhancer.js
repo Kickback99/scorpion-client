@@ -149,7 +149,7 @@ function markCssRoles(doc, language) {
   const roots = CSS_LANGUAGES.has(language) ? [doc.body] : [...doc.querySelectorAll(`.${CSS_SUBLANGUAGE}`)]
   roots.forEach((box) => {
     // 块类型栈：true = at 规则块（@media { ... } 里面还是规则），
-    // false = 声明块（里面是 属性: 值）
+    // false = 声明块（里面是 属性：值）
     // 只看大括号深度是不够的 —— @media 里再包一层 .foo { } 时，深度是 2，
     // 但 .foo 明明是选择器，不是属性名。
     const blockStack = []
@@ -158,7 +158,7 @@ function markCssRoles(doc, language) {
     // 当前声明里是否已经过了冒号（过了就是属性值）
     let afterColon = false
 
-    // 只有最内层是声明块时，冒号才是「属性名: 属性值」的那个冒号
+    // 只有最内层是声明块时，冒号才是「属性名：属性值」的那个冒号
     const inDeclaration = () => blockStack.length > 0 && blockStack[blockStack.length - 1] === false
 
     const step = (chunk) => {
