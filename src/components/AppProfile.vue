@@ -28,7 +28,7 @@
         <v-col cols="12" class="text-center">
           <div class="avatar-wrapper mb-4">
             <v-avatar :size="display.mobile.value ? 65 : 100" color="surface-variant">
-              <!-- 使用预览URL或默认头像 -->
+              <!-- 使用预览 URL 或默认头像 -->
               <v-img v-if="avatarPreview || profileData.avatar" :src="avatarPreview || profileData.avatar"></v-img>
               <v-icon v-else size="60" color="primary">mdi-account</v-icon>
               <!-- 使用 v-file-input 触发文件选择 -->
@@ -262,7 +262,7 @@ const saving = ref(false)
 
 // 文件相关
 const fileInputRef = ref(null)
-const avatarPreview = ref(null) // 头像预览URL
+const avatarPreview = ref(null) // 头像预览 URL
 
 // ============================================================
 // 头像
@@ -326,7 +326,7 @@ const saveProfile = async () => {
     // 这里是错误的，因为后端 userUpdateInfoApi 没有返回值
     // 调用更新接口
     /* const res = await userUpdateInfoApi(profileData)
-    profileData.avatar = res.data?.avatar || profileData.avatar // 使用服务器返回的头像URL
+    profileData.avatar = res.data?.avatar || profileData.avatar // 使用服务器返回的头像 URL
     // 更新 store
     userStore.setUser({ ...userStore.user, ...profileData }) */
     

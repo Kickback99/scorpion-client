@@ -102,7 +102,7 @@ const handleCopyClick = (e) => {
   document.querySelectorAll('.v-md-copy-code-btn.copied').forEach((b) => b.classList.remove('copied'))
   btn.classList.add('copied')
 
-  // 1.5秒后移除
+  // 1.5 秒后移除
   setTimeout(() => {
     btn.classList.remove('copied')
   }, 1500)

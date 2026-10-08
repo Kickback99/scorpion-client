@@ -216,7 +216,7 @@ const themeStore = useThemeStore()
   max-width: 100%;
 }
 
-/* pc端-标题两行截断 */
+/* pc 端-标题两行截断 */
 .v-list-item-title .truncate-multi,
 .v-list-item-subtitle .truncate-multi {
 

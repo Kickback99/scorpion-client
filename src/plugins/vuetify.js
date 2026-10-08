@@ -9,10 +9,10 @@ export default {
       MyButton: { variant: 'tonal',color:'primary'},
     },
     aliases: {
-      MyButton: VBtn, // 继承全局VBtn配置
+      MyButton: VBtn, // 继承全局 VBtn 配置
       
     },
     display: {
-      mobileBreakpoint: 'md', // 只有md以下（不包含）才为移动设备
+      mobileBreakpoint: 'md', // 只有 md 以下（不包含）才为移动设备
     },
   }

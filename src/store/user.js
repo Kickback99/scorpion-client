@@ -2,7 +2,7 @@ import { userInfoApi } from '@/api/user'
 import {defineStore} from 'pinia'
 import { isCookieMode } from '@/utils/auth'
 
-// 定义store
+// 定义 store
 // defineStore('仓库的唯一标识',()=>{...})
 
 // 仅持久化展示所需字段（email/phone 等 PII 不落 localStorage；内存中的 user 仍是完整 VO）

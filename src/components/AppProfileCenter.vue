@@ -292,7 +292,7 @@ const favoriteHeaders = [
   postLoading.value = true
   try {
     postList.value = [
-      { id: 1, title: 'Vue3入门教程', category: '前端开发', views: 1234, createdAt: '2024-01-10' }
+      { id: 1, title: 'Vue3 入门教程', category: '前端开发', views: 1234, createdAt: '2024-01-10' }
     ]
   } finally {
     postLoading.value = false

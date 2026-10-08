@@ -396,11 +396,11 @@ const loginRules = {
         (v) => !!v || '请输入账号/邮箱/手机号',
         (v) => {
             if (!v) return true
-            // 校验用户名（4-20位字母数字下划线）
+            // 校验用户名（4-20 位字母数字下划线）
             const usernameRegex = /^[a-zA-Z0-9_]{4,20}$/
             // 校验邮箱
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-            // 校验手机号（简单校验11位数字，可根据需要调整）
+            // 校验手机号（简单校验 11 位数字，可根据需要调整）
             const phoneRegex = /^1[3-9]\d{9}$/
             
             if (usernameRegex.test(v)) return true

@@ -70,5 +70,5 @@ export const userUpdateInfoApi = (params) => {
         formData.append(k,params[k])
         }
     }
-    return http.put('/user/updateUserDetailInfo',formData,{ timeout: 35000 }) // 资料/头像上传超时35秒
+    return http.put('/user/updateUserDetailInfo',formData,{ timeout: 35000 }) // 资料/头像上传超时 35 秒
 }
