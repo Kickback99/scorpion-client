@@ -72,8 +72,8 @@
               <template v-slot:prepend>
                 <v-avatar size="35">
                   <!-- 优先显示真实头像，没有则显示图标 -->
-                  <v-img 
-                    v-if="comment.userAvatar" 
+                  <v-img
+                    v-if="comment.userAvatar"
                     :src="comment.userAvatar"
                     :alt="comment.username"
                   ></v-img>
@@ -148,8 +148,8 @@
                     <template v-slot:prepend>
                       <v-avatar size="27">
                         <!-- 优先显示真实头像，没有则显示图标 -->
-                        <v-img 
-                          v-if="child.userAvatar" 
+                        <v-img
+                          v-if="child.userAvatar"
                           :src="child.userAvatar"
                           :alt="child.username"
                         ></v-img>
@@ -162,8 +162,8 @@
                     <v-list-item-title class="text-body-2">
                       <div class="d-flex align-center mb-1">
                         <strong class="comment-username">{{ child.username || '匿名用户' }}</strong>
-                        <span 
-                          v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId" 
+                        <span
+                          v-if="child.toCommentUserName && child.toCommentUserId !== -1 && child.toCommentId !== child.rootId"
                           class="text-caption ms-1">
                           <strong class="comment-username">@ {{ child.toCommentUserName }}</strong>
                         </span>
@@ -240,7 +240,7 @@
                     <v-icon size="16">mdi-chevron-down</v-icon>
                     查看更多
                   </v-btn>
-                  
+
                   <v-btn
                     variant="text"
                     size="small"
@@ -252,7 +252,7 @@
                     收起
                   </v-btn>
                 </template>
-                
+
                 <!-- 收起状态 -->
                 <v-btn
                   v-else
@@ -293,11 +293,11 @@
           <v-icon color="error" start>mdi-delete-outline</v-icon>
           确认删除
         </v-card-title>
-        
+
         <v-card-text class="pt-4">
           <div class="text-body-1">确定要删除这条评论吗？</div>
         </v-card-text>
-        
+
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -397,11 +397,11 @@ const isCommentTypeEnabled = () => {
 // 判断是否显示操作按钮
 const shouldShowChildActions = (comment) => {
   if (comment.childTotal === 0) return false
-  
+
   if (childCommentLimit.value === 0) {
     return comment.childTotal > 0
   }
-  
+
   return comment.childTotal > childCommentLimit.value
 }
 
@@ -433,7 +433,7 @@ const initCommentChildren = (comment) => {
     // 初始化缓存字段
   comment.cachedChildren = null
   comment.cachedHasMore = false
-  
+
   if (childCommentLimit.value === 0) {
     // 打底为 0：不显示任何子评论
     comment.displayChildren = []
@@ -621,10 +621,10 @@ const loadMoreComments = async ({ done }) => {
     done('empty')
     return
   }
-  
+
   scrollLoading.value = true
   const nextPage = currentPage.value + 1
-  
+
   try {
     let res
     if (props.commentType === 'friendLink') {
@@ -634,22 +634,22 @@ const loadMoreComments = async ({ done }) => {
     }
     if (res.code === 200 && res.data) {
       const newComments = res.data.items || []
-      
+
       if (newComments.length === 0) {
         hasMore.value = false
         done('empty')
         return
       }
-      
+
       // 初始化新评论的子评论状态
       newComments.forEach(comment => {
         initCommentChildren(comment)
       })
-      
+
       commentList.value.push(...newComments)
       currentPage.value = nextPage
       hasMore.value = commentList.value.length < total.value
-      
+
       done(hasMore.value ? 'ok' : 'empty')
     } else {
       hasMore.value = false
@@ -692,7 +692,7 @@ const expandChildren = async (comment) => {
 
   // 计算需要加载的数量：使用 childPageSize
   const needLoadCount = childPageSize.value
-  
+
   comment.childLoading = true
   try {
     const res = await getChildCommentsApi(comment.id, 1, needLoadCount)
@@ -745,10 +745,10 @@ const collapseChildren = async (comment) => {
 // 加载更多子评论
 const loadMoreChildren = async (comment) => {
   if (comment.childLoading) return
-  
+
   const currentDisplayCount = comment.displayChildren.length
   const nextPageNum = Math.ceil(currentDisplayCount / childPageSize.value) + 1
-  
+
   comment.childLoading = true
   try {
     const res = await getChildCommentsApi(comment.id, nextPageNum, childPageSize.value)
@@ -778,7 +778,7 @@ const loadMoreChildren = async (comment) => {
 // 发表评论
 const submitComment = async () => {
   if (!commentContent.value.trim()) return
-  
+
   // 清空输入框前先留住内容，用于刷新后定位自己刚发的那条
   const content = commentContent.value
   submitLoading.value = true
@@ -814,12 +814,12 @@ const startReply = (comment) => {
     emitter.emit('loginDialogVisible', true);
     return;
   }
-  
+
   if (replyTarget.value && replyTarget.value.id === comment.id) {
     cancelReply()
     return
   }
-  
+
   replyTarget.value = {
     id: comment.id,
     rootId: comment.rootId === -1 ? comment.id : comment.rootId,
@@ -882,7 +882,7 @@ const formatTime = (time) => {
   const date = new Date(time)
   const now = new Date()
   const diff = now - date
-  
+
   const minutes = Math.floor(diff / (60 * 1000))
   const hours = Math.floor(diff / (60 * 60 * 1000))
   const days = Math.floor(diff / (24 * 60 * 60 * 1000))
@@ -946,7 +946,7 @@ const confirmDelete = async () => {
   if (!deletingCommentId.value) return
 
    isDeleting.value = true
-  
+
   try {
     const res = await deleteCommentApi(deletingCommentId.value)
     window.$snackbar?.success(res.message || '删除成功')
@@ -1075,7 +1075,7 @@ onMounted(() => {
     margin-left: 8px;
     margin-right: 8px;
   }
-  
+
   .child-comment-item {
     padding-left: 40px !important;
   }

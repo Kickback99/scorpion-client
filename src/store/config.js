@@ -183,7 +183,7 @@ export const useConfigStore = defineStore('config', {
         pagination_page_size: 7,
         title_bone_count: 1
       },
-    
+
       // 公告相关
       notice: {
         enabled: true,

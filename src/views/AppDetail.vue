@@ -61,7 +61,7 @@
       </div>
     </v-btn>
   </div>
-  
+
   <!-- ===== 新增：评论组件 ===== -->
   <div class="mt-5" v-if="isArticleLoaded && markdownReady && (configStore.getUserLoginEnabled() || isLoggedIn) && configStore.getArticleCommentEnabled() && article.isComment === '1'">
     <AppComment
@@ -238,7 +238,7 @@ const handleFavoriteToggle = async () => {
     emitter.emit('loginDialogVisible', true);
     return;
   }
-  
+
   favoriteLoading.value = true;
   try {
     const res = await toggleFavoriteApi(article.value.id);

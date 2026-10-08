@@ -734,7 +734,7 @@ onUnmounted(() => {
 /* 彻底移除 hover、focus 等所有交互效果 */
 /* 强制保持默认边框颜色 */
 /* :deep(.v-field__outline) {
-  color: rgba(0, 0, 0, 0.38) !important; 
+  color: rgba(0, 0, 0, 0.38) !important;
 } */
 
 

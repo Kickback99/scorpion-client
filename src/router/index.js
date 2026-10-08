@@ -61,17 +61,17 @@ const CONFIG_CACHE_DURATION = 5 * 60 * 1000 // 5 分钟缓存，可根据需要�
  */
 const loadClientConfig = async (forceRefresh = false) => {
   const now = Date.now()
-  
+
   // 检查缓存是否有效（非强制刷新 且 已加载 且 未过期）
   if (!forceRefresh && configLoaded && (now - lastLoadTime) < CONFIG_CACHE_DURATION) {
     return Promise.resolve()
   }
-  
+
   // 如果正在加载中，返回同一个 Promise
   if (loadingPromise) {
     return loadingPromise
   }
-  
+
   // 开始加载配置
   loadingPromise = (async () => {
     try {
@@ -86,7 +86,7 @@ const loadClientConfig = async (forceRefresh = false) => {
       loadingPromise = null
     }
   })()
-  
+
   return loadingPromise
 }
 

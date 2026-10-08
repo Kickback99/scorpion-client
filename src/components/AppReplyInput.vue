@@ -184,7 +184,7 @@ const handleCancel = () => {
     margin-left: 8px;
     margin-right: 8px;
   }
-  
+
   .child-reply-wrapper {
     margin-left: 8px !important;
   }

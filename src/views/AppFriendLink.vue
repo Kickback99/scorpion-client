@@ -81,8 +81,8 @@
 
       <div class="mt-5" v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && configStore.getFriendLinkCommentEnabled()">
         <!-- 复用 AppComment 组件，传入友链 ID 和 API 类型 -->
-        <AppComment 
-          :articleId="null" 
+        <AppComment
+          :articleId="null"
           :totalCount="totalCount"
           commentType="friendLink"
           @comment-deleted="handleCommentCountChange"
@@ -196,7 +196,7 @@ const fetchFriendLinks = async (isLoadMore = false) => {
         friendLinkList.value = newList
       }
       total.value = res.data.total || 0
-      
+
       // 判断是否还有更多数据
       hasMore.value = friendLinkList.value.length < total.value
 
@@ -219,10 +219,10 @@ const loadMore = async ({ done }) => {
     done('empty')
     return
   }
-  
+
   // 增加页码
   params.value.pageNum++
-  
+
   try {
     const res = await getClientFriendLinkListApi(params.value.pageNum, params.value.pageSize)
     if (res.code === 200 && res.data) {
@@ -231,7 +231,7 @@ const loadMore = async ({ done }) => {
 
       // 重新判断是否还有更多数据
       hasMore.value = friendLinkList.value.length < total.value
-      
+
       if (!hasMore.value) {
         done('empty')
       } else {
@@ -276,10 +276,10 @@ const init = async () => {
   loading.value = true
   params.value.pageNum = 1
   friendLinkList.value = []
-  
+
   await fetchFriendLinks(false)
   await fetchLinkCommentCount()
-  
+
   loading.value = false
 }
 
@@ -308,7 +308,7 @@ init()
 .friend-link-card {
   transition: all 0.2s ease;
   cursor: pointer;
-  
+
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.05);
     border-color: rgba(var(--v-theme-primary), 0.5);

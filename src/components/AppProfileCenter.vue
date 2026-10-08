@@ -3,8 +3,8 @@
       <div>
         <!-- 使用动态 direction 属性 -->
         <v-sheet>
-          <v-tabs 
-          v-model="tab" 
+          <v-tabs
+          v-model="tab"
           color="primary"
           direction="horizontal"
           grow
@@ -68,7 +68,7 @@
               :get-item-id="(item) => item.id"
             >
               <template #column-title="{ item }">
-                <router-link :to="`/detail/${item.id}`" 
+                <router-link :to="`/detail/${item.id}`"
                 class="text-decoration-none text-primary"
                     style="display: inline-block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                 >
@@ -124,7 +124,7 @@
 
               <!-- 自定义标题（评论内容） -->
               <template #card-title="{ item }">
-                <router-link 
+                <router-link
                   :to="item.type === '0' ? `/detail/${item.articleId}` : '/friendLink'"
                   class="text-decoration-none text-primary font-weight-medium"
                 >
@@ -172,7 +172,7 @@
             >
               <!-- 自定义标题列 -->
               <template #column-title="{ item }">
-                <router-link 
+                <router-link
                   :to="`/detail/${item.articleId}`"
                   class="text-decoration-none text-primary"
                 >
@@ -207,7 +207,7 @@
         </v-tabs-window>
         </v-sheet>
       </div>
-      
+
   </v-container>
 </template>
 

@@ -311,7 +311,7 @@ const triggerFileInput = () => {
 const saveProfile = async () => {
   const { valid } = await profileFormRef.value.validate()
   if (!valid) return
-  
+
   saving.value = true
   try {
 
@@ -329,7 +329,7 @@ const saveProfile = async () => {
     profileData.avatar = res.data?.avatar || profileData.avatar // 使用服务器返回的头像 URL
     // 更新 store
     userStore.setUser({ ...userStore.user, ...profileData }) */
-    
+
     // 触发父组件事件
     emit('profile-saved', profileData)
     window.$snackbar?.success('修改成功')
@@ -359,7 +359,7 @@ const { visible: confirmShowPassword, toggle: toggleConfirmPwd } = usePasswordVi
 const changePassword = async () => {
   const { valid } = await passwordFormRef.value.validate()
   if (!valid) return
-  
+
   changingPassword.value = true
   try {
     await userChangePasswordApi({

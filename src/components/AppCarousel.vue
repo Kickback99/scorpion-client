@@ -76,7 +76,7 @@ const loadCarousel = async () => {
 // 跳转链接：外部链接新窗口打开，内部链接路由跳转
 const goToLink = (link) => {
     if (!link) return
-    
+
     // 判断是否为 http 或 https 开头的外部链接
     if (link.startsWith('http://') || link.startsWith('https://')) {
         window.open(link, '_blank')

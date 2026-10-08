@@ -24,8 +24,8 @@
                                 </span>
                             </v-container>
                             <v-container class="pb-2">
-                            <v-form 
-                            ref="loginFormRef" 
+                            <v-form
+                            ref="loginFormRef"
                             @submit.prevent="handleLogin"
                             >
                                 <!-- 账号文本框 -->
@@ -39,7 +39,7 @@
                                     :rules="loginRules.username"
                                     prepend-inner-icon="mdi-account"
                                     class="mb-2"
-                                ></v-text-field>        
+                                ></v-text-field>
                                 <!-- 密码文本框 -->
                                 <v-text-field
                                     color="primary"
@@ -65,7 +65,7 @@
                                 color="primary"
                                 density="compact"
                                 style="--v-input-control-height: 20px; --v-input-padding-top: 8px;"
-                                class="my-4" 
+                                class="my-4"
                                 v-model="loginTerm"
                                 :rules="loginRules.term"
                                 >
@@ -76,12 +76,12 @@
                                             和
                                             <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('policy')">《隐私协议》</a>
                                         </span>
-                                    </template> 
+                                    </template>
                                 </v-checkbox> -->
 
-                                <v-btn 
-                                block 
-                                color="primary" 
+                                <v-btn
+                                block
+                                color="primary"
                                 :loading="loading"
                                 type="submit"
                                 >登录</v-btn>
@@ -95,7 +95,7 @@
                                 <v-sheet class="mb-4">
                                     <v-divider color="primary" opacity=".7" gradient><span class="text-caption text-grey" style="flex-shrink: 0;">其他的登录方式</span></v-divider>
                                 </v-sheet>
-                                
+
                                 <!-- 图标 -->
                                 <v-sheet class="text-center py-0">
                                     <v-btn
@@ -106,11 +106,11 @@
                                     :to="item.to"
                                     :class="{'ml-8':(index != 0)}"
                                     >
-                                    <v-icon>{{ item.icon }}</v-icon> 
-                                    </v-btn>        
+                                    <v-icon>{{ item.icon }}</v-icon>
+                                    </v-btn>
                                 </v-sheet>
                             </v-container>
-                        </v-card> 
+                        </v-card>
                     </v-window-item>
 
                     <!-- ===== 注册视图 ===== -->
@@ -125,7 +125,7 @@
                             </v-container>
                             <v-container>
                             <v-form
-                            ref="registerFormRef" 
+                            ref="registerFormRef"
                             @submit.prevent="handleRegister"
                             >
                                 <v-text-field
@@ -162,7 +162,7 @@
                                 color="primary"
                                 density="compact"
                                 style="--v-input-control-height: 20px; --v-input-padding-top: 8px;"
-                                class="my-4" 
+                                class="my-4"
                                 v-model="registerTerm"
                                 :rules="registerRules.term"
                                 >
@@ -173,30 +173,30 @@
                                             和
                                             <a class="text-primary text-decoration-none" href="#" @click.stop.prevent="handleOpenTerms('policy')">《隐私协议》</a>
                                         </span>
-                                    </template> 
+                                    </template>
                                 </v-checkbox>
-                                
+
                                 <v-btn
-                                block 
-                                color="primary" 
+                                block
+                                color="primary"
                                 :loading="registerLoading"
                                 type="submit"
                                 >注册</v-btn>
                             </v-form>
                             </v-container>
-                        </v-card> 
+                        </v-card>
                     </v-window-item>
                     <!-- ===== 注册成功视图 ===== -->
                     <v-window-item :value="3">
                         <v-card title height="auto" class="d-flex align-center">
                             <v-container class="text-center">
-                                <v-icon :size="handleIconSize" color="success">mdi-check-circle</v-icon> 
+                                <v-icon :size="handleIconSize" color="success">mdi-check-circle</v-icon>
                                 <h3 class="mt-4">恭喜你，注册成功</h3>
                                 <p class="text-caption text-grey">请前往邮箱，查看账号信息
                                     <a href="#" @click="forwardLogin" class="text-decoration-none">前往登录</a>
                                 </p>
                             </v-container>
-                        </v-card> 
+                        </v-card>
                     </v-window-item>
 
                     <!-- ===== 忘记密码视图 ===== -->
@@ -402,11 +402,11 @@ const loginRules = {
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
             // 校验手机号（简单校验 11 位数字，可根据需要调整）
             const phoneRegex = /^1[3-9]\d{9}$/
-            
+
             if (usernameRegex.test(v)) return true
             if (emailRegex.test(v)) return true
             if (phoneRegex.test(v)) return true
-            
+
             return '请输入正确的账号（4-20位字母/数字/下划线）、邮箱或手机号'
         }
     ],
@@ -441,12 +441,12 @@ const handleLogin = async () => {
     // if (!loginFormRef.value) return
 
     await loginFormRef.value.validate()
-    
+
     loading.value = true
     try {
         // 再次确认表单校验
         const { valid } = await loginFormRef.value.validate()
-        
+
         if (valid) {
             // 这里调用登录接口
             console.log('登录信息:', loginModel)
@@ -649,7 +649,7 @@ const switchToRegister = () => {
     // 重置登录表单
     /* loginModel.username = ''
     loginModel.password = '' */
-    loginShowPassword.value = false 
+    loginShowPassword.value = false
     loginTerm.value = false
     // 清除登录表单的校验状态
     loginFormRef.value?.reset()
@@ -695,7 +695,7 @@ const forwardLogin = () => {
 // ============================================================
 .dialog-container {
     position: relative;
-    
+
     .dialog-close-btn {
         position: absolute;
         top: 20px;
