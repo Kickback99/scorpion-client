@@ -119,12 +119,12 @@ const { name: breakpointName } = useDisplay()
 const sheetWidth = computed(() => {
   const bp = breakpointName.value
   // 9/12 = 75%，这里用百分比
-  if (bp === 'xs') return '100%'   //  手机屏幕占100%
-  if (bp === 'sm') return '90%'    //  小屏幕占90%
-  if (bp === 'md') return '85%'    //  中等屏幕占85%
-  if (bp === 'lg') return '75%'    //  大屏幕占75%（9/12）
-  if (bp === 'xl') return '70%'    //  超大屏幕占70%
-  return '75%'                     //  xxl 占75%
+  if (bp === 'xs') return '100%'   // 手机屏幕占100%
+  if (bp === 'sm') return '90%'    // 小屏幕占90%
+  if (bp === 'md') return '85%'    // 中等屏幕占85%
+  if (bp === 'lg') return '75%'    // 大屏幕占75%（9/12）
+  if (bp === 'xl') return '70%'    // 超大屏幕占70%
+  return '75%'                     // xxl 占75%
 })
 
 // 根据屏幕宽度动态计算每行列数
