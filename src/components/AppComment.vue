@@ -139,7 +139,7 @@
               @cancel="cancelReply"
             />
 
-            <!-- 子评论区域（整合v1逻辑） -->
+            <!-- 子评论区域（整合 v1 逻辑） -->
             <div v-if="comment.children?.length > 0 || comment.childTotal > 0">
               <!-- 子评论列表容器 -->
               <div class="children-list">
@@ -361,10 +361,10 @@ const userStore = useUserStore()
 const configStore = useConfigStore()
 const scale = useDialogFontScale()
 
-// 子评论显示限制数量（默认3条）
+// 子评论显示限制数量（默认 3 条）
 const childCommentLimit = ref(3)
 
-// 子评论分页大小（默认10条）
+// 子评论分页大小（默认 10 条）
 const childPageSize = ref(10)
 
 // 登录态判定统一走 store getter（cookie 模式看 user 展示缓存，jwt 模式看 token+user）
@@ -424,7 +424,7 @@ const getRemainingCount = (comment) => {
 // ============================================================
 // 评论列表
 // ============================================================
-// 初始化评论的子评论状态（整合v1逻辑）
+// 初始化评论的子评论状态（整合 v1 逻辑）
 const initCommentChildren = (comment) => {
   comment.childLoading = false
   comment.originalChildren = [...(comment.children || [])]
@@ -435,7 +435,7 @@ const initCommentChildren = (comment) => {
   comment.cachedHasMore = false
   
   if (childCommentLimit.value === 0) {
-    // 打底为0：不显示任何子评论
+    // 打底为 0：不显示任何子评论
     comment.displayChildren = []
     comment.isChildExpanded = false
     comment.hasMoreChild = comment.hasMoreChild || false
@@ -577,7 +577,7 @@ const initLoadComments = async () => {
     let anyPageLoaded = false
 
     for (let pageNum = 1; pageNum <= loadedPages; pageNum++) {
-      // 根据评论类型调用不同API
+      // 根据评论类型调用不同 API
       const res = props.commentType === 'friendLink'
         ? await getFriendLinkCommentApi(pageNum, pageSize.value)
         : await getCommentsApi(pageNum, pageSize.value, props.articleId)
@@ -783,7 +783,7 @@ const submitComment = async () => {
   const content = commentContent.value
   submitLoading.value = true
   try {
-    // 根据评论类型设置不同的 type 值（0为文章评论，1为友链评论）
+    // 根据评论类型设置不同的 type 值（0 为文章评论，1 为友链评论）
     const commentTypeValue = props.commentType === 'friendLink' ? '1' : '0'
 
     const res = await addCommentApi({
@@ -844,7 +844,7 @@ const submitReply = async () => {
 
   replyLoading.value = true
   try {
-    // 根据评论类型设置不同的 type 值（0为文章评论，1为友链评论）
+    // 根据评论类型设置不同的 type 值（0 为文章评论，1 为友链评论）
     const commentTypeValue = props.commentType === 'friendLink' ? '1' : '0'
     const res = await addCommentApi({
       articleId: props.articleId,

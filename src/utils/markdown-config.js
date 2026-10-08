@@ -46,7 +46,7 @@ export async function createMarkdownPreview(theme = 'github') {
     ]);
     await Promise.all([
       import('@kangc/v-md-editor/lib/theme/style/vuepress.css'),
-      import('prismjs/themes/prism-tomorrow.css'), // Prism主题
+      import('prismjs/themes/prism-tomorrow.css'), // Prism 主题
     ]);
     // Prism 没有 vue 语言，借道 markup（xml/html 的别名本体），仅能着色 template 段
     preview.use(vuepressTheme, { Prism, codeHighlightExtensionMap: { vue: 'markup' } });

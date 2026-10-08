@@ -73,14 +73,14 @@ instance.interceptors.response.use(
             return Promise.reject(res.data)
         }
 
-        // 匹配状态码为40开头的正则，以及认证失效码 215（token过期）/ 216（账号已退出）
+        // 匹配状态码为 40 开头的正则，以及认证失效码 215（token 过期）/ 216（账号已退出）
        let regex = /^40[0-9]$/
 
               if(regex.test(res.data.code) || res.data.code === 215 || res.data.code === 216) {
 
             if(res.data.code === 401 || res.data.code === 215 || res.data.code === 216){
                 console.log('==================== 响应拦截器执行 ====================')
-                // 处理token过期或者篡改
+                // 处理 token 过期或者篡改
                 handleAuthExpired(res.data?.message, res.config)
 
             }else window.$snackbar?.error(res.data.message)

@@ -5,7 +5,7 @@
  */
 export const mdToPlainText = (mdStr) => {
   // t_question：空值处理
-  if (!mdStr) return '' // 处理null/undefined
+  if (!mdStr) return '' // 处理 null/undefined
 
   return mdStr
     .replace(/```[\s\S]*?(?:```|$)/g, ' ')          // 围栏代码块整块剔除（含未闭合：正文被截断时会剩半个围栏）

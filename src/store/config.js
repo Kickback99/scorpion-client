@@ -127,9 +127,9 @@ export const useConfigStore = defineStore('config', {
 
       // 评论相关
       comment: {
-        // 文章评论显示（true开启，false禁用）
+        // 文章评论显示（true 开启，false 禁用）
         article_comment_enabled: true,
-        // 友链评论显示（true开启，false禁用）
+        // 友链评论显示（true 开启，false 禁用）
         friend_link_comment_enabled: false,
         // 子评论默认显示数量
         child_comment_limit: 3,
@@ -137,7 +137,7 @@ export const useConfigStore = defineStore('config', {
         child_page_size: 7,
         // 父评论分页大小
         parent_page_size: 10,
-        // 评论表情显示（true开启，false禁用）
+        // 评论表情显示（true 开启，false 禁用）
         emoji_enabled: true
       },
 
@@ -151,9 +151,9 @@ export const useConfigStore = defineStore('config', {
 
       // 用户相关
       user: {
-        // 前端登录（true开启，false禁用）
+        // 前端登录（true 开启，false 禁用）
         login_enabled: true,
-        // 前端其他登录（true开启，false禁用）
+        // 前端其他登录（true 开启，false 禁用）
         other_login_enabled: false
       },
 
@@ -167,8 +167,8 @@ export const useConfigStore = defineStore('config', {
 
       // 文章详情相关
       article_detail: {
-        theme: 0, // 前端主题（0：github主题，1：vuepress主题）
-        anchor_enabled: true, // 锚点显示（true开启，false禁用）
+        theme: 0, // 前端主题（0：github 主题，1：vuepress 主题）
+        anchor_enabled: true, // 锚点显示（true 开启，false 禁用）
         favorite_count_enabled: true,
         toc_position: 'outer' // TOC/回到顶部图标位置（outer：左栏右边缘，inner：内容区右边缘）
       },

@@ -310,7 +310,7 @@ onMounted(() => {
   // 监听路由变化处理参数（列表数据始终以 URL query 为准，浏览器回退/前进同样生效）
   watch(() => route.query, (newQuery) => {
     if (newQuery.type && newQuery.param) {
-      // console.log('query参数路由执行...')
+      // console.log('query 参数路由执行...')
       updateSearchState({
         type: newQuery.type,
         param: newQuery.param
@@ -336,7 +336,7 @@ const handleAutoDescription = (item) => {
       return '';
     case 0: // 自动生成
       return mdToPlainText(item.description) || '暂无内容摘要';
-    default: // 自定义或null
+    default: // 自定义或 null
       return item.description;
   }
 }

@@ -80,7 +80,7 @@
       </v-card>
 
       <div class="mt-5" v-if="(configStore.getUserLoginEnabled() || isLoggedIn) && configStore.getFriendLinkCommentEnabled()">
-        <!-- 复用 AppComment 组件，传入友链ID和API类型 -->
+        <!-- 复用 AppComment 组件，传入友链 ID 和 API 类型 -->
         <AppComment 
           :articleId="null" 
           :totalCount="totalCount"
@@ -115,28 +115,28 @@ const scale = useDialogFontScale()
 // ============================================================
 const { name: breakpointName } = useDisplay()
 
-// 计算 sheet 的宽度（基于栅格系统的9格）
+// 计算 sheet 的宽度（基于栅格系统的 9 格）
 const sheetWidth = computed(() => {
   const bp = breakpointName.value
   // 9/12 = 75%，这里用百分比
-  if (bp === 'xs') return '100%'   // 手机屏幕占100%
-  if (bp === 'sm') return '90%'    // 小屏幕占90%
-  if (bp === 'md') return '85%'    // 中等屏幕占85%
-  if (bp === 'lg') return '75%'    // 大屏幕占75%（9/12）
-  if (bp === 'xl') return '70%'    // 超大屏幕占70%
-  return '75%'                     // xxl 占75%
+  if (bp === 'xs') return '100%'   // 手机屏幕占 100%
+  if (bp === 'sm') return '90%'    // 小屏幕占 90%
+  if (bp === 'md') return '85%'    // 中等屏幕占 85%
+  if (bp === 'lg') return '75%'    // 大屏幕占 75%（9/12）
+  if (bp === 'xl') return '70%'    // 超大屏幕占 70%
+  return '75%'                     // xxl 占 75%
 })
 
 // 根据屏幕宽度动态计算每行列数
-// xs: 1列, sm: 2列, md: 3列, lg: 4列, xl: 5列, xxl: 6列
+// xs: 1 列, sm: 2 列, md: 3 列, lg: 4 列, xl: 5 列, xxl: 6 列
 const cols = computed(() => {
   const bp = breakpointName.value
-  if (bp === 'xs') return 12      // 1列
-  if (bp === 'sm') return 6       // 2列
-  if (bp === 'md') return 4       // 3列
-  if (bp === 'lg') return 3       // 4列
-  if (bp === 'xl') return 2.4     // 5列（12/5）
-  return 2                        // xxl: 6列（12/6）
+  if (bp === 'xs') return 12      // 1 列
+  if (bp === 'sm') return 6       // 2 列
+  if (bp === 'md') return 4       // 3 列
+  if (bp === 'lg') return 3       // 4 列
+  if (bp === 'xl') return 2.4     // 5 列（12/5）
+  return 2                        // xxl: 6 列（12/6）
 })
 
 const sm = computed(() => {

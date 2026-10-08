@@ -56,7 +56,7 @@ export const themeConfig = {
   // 颜色变体配置 - 自动生成亮色和深色变体
   variations: {
     colors: ['primary', 'secondary', 'accent'],  // 对主色、次色、强调色生成变体
-    lighten: 2,  // 生成2个亮色变体（lighten1, lighten2）
-    darken: 3,   // 生成3个深色变体（darken1, darken2, darken3）
+    lighten: 2,  // 生成 2 个亮色变体（lighten1, lighten2）
+    darken: 3,   // 生成 3 个深色变体（darken1, darken2, darken3）
   }
 }

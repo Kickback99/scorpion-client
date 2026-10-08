@@ -326,7 +326,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  // 获取条目ID的函数
+  // 获取条目 ID 的函数
   getItemId: {
     type: Function,
     default: (item) => item.id || item.commentId || item.articleId
@@ -349,7 +349,7 @@ const loading = ref(false)
 const searchKeyword = ref('')
 const currentPage = ref(1)
 const total = ref(0)
-const deletingIds = ref([]) // 正在删除的ID列表
+const deletingIds = ref([]) // 正在删除的 ID 列表
 
 // ============================================================
 // 计算属性

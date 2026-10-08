@@ -178,7 +178,7 @@ const renderArticleItem = async() => {
     // 过期响应不得提前收起骨架屏：期间已切到别的文章/离开详情页时，交给那次请求收尾
     if (String(id) === String(route.params.id)) isLoading.value = false
   }
-  // 更新文章浏览量到redis（article.id 值是对外 url_id，后端解析为真实 id）
+  // 更新文章浏览量到 redis（article.id 值是对外 url_id，后端解析为真实 id）
   updateViewCountApi(res.data.articleItem.id).catch(err => console.error('更新浏览量失败', err))
 
   // 期间路由已切走：本次结果作废，不覆盖正文也不 emit，否则会把这篇的相关文章写到别的页面
@@ -268,7 +268,7 @@ const handleCopyClick = (e) => {
   document.querySelectorAll('.v-md-copy-code-btn.copied').forEach((b) => b.classList.remove('copied'))
   btn.classList.add('copied')
 
-  // 1.5秒后移除
+  // 1.5 秒后移除
   setTimeout(() => {
     btn.classList.remove('copied')
   }, 1500)
@@ -379,8 +379,8 @@ watch(() => isLoggedIn.value, () => {
    骨架屏内容行宽度控制区
    ============================================================
    每组 sentences 渲染 2 行 text 骨：
-     第1行 :first-child   → 默认 100%，可在此改 max-width
-     第2行 :nth-child(2)  → Vuetify 默认 max-width 50%
+     第 1 行 :first-child   → 默认 100%，可在此改 max-width
+     第 2 行 :nth-child(2)  → Vuetify 默认 max-width 50%
    修改宽度就在下方规则里调整即可 */
  .detail-skeleton-content :deep(.v-skeleton-loader__text:first-child) {
   max-width: 70%;
