@@ -101,7 +101,7 @@ export default defineConfig(({ mode }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    //配置代理
+    // 配置代理
     server: {
       proxy: {
         // 把 /images 放在最前面，优先匹配
@@ -118,7 +118,7 @@ export default defineConfig(({ mode }) => {
         [env.VITE_API]: {
           target: env.VITE_HOST, // 后端服务器地址
           changeOrigin: true, // 是否改变请求域名
-          rewrite: (path) => path.replace(new RegExp(`^${env.VITE_API}`), '')//将原有请求路径中的api替换为''
+          rewrite: (path) => path.replace(new RegExp(`^${env.VITE_API}`), '')// 将原有请求路径中的api替换为''
         }
       }
     },

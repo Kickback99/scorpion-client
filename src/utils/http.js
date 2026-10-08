@@ -1,9 +1,9 @@
-//定制请求的实例
+// 定制请求的实例
 
 import { useUserStore } from '@/store/user';
 import axios from 'axios';
 import { isCookieMode } from '@/utils/auth'
-//定义一个变量,记录公共的前缀  ,  baseURL
+// 定义一个变量,记录公共的前缀  ,  baseURL
 const baseURL = import.meta.env.VITE_API;
 // withCredentials：cookie 模式下跨域请求携带 HttpOnly Cookie（同源请求无影响）
 const instance = axios.create({baseURL,timeout:15000,withCredentials:true})
@@ -16,7 +16,7 @@ import { useWebSocket } from '@/server/useWebSocket.js'
 const { closeWebSocket } = useWebSocket()
 
 
-//添加请求拦截器
+// 添加请求拦截器
 instance.interceptors.request.use(
     config => {
         const userStore = useUserStore()
@@ -56,7 +56,7 @@ const handleAuthExpired = (message, config) => {
     router.replace('/')
 }
 
-//添加响应拦截器
+// 添加响应拦截器
 instance.interceptors.response.use(
     res=>{
         if(res.data.code === 0 || res.data.code === 200){
@@ -73,7 +73,7 @@ instance.interceptors.response.use(
             return Promise.reject(res.data)
         }
 
-        //匹配状态码为40开头的正则，以及认证失效码 215（token过期）/ 216（账号已退出）
+        // 匹配状态码为40开头的正则，以及认证失效码 215（token过期）/ 216（账号已退出）
        let regex = /^40[0-9]$/
 
               if(regex.test(res.data.code) || res.data.code === 215 || res.data.code === 216) {

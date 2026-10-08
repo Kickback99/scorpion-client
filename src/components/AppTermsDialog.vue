@@ -136,8 +136,8 @@ const handleClose = () => { visible.value = false }
 // ============================================================
 // 骨架屏：内容行宽度控制（对齐真实 markdown 内容布局）
 // 每组 sentences 渲染 2 行 text 骨，宽度与详情页同一套：
-//   第1行（上）→ 70%
-//   第2行（下）→ 50%（Vuetify 默认，不再覆盖）
+// 第1行（上）→ 70%
+// 第2行（下）→ 50%（Vuetify 默认，不再覆盖）
 // ============================================================
 .terms-skeleton :deep(.v-skeleton-loader__text:first-child) {
   max-width: 70%;

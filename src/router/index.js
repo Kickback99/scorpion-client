@@ -37,7 +37,7 @@ const routes = [
 // 创建路由对象
 
 const router = createRouter({
-    history:createWebHistory(import.meta.env.VITE_ROUTER_URL), //采用 html5 路由模式
+    history:createWebHistory(import.meta.env.VITE_ROUTER_URL), // 采用 html5 路由模式
     routes,
     // 传了 scrollBehavior，vue-router 才置 scrollRestoration = manual 并接管滚动；
     // 不传则刷新时由浏览器恢复位置，afterEach 里的 scrollTo 拦不住

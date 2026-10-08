@@ -12,9 +12,9 @@
 // 需要补 class 的裸文本分两类，作用域不同：
 
 // ① 运算符 / 括号：:= = => || && { } [ ] ( )
-//    hljs 对大多数语言都不给它们发 class —— JS 的 = ( ) 、Java 的 { } 、CSS 的 ( ) 都是裸文本。
-//    因此这一类的补色范围是「所有语言」。
-//    注意 `=>` 必须排在 `=` 前面，否则箭头会被切成 `=` 和 `>` 两个 token。
+// hljs 对大多数语言都不给它们发 class —— JS 的 = ( ) 、Java 的 { } 、CSS 的 ( ) 都是裸文本。
+// 因此这一类的补色范围是「所有语言」。
+// 注意 `=>` 必须排在 `=` 前面，否则箭头会被切成 `=` 和 `>` 两个 token。
 const BARE_PUNCTUATION = /=>|\|\||&&|=|[{}()\[\]]/g
 const PUNCTUATION_CLASS = {
   // 裸箭头借用 .hljs-function —— hljs 给正常箭头的就是这个 class，
@@ -33,8 +33,8 @@ const PUNCTUATION_CLASS = {
   ')': 'hljs-paren',
 }
 // ② 裸标识符：字母/下划线/美元符开头，后接字母数字下划线美元符。
-//    只对 JS 系语言补 —— 其它语言的裸文本语义完全不同（CSS 里 flex、hidden 是属性值，
-//    补成「变量色」是错的），所以这类严格限定作用域。
+// 只对 JS 系语言补 —— 其它语言的裸文本语义完全不同（CSS 里 flex、hidden 是属性值，
+// 补成「变量色」是错的），所以这类严格限定作用域。
 const BARE_IDENTIFIER = /[A-Za-z_$][\w$]*/g
 
 // ③ CSS 段的裸 token：允许前导 `-`（-webkit-、-clamp 这类），后接字母数字下划线连字符
@@ -149,7 +149,7 @@ function markCssRoles(doc, language) {
   const roots = CSS_LANGUAGES.has(language) ? [doc.body] : [...doc.querySelectorAll(`.${CSS_SUBLANGUAGE}`)]
   roots.forEach((box) => {
     // 块类型栈：true = at 规则块（@media { ... } 里面还是规则），
-    //            false = 声明块（里面是 属性: 值）
+    // false = 声明块（里面是 属性: 值）
     // 只看大括号深度是不够的 —— @media 里再包一层 .foo { } 时，深度是 2，
     // 但 .foo 明明是选择器，不是属性名。
     const blockStack = []
@@ -207,8 +207,8 @@ function markCssRoles(doc, language) {
           }
           if (child.classList.contains('hljs-built_in')) {
             // 同样是 .hljs-built_in，在 CSS 里其实是两种完全不同的东西：
-            //   紧跟冒号的 → 伪类函数（:deep / :not / :is）
-            //   其余       → 值函数（rgba / var / calc）
+            // 紧跟冒号的 → 伪类函数（:deep / :not / :is）
+            // 其余       → 值函数（rgba / var / calc）
             const prev = child.previousSibling
             const followsColon = !!prev && prev.textContent.endsWith(':')
             if (followsColon) {
@@ -241,7 +241,7 @@ function markCssRoles(doc, language) {
         const token = match[0]
         // 选择器位（深度 0 且还没到冒号）里，紧跟在 . 后面的是类选择器、紧跟 : 后面的是伪类。
         // 这两类 hljs 常常不给 class —— 例如 :deep(...) 里的
-        //   .v-skeleton-loader__text:first-child
+        // .v-skeleton-loader__text:first-child
         // 整段都是裸文本，只看 class 名会把它俩当成属性名
         // （那样 first-child 就会显示成属性名的绿，而不是伪类色）。
         // 例外：:deep/:global/:slotted 是 Vue 的作用域组合器，不算 CSS 伪类。
@@ -271,8 +271,8 @@ function markCssRoles(doc, language) {
 
     // SCSS 的 // 行注释 hljs 不识别 —— <style> 段无论 lang="scss" 还是空，
     // hljs 都固定按 css 语法高亮，不认 scss 方言。结果这些注释会被整段当成代码：
-    //   1. 注释里的词被当成 CSS 拆碎（「// ...仍各自 fixed 相对视口定位」里的 fixed）
-    //   2. 注释文字混进 prelude，把 @media 的 @ 前缀判断冲掉，块类型就判错了
+    // 1. 注释里的词被当成 CSS 拆碎（「// ...仍各自 fixed 相对视口定位」里的 fixed）
+    // 2. 注释文字混进 prelude，把 @media 的 @ 前缀判断冲掉，块类型就判错了
     // 这里先按行把 // ... 包成 .hljs-comment，后续就不会再动它们
     const wrapLineComments = () => {
       const walker = doc.createTreeWalker(box, NodeFilter.SHOW_TEXT)
@@ -336,12 +336,12 @@ export function enhanceHighlightedHtml(html, language) {
   const doc = new DOMParser().parseFromString(`<body>${html}</body>`, 'text/html')
 
   // ① CSS 段：按大括号深度分派属性名 / 属性值 / 选择器。
-  //    必须排在标点那一步之前 —— 它要靠 { } 还在裸文本里来判断当前位置
-  //    （标点那步会把大括号包成 span，之后就没法计数了）
+  // 必须排在标点那一步之前 —— 它要靠 { } 还在裸文本里来判断当前位置
+  // （标点那步会把大括号包成 span，之后就没法计数了）
   if (hasCssSection) markCssRoles(doc, language)
 
   // ② 运算符 / 括号：整块根节点 + 各子语言容器（.language-xxx）都要处理。
-  //    子语言容器要单独列，是因为 Vue 借道 xml 时 script / style 段各自包了一层。
+  // 子语言容器要单独列，是因为 Vue 借道 xml 时 script / style 段各自包了一层。
   const punctuationRoots = [doc.body, ...doc.querySelectorAll('[class*="language-"]')]
   punctuationRoots.forEach((box) => {
     wrapBareTokens(doc, box, BARE_PUNCTUATION, (token) => PUNCTUATION_CLASS[token])

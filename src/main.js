@@ -33,8 +33,8 @@ StealthStorage
 const app = createApp(App)
 app.use(vuetify) // 只需注册一次
 app.use(router)
-const pinia = createPinia() //创建Pinia实例
-app.use(pinia.use(persist)) //安装pinia插件
+const pinia = createPinia() // 创建Pinia实例
+app.use(pinia.use(persist)) // 安装pinia插件
 // 挂载前同步持久化主题：Vuetify 默认按 scorpion-light 创建，这里提前应用 store 里的深色主题，
 // 避免刷新时先浅色再深色（配合 index.html 内联脚本彻底消除刷新闪白）
 useThemeStore(pinia).initTheme(vuetify.theme)
