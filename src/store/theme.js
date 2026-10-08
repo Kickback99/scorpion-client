@@ -22,16 +22,16 @@ export const useThemeStore = defineStore('theme', {
     configHash: getConfigHash(),  // 存储配置哈希
     currentTheme: themeConfig.defaultTheme
   }),
-  
+
   getters: {
     isDark: (state) => state.currentTheme?.endsWith('-dark') || false,
-    
+
     currentBase: (state) => {
       if (!state.currentTheme) return 'default'
       return state.currentTheme.replace('-light', '').replace('-dark', '')
     }
   },
-  
+
   actions: {
     /**
      * 检查配置是否变化
@@ -47,7 +47,7 @@ export const useThemeStore = defineStore('theme', {
     setTheme(themeName) {
       this.currentTheme = themeName
     },
-    
+
     /**
      * 验证主题是否有效
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
@@ -58,7 +58,7 @@ export const useThemeStore = defineStore('theme', {
       const availableThemes = Object.keys(vuetifyTheme.themes.value)
       return availableThemes.includes(themeName)
     },
-    
+
     /**
      * 获取有效的主题（如果主题无效，返回默认主题）
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
@@ -71,7 +71,7 @@ export const useThemeStore = defineStore('theme', {
       }
       return themeConfig.defaultTheme
     },
-    
+
     /**
      * 应用主题到 Vuetify 并同步到 Store
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
@@ -100,7 +100,7 @@ export const useThemeStore = defineStore('theme', {
       root.style.backgroundColor = current.colors['background']
       root.style.colorScheme = current.dark ? 'dark' : 'normal'
     },
-    
+
     /**
      * 切换主题（深浅切换）
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
@@ -111,10 +111,10 @@ export const useThemeStore = defineStore('theme', {
       const isDark = currentName.endsWith('-dark')
       const targetSuffix = isDark ? 'light' : 'dark'
       const targetTheme = `${currentBase}-${targetSuffix}`
-      
+
       // 获取所有可用主题
       const availableThemes = Object.keys(vuetifyTheme.themes.value)
-      
+
       // 检查目标主题是否存在
       if (availableThemes.includes(targetTheme)) {
         vuetifyTheme.change(targetTheme)
@@ -129,7 +129,7 @@ export const useThemeStore = defineStore('theme', {
       }
       this.syncDocumentTheme(vuetifyTheme)
     },
-    
+
     /**
      * 初始化主题（从 Store 恢复，应用到 Vuetify）
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
@@ -147,11 +147,11 @@ export const useThemeStore = defineStore('theme', {
         console.warn(`主题 "${this.currentTheme}" 不存在，回退到默认主题`)
         this.currentTheme = themeConfig.defaultTheme
       }
-      
+
       // 验证并应用主题
       this.applyTheme(vuetifyTheme, this.currentTheme)
     },
-    
+
     /**
      * 重置主题到配置的默认值
      * @param {Object} vuetifyTheme - useTheme() 返回的对象
@@ -160,6 +160,6 @@ export const useThemeStore = defineStore('theme', {
       this.applyTheme(vuetifyTheme, themeConfig.defaultTheme)
     }
   },
-  
+
   persist: true
 })

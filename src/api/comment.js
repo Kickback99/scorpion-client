@@ -5,11 +5,11 @@ import http from '@/utils/http'
  * @param {Number} pageNum 页码
  * @param {Number} pageSize 每页数量
  * @param {Number} articleId 文章 ID
- * @returns 
+ * @returns
  */
-export const getCommentsApi = (pageNum, pageSize, articleId) => 
-  http.get(`/user/msg/comment/${pageNum}/${pageSize}`, { 
-    params: { articleId } 
+export const getCommentsApi = (pageNum, pageSize, articleId) =>
+  http.get(`/user/msg/comment/${pageNum}/${pageSize}`, {
+    params: { articleId }
   })
 
 /**
@@ -21,29 +21,29 @@ export const getCommentsApi = (pageNum, pageSize, articleId) =>
  * @param {Number} [data.rootId] 根评论 ID
  * @param {Number} [data.toCommentId] 回复的目标评论 ID
  * @param {Number} [data.toCommentUserId] 回复的目标评论用户 ID
- * @returns 
+ * @returns
  */
-export const addCommentApi = (data) => 
+export const addCommentApi = (data) =>
   http.post('/user/msg/comment/reply', data)
 
 export const getChildCommentsApi = (commentId,pageNum,pageSize) =>
   http.get(`/user/msg/comment/child/${commentId}/${pageNum}/${pageSize}`)
 
-export const deleteCommentApi = (id) => 
+export const deleteCommentApi = (id) =>
   http.delete(`/user/msg/comment/byId/${id}`)
 
 /**
  * 获取友链评论列表
  * @param {Number} pageNum 页码
  * @param {Number} pageSize 每页数量
- * @returns 
+ * @returns
  */
-export const getFriendLinkCommentApi = (pageNum, pageSize) => 
+export const getFriendLinkCommentApi = (pageNum, pageSize) =>
   http.get(`/user/msg/comment/friendLink/${pageNum}/${pageSize}`)
 
 /**
  * 获取友链评论总数
- * @returns 
+ * @returns
  */
-export const getFriendLinkCommentCountApi = () => 
+export const getFriendLinkCommentCountApi = () =>
   http.get(`/user/msg/comment/friendLink/count`)

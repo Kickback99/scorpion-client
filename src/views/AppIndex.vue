@@ -31,10 +31,10 @@
                 <AppArticleItem v-for="(item,index) in articleList" :key="item.id"
                     :class="{'mt-5':(index !== 0)}"
                     :id="item.id"
-                    :title="item.title" 
+                    :title="item.title"
                     :cateName="item.cateName"
-                    :cover="item.cover" 
-                    :description="item.displayDescription" 
+                    :cover="item.cover"
+                    :description="item.displayDescription"
                     :createTime="item.createTime"
                     :viewCount="item.viewCount"
                     :favoriteCount="item.favoriteCount"
@@ -57,18 +57,18 @@
                 </template>
               </v-infinite-scroll>
             </template>
-            
+
             <!-- 分页加载模式（原有逻辑） -->
             <template v-else>
               <AppArticleItem
                   v-for="(item, index) in articleList"
-                  :key="item.id" 
+                  :key="item.id"
                   :class="{'mt-5': (index !== 0)}"
                   :id="item.id"
-                  :title="item.title" 
+                  :title="item.title"
                   :cateName="item.cateName"
-                  :cover="item.cover" 
-                  :description="item.displayDescription" 
+                  :cover="item.cover"
+                  :description="item.displayDescription"
                   :createTime="item.createTime"
                   :viewCount="item.viewCount"
                   :favoriteCount="item.favoriteCount"
@@ -77,8 +77,8 @@
               />
 
               <v-pagination
-              v-show=" Math.ceil(total / currentPageSize) > 1 " 
-              v-model="params.pageNum" 
+              v-show=" Math.ceil(total / currentPageSize) > 1 "
+              v-model="params.pageNum"
               class="mt-5"
               :length="Math.ceil(total / currentPageSize)"
               :total-visible="smAndUp?8:4"

@@ -5,7 +5,7 @@
 export const StealthStorage = {
   // 存储映射表
   _map: new Map(),
-  
+
   /**
    * 初始化映射关系
    * @param {string} type - 存储类型：'localStorage' 或 'sessionStorage'
@@ -20,19 +20,19 @@ export const StealthStorage = {
     this._map.set(realKey, { type, fakeKey, salt });
     return this;
   },
-  
+
   // 获取对应的存储对象
   _getStorage(type) {
     return type === 'localStorage' ? localStorage : sessionStorage;
   },
-  
+
   // 设置值
   set(realKey, value) {
     const config = this._map.get(realKey);
     if (!config) {
       throw new Error(`未找到 key: ${realKey} 的映射配置，请先调用 init()`);
     }
-    
+
     const { type, fakeKey, salt } = config;
     const storage = this._getStorage(type);
     const strValue = String(value);
@@ -40,19 +40,19 @@ export const StealthStorage = {
     storage.setItem(fakeKey, encoded);
     return this;
   },
-  
+
   // 获取值
   get(realKey) {
     const config = this._map.get(realKey);
     if (!config) {
       throw new Error(`未找到 key: ${realKey} 的映射配置，请先调用 init()`);
     }
-    
+
     const { type, fakeKey, salt } = config;
     const storage = this._getStorage(type);
     const raw = storage.getItem(fakeKey);
     if (!raw) return null;
-    
+
     try {
       const decoded = decodeURIComponent(atob(raw));
       if (salt && !decoded.endsWith(salt)) return null;
@@ -62,30 +62,30 @@ export const StealthStorage = {
       return null;
     }
   },
-  
+
   // 删除
   remove(realKey) {
     const config = this._map.get(realKey);
     if (!config) {
       throw new Error(`未找到 key: ${realKey} 的映射配置，请先调用 init()`);
     }
-    
+
     const { type, fakeKey } = config;
     const storage = this._getStorage(type);
     storage.removeItem(fakeKey);
     return this;
   },
-  
+
   // 检查是否存在
   has(realKey) {
     const config = this._map.get(realKey);
     if (!config) return false;
-    
+
     const { type, fakeKey } = config;
     const storage = this._getStorage(type);
     return storage.getItem(fakeKey) !== null;
   },
-  
+
   // 查看所有已配置的映射（调试用）
   debug() {
     const result = [];

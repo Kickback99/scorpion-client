@@ -24,8 +24,8 @@
                     </span>
                   </v-sheet>
 
-                  <!-- 移动端置顶图标按钮 -->       
-                  <v-btn 
+                  <!-- 移动端置顶图标按钮 -->
+                  <v-btn
                     v-if="isTop === '1' && display.smAndDown.value"
                     class="top-btn-mobile"
                     variant="flat"
@@ -46,11 +46,11 @@
                     {{ cateName }}
                   </v-chip>
                 </v-list-item-title>
-  
+
                 <v-list-item-subtitle class="description d-none d-sm-block">
                   <p class="ma-0 truncate-multi">{{ description }}</p>
                 </v-list-item-subtitle>
-  
+
                 <v-list-item-subtitle class="metadata pb-1">
                   <span class="d-inline-flex mr-3">
                        <v-icon icon="mdi-clock-outline" size="small" class="mr-1"></v-icon>
@@ -152,7 +152,7 @@ const themeStore = useThemeStore()
   height: 24px;
   opacity: 0.9;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  
+
   &:active {
     opacity: 1;
   }
@@ -254,7 +254,7 @@ const themeStore = useThemeStore()
   top: calc(-1 * var(--article-title-lift));
   /* 同理放开 .v-list-item-title 的 overflow（标题自身的截断/省略由 h4 的 truncate-* 承担） */
   overflow: visible;
-  
+
   h4 {
     flex: 1; /* 标题占据剩余空间 */
     min-width: 0; /* 允许收缩 */

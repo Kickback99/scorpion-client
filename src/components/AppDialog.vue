@@ -13,7 +13,7 @@
         <v-icon v-if="config.icon" :icon="config.icon" :color="config.iconColor" class="mr-2" />
         {{ config.title }}
       </v-card-title>
-      
+
       <!-- 内容区域：支持纯文本和 Markdown -->
       <v-card-text class="pt-4" :class="config.textClass">
         <!-- 纯文本模式 -->
@@ -30,7 +30,7 @@
       <!-- 按钮区域 -->
       <v-card-actions>
         <v-spacer />
-        
+
         <v-btn
           v-if="config.showCancel"
           :color="config.cancelColor"
@@ -39,7 +39,7 @@
         >
           {{ config.cancelText }}
         </v-btn>
-        
+
         <v-btn
           :color="config.confirmColor"
           :variant="config.confirmVariant"
@@ -110,10 +110,10 @@ const show = (options) => {
     confirmVariant: options.confirmVariant || 'flat',
     useMarkdown: options.useMarkdown || false
   })
-  
+
   confirmCallback = options.onConfirm || null
   cancelCallback = options.onCancel || null
-  
+
   visible.value = true
 }
 

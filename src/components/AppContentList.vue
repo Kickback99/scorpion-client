@@ -40,8 +40,8 @@
         :hide-default-footer="hideDefaultFooter"
         hover
       >
-        <template 
-          v-for="header in tableHeaders" 
+        <template
+          v-for="header in tableHeaders"
           :key="header.key"
           #[`item.${header.key}`]="{ item }"
         >
@@ -86,7 +86,7 @@
 
     <!-- ===== Grid 模式（虚拟滚动表格）===== -->
     <div v-if="contentType === 'grid'" class="grid-container">
-      
+
       <!-- 数据加载之前，使用 loading -->
       <div v-if="loading" class="d-flex flex-column justify-center align-center py-8">
         <v-progress-circular indeterminate color="primary" :size="display.mobile.value ? 32 : 40" />
@@ -104,8 +104,8 @@
         hide-default-footer
       >
         <!-- 动态遍历所有列，使用具名插槽 -->
-        <template 
-          v-for="header in tableHeaders" 
+        <template
+          v-for="header in tableHeaders"
           :key="header.key"
           #[`item.${header.key}`]="{ item }"
         >
@@ -128,7 +128,7 @@
           </slot>
         </template> -->
       </v-data-table-virtual>
-        
+
       <!-- 无数据且不在加载中时显示空状态 -->
       <slot v-else name="empty" :searchKeyword="searchKeyword">
       <v-empty-state
@@ -402,7 +402,7 @@ const loadData = async (page = currentPage.value) => {
   loading.value = true
   try {
     let params = {}
-    
+
     if (props.contentType === 'table') {
       // table 模式下的分页参数处理
       if (props.hideDefaultFooter) {
@@ -416,9 +416,9 @@ const loadData = async (page = currentPage.value) => {
       // card 模式下的分页参数处理
       params = { pageNum: page, pageSize: itemsPerPage.value}
     }
-    
+
     const result = await props.loadDataApi(params)
-    
+
     if (result && result.data) {
       items.value = result.data.items || result.data.records || result.data
       total.value = result.data.total || items.value.length

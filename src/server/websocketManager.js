@@ -39,7 +39,7 @@ class WebSocketManager {
       return
     }
 
-    
+
     // 重置手动关闭标志
     this.isManualClose = false
 
@@ -103,14 +103,14 @@ class WebSocketManager {
   shouldReconnectOnClose(code) {
     // 正常关闭，不重连
     if (code === 1000) return false
-    
+
     // 1001：服务端主动关闭（如 Spring Boot 优雅停机），应重连
     // 注意：客户端 onclose 收到的 1001 来自服务端，表示"服务端要下线"，
     // 与浏览器导航离开时客户端发出的 1001 是不同的方向，与 dashboard 端保持一致
 
     // 1008：策略违规，可能是权限问题，不重连
     if (code === 1008) return false
-    
+
     // 其他错误码（含 1006 连接异常断开），尝试重连
     return true
   }
@@ -165,13 +165,13 @@ class WebSocketManager {
     switch (messageType) {
       case 'comment':  // 评论消息
         break
-        
+
       case 'task':  // 任务消息
         break
-        
+
       case 'system':  // 系统消息
         break
-        
+
       default:
         // 未知类型的数组消息，尝试显示
         console.warn('未知的数组消息类型:', messageType, arr)

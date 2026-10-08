@@ -28,22 +28,22 @@ export const themeConfig = {
     'scorpion-dark': {
       dark: true,
       colors: {
-            // 主品牌色 - SlateBlue 家族  
+            // 主品牌色 - SlateBlue 家族
           primary: '#6A5ACD',     // SlateBlue（核心色）
           secondary: '#483D8B',   // DarkSlateBlue（深色层次）
           accent: '#7B68EE',      // MediumSlateBlue（高亮点缀）
-          
+
           // 功能色
           error: '#FF5252',
           info: '#40C4FF',
           success: '#69F0AE',
           warning: '#FFB74D',
-          
+
           // 背景色系
           background: '#0F0D1A',  // 深紫黑背景
           surface: '#1A1730',     // 卡片背景（带紫调）
           'surface-variant': '#262240',
-          
+
           // 文字色
           'on-primary': '#FFFFFF',
           'on-background': '#E0DDF5',
