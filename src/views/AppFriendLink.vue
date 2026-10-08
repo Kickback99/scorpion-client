@@ -176,7 +176,7 @@ const params = ref({
 })
 const total = ref(0)
 const hasMore = ref(true)  // 是否还有更多数据
-const scrollStatus = ref('') // 滚动状态: '', 'loading', 'empty'
+const scrollStatus = ref('') // 滚动状态：'', 'loading', 'empty'
 
 // 友链评论总数
 const totalCount = ref(0)

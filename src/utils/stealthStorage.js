@@ -8,7 +8,7 @@ export const StealthStorage = {
   
   /**
    * 初始化映射关系
-   * @param {string} type - 存储类型: 'localStorage' 或 'sessionStorage'
+   * @param {string} type - 存储类型：'localStorage' 或 'sessionStorage'
    * @param {string} realKey - 真实的业务 key
    * @param {string} fakeKey - 对外显示的伪装 key
    * @param {string} salt - 可选，防简单篡改的盐值

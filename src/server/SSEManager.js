@@ -86,7 +86,7 @@ class SSEManager {
 
     /**
      * 注册自定义监听器
-     * @param {String} event 事件名: message | open | error | close
+     * @param {String} event 事件名：message | open | error | close
      * @param {Function} callback 回调函数
      */
     on(event, callback) {
