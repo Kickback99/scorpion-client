@@ -11,7 +11,9 @@ lerna-debug.log*
 CLAUDE.md
 CONVENTIONS.md
 .claude/
-/gits
+.playwright-mcp
+.comment-style-lint
+.commit-msg-lint
 /docs
 
 node_modules
@@ -25,6 +27,7 @@ coverage
 /cypress/screenshots/
 
 # Editor directories and files
+.editorconfig
 .vscode/*
 !.vscode/extensions.json
 .idea
