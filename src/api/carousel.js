@@ -1,7 +1,7 @@
 import http from '@/utils/http'
 
 const API = {
-    CAROUSEL_URL: '/user/content/carousel'
+    CAROUSEL_URL: '/user/blog/carousel'
 }
 
 // 获取轮播图列表
