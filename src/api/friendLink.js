@@ -8,7 +8,7 @@ import http from '@/utils/http'
  */
 export function getClientFriendLinkListApi(pageNum, pageSize) {
   return http({
-    url: `/user/content/friendLink/${pageNum}/${pageSize}`,
+    url: `/user/blog/friendLink/${pageNum}/${pageSize}`,
     method: 'get'
   })
 }
