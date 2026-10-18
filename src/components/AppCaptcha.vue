@@ -3,7 +3,7 @@
         <!-- ===== 文本验证码（算术/中文/英文/数字/混合/GIF） ===== -->
         <template v-if="isTextType">
             <!-- 输入框占剩余宽度，验证码图片 + 刷新按钮靠右；容器过窄时改回图片在上的上下布局 -->
-            <div class="captcha-text-row d-flex" :class="{ 'has-image': backgroundLoaded }">
+            <div class="captcha-text-row d-flex" :class="{ 'has-image': !!vo.backgroundImage }">
                 <v-text-field
                     color="primary"
                     variant="outlined"
@@ -16,7 +16,8 @@
                     prepend-inner-icon="mdi-shield-check"
                     :loading="verifying"
                 ></v-text-field>
-                <div class="captcha-text-aside d-flex align-center">
+                <!-- 无图时不占位，避免 loading 态多出一段列间距 -->
+                <div v-if="vo.backgroundImage || backgroundLoaded" class="captcha-text-aside d-flex align-center">
                     <img
                         v-if="vo.backgroundImage"
                         :src="vo.backgroundImage"
