@@ -97,9 +97,12 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
+      alias: [
+        { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+        // markdown-it 仅用 punycode 处理 IDN 域名且调用在 try/catch 内，换成本地透传实现可消除
+        // Vite 的 node 内置外部化警告，行为不变
+        { find: /^punycode$/, replacement: fileURLToPath(new URL('./src/utils/punycode-stub.js', import.meta.url)) },
+      ]
     },
     // 配置代理
     server: {
