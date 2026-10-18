@@ -15,7 +15,6 @@ import { useWebSocket } from '@/server/useWebSocket.js'
 // 关闭 WebSocket（修改密码/注销后断开连接，与 Header 的 handleLogout 保持一致）
 const { closeWebSocket } = useWebSocket()
 
-
 // 添加请求拦截器
 instance.interceptors.request.use(
     config => {
@@ -30,7 +29,6 @@ instance.interceptors.request.use(
 
     err => Premise.reject(err)
 )
-
 
 // 认证失效统一清理：清用户状态 + 断开 WS + 提示 + 跳首页（业务码 401 与 HTTP 401 共用）
 // config._quiet 为 true 时（如 verifyLogin 后台校验）：只清状态，不弹窗不跳转（网友刷新页面不该被"登录已过期"打扰）

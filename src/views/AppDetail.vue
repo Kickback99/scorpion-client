@@ -72,7 +72,6 @@
     />
   </div>
 
-
   <!-- ===== TOC 文章目录 ===== -->
   <AppArticleToc ref="tocRef" :preview="preview" />
 
@@ -283,7 +282,6 @@ const themeStore = useThemeStore()
 watch(() => configStore.getArticleTheme(), () => {
   if (isArticleLoaded.value) loadMarkdown(true);
 });
-
 
 // ============================================================
 // 生命周期

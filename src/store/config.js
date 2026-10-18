@@ -379,7 +379,6 @@ export const useConfigStore = defineStore('config', {
       return globalEnabled
     },
 
-
     /**
      * 获取子评论默认显示数量
      */

@@ -57,7 +57,6 @@ const {mdAndUp, lgAndUp} = useDisplay()
 
 const configStore = useConfigStore()
 
-
 const route = useRoute()
 
 const categories = ref([])
