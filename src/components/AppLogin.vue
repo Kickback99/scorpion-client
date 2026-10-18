@@ -162,7 +162,7 @@
                                 color="primary"
                                 density="compact"
                                 style="--v-input-control-height: 20px; --v-input-padding-top: 8px;"
-                                class="my-4"
+                                :class="registerCaptchaIsText ? 'mt-2 mb-4' : 'my-4'"
                                 v-model="registerTerm"
                                 :rules="registerRules.term"
                                 >
@@ -317,6 +317,8 @@ const loginCaptchaRef = ref(null)
 const registerCaptchaRef = ref(null)
 // 登录验证码是否为文本类（子组件未挂载时按非文本类处理），类型判定复用 AppCaptcha 暴露的 isTextType
 const loginCaptchaIsText = computed(() => loginCaptchaRef.value?.isTextType ?? false)
+// 注册验证码同上
+const registerCaptchaIsText = computed(() => registerCaptchaRef.value?.isTextType ?? false)
 
 const dialogVisible = ref(false)
 
