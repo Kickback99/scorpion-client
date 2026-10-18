@@ -1,6 +1,10 @@
 import http from '@/utils/http'
 
-// 用户登录
+/**
+ * 用户登录
+ * @param {Object} params 登录参数
+ * @returns {Promise}
+ */
 export const userLoginApi = (params) => http.post('/user/login',params)
 
 /**
@@ -31,30 +35,53 @@ export const userCancelApi = (params) => http.post('/user/cancel',params)
  */
 export const userChangePasswordApi = (params) => http.post('/user/changePassword',params)
 
-// 用户详情（options 可传 axios config，如 { _quiet: true } 静默校验：401 时不弹窗不跳转）
+/**
+ * 查询用户详情，options 可传 axios config（如 { _quiet: true } 静默校验：401 时不弹窗不跳转）
+ * @param {Object} options axios 配置
+ * @returns {Promise}
+ */
 export const userInfoApi = (options = {}) => http.get('/user/userDetailInfo', options)
 
-// 用户注销
+/**
+ * 用户注销
+ * @returns {Promise}
+ */
 export const userLogoutApi = () => http.get("/user/logout")
 
-// 用户收藏
+/**
+ * 分页查询用户收藏列表
+ * @param {Object} params 分页参数，{ pageNum, pageSize }
+ * @returns {Promise}
+ */
 export const userFavoritesApi = (params) => {
   const pageNum = params?.pageNum || 1
   const pageSize = params?.pageSize || 9999
   return http.get(`/user/favorites/${pageNum}/${pageSize}`)
 }
 
-// 取消收藏
+/**
+ * 取消收藏
+ * @param {Number} articleId 文章 ID
+ * @returns {Promise}
+ */
 export const deleteFavoriteApi = (articleId) => http.delete(`/user/favorites/${articleId}`)
 
-// 获取用户评论列表
+/**
+ * 分页查询用户评论列表
+ * @param {Object} params 分页参数，{ pageNum, pageSize }
+ * @returns {Promise}
+ */
 export const getUserCommentsApi = (params) => {
   const pageNum = params?.pageNum || 1
   const pageSize = params?.pageSize || 9999
   return http.get(`/user/comments/${pageNum}/${pageSize}`)
 }
 
-// 删除用户评论
+/**
+ * 删除用户评论
+ * @param {Number} commentId 评论 ID
+ * @returns {Promise}
+ */
 export const deleteCommentApi = (commentId) => {
   return http({
     url: `/user/userComment/${commentId}`,
@@ -62,7 +89,11 @@ export const deleteCommentApi = (commentId) => {
   })
 }
 
-// 修改用户基本资料
+/**
+ * 修改用户基本资料
+ * @param {Object} params 用户资料（含头像文件）
+ * @returns {Promise}
+ */
 export const userUpdateInfoApi = (params) => {
     const formData = new FormData()
     for(const k in params){

@@ -5,7 +5,7 @@ import http from '@/utils/http'
  * @param {Number} pageNum 页码
  * @param {Number} pageSize 每页数量
  * @param {Number} articleId 文章 ID
- * @returns
+ * @returns {Promise}
  */
 export const getCommentsApi = (pageNum, pageSize, articleId) =>
   http.get(`/user/msg/comment/${pageNum}/${pageSize}`, {
@@ -21,14 +21,26 @@ export const getCommentsApi = (pageNum, pageSize, articleId) =>
  * @param {Number} [data.rootId] 根评论 ID
  * @param {Number} [data.toCommentId] 回复的目标评论 ID
  * @param {Number} [data.toCommentUserId] 回复的目标评论用户 ID
- * @returns
+ * @returns {Promise}
  */
 export const addCommentApi = (data) =>
   http.post('/user/msg/comment/reply', data)
 
+/**
+ * 获取子评论列表
+ * @param {Number} commentId 根评论 ID
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize 每页数量
+ * @returns {Promise}
+ */
 export const getChildCommentsApi = (commentId,pageNum,pageSize) =>
   http.get(`/user/msg/comment/child/${commentId}/${pageNum}/${pageSize}`)
 
+/**
+ * 删除评论
+ * @param {Number} id 评论 ID
+ * @returns {Promise}
+ */
 export const deleteCommentApi = (id) =>
   http.delete(`/user/msg/comment/byId/${id}`)
 
@@ -36,14 +48,14 @@ export const deleteCommentApi = (id) =>
  * 获取友链评论列表
  * @param {Number} pageNum 页码
  * @param {Number} pageSize 每页数量
- * @returns
+ * @returns {Promise}
  */
 export const getFriendLinkCommentApi = (pageNum, pageSize) =>
   http.get(`/user/msg/comment/friendLink/${pageNum}/${pageSize}`)
 
 /**
  * 获取友链评论总数
- * @returns
+ * @returns {Promise}
  */
 export const getFriendLinkCommentCountApi = () =>
   http.get(`/user/msg/comment/friendLink/count`)

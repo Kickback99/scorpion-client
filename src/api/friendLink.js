@@ -2,9 +2,9 @@ import http from '@/utils/http'
 
 /**
  * 查询友链列表
- * @param {*} pageNum 页码
- * @param {*} pageSize 每页大小
- * @returns
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize 每页数量
+ * @returns {Promise}
  */
 export function getClientFriendLinkListApi(pageNum, pageSize) {
   return http({
