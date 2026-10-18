@@ -367,7 +367,8 @@ const handleAutoDescription = (item) => {
     top: 64px;
     left: 0;
     right: 0;
-    z-index: 9999;
+    // 低于 v-overlay 的 2000，子分类下拉/弹窗要能压住进度条
+    z-index: 1999;
 }
 
 .loading-bar {
