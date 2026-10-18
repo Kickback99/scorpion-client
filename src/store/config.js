@@ -114,6 +114,10 @@ function deepMerge(target, src) {
 }
 
 export const useConfigStore = defineStore('config', {
+
+  // ============================================================
+  // 数据
+  // ============================================================
   state: () => ({
     // 加载状态
     loading: false,
@@ -211,8 +215,11 @@ export const useConfigStore = defineStore('config', {
     },
   }),
 
+  // ============================================================
+  // 方法
+  // ============================================================
   actions: {
-    // ==================== 核心：动态读写 ====================
+    // ===== 核心：动态读写 =====
 
     /**
      * 按 key 读取配置值，通过 _keyToGroup 自动定位所属 group
@@ -240,7 +247,7 @@ export const useConfigStore = defineStore('config', {
       if (gk) deepSet(this, [gk, ...key.split('.')], value)
     },
 
-    // ==================== 加载 ====================
+    // ===== 加载 =====
 
     /**
      * 加载所有配置
@@ -264,7 +271,7 @@ export const useConfigStore = defineStore('config', {
       }
     },
 
-    // ==================== 专用方法（thin wrapper，全部调 getValue） ====================
+    // ===== 专用方法（thin wrapper，全部调 getValue） =====
 
     /**
      * 获取轮播数量限制
@@ -546,6 +553,9 @@ export const useConfigStore = defineStore('config', {
 
   },
 
+  // ============================================================
+  // 计算属性
+  // ============================================================
   getters: {
     carouselLimit()          { return this.getValue('article.carousel_limit') ?? 3 },
     tagLimit()               { return this.getValue('article.tag_limit') ?? 16 },

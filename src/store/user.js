@@ -23,18 +23,30 @@ const pickUserFields = (user) => {
 let verifyPromise = null
 
 export const useUserStore = defineStore('user',{
+
+    // ============================================================
+    // 数据
+    // ============================================================
     state:()=>({
         token:'',
         user:{},
         // 本次会话是否已校验过登录态（内存标志，不持久化，等价管理端 hasUserInfo 懒加载）
         loginVerified:false
     }),
+
+    // ============================================================
+    // 计算属性
+    // ============================================================
     getters:{
         // 登录态判定：cookie 模式看 user 展示缓存（服务端校验失败后会被清空），jwt 模式看 token+user
         isLoggedIn:(state) => isCookieMode()
             ? Object.keys(state.user).length > 0
             : !!state.token && Object.keys(state.user).length > 0
     },
+
+    // ============================================================
+    // 方法
+    // ============================================================
     actions:{
         setToken(newToken) {
             // cookie 模式：token 在 HttpOnly Cookie 中由浏览器管理，前端不存储（置空顺带覆盖历史残留）
@@ -82,6 +94,10 @@ export const useUserStore = defineStore('user',{
             this.$reset()
         }
     },
+
+    // ============================================================
+    // 持久化
+    // ============================================================
     persist:{
         paths:['token','user'],
         // 自定义序列化：仅持久化展示所需字段（email/phone 等 PII 不落 localStorage）；旧版本数据自动迁移裁剪

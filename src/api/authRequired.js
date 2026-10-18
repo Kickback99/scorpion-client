@@ -1,5 +1,7 @@
-// 定义需要携带 token 的路径列表（即"需要登录认证的接口"）
-// 与后端 ClientSecurityConfig 的 matchers 对齐（子路径接口用尾部斜杠做前缀匹配）
+/**
+ * 需要携带 token 的路径列表（即"需要登录认证的接口"）
+ * 与后端 ClientSecurityConfig 的 matchers 对齐（子路径接口用尾部斜杠做前缀匹配）
+ */
 export const AUTH_REQUIRED_PATHS = [
   '/test',
   '/user/userDetailInfo',
@@ -15,7 +17,11 @@ export const AUTH_REQUIRED_PATHS = [
   '/user/msg/comment/byId/',  // DELETE 按 id 删评论
 ];
 
-// 导出匹配函数
+/**
+ * 判断请求路径是否需要携带 token
+ * @param {String} url 请求路径
+ * @returns {Boolean}
+ */
 export const isAuthRequired = (url) => {
   return AUTH_REQUIRED_PATHS.some(path => {
     // 如果路径以 '/' 结尾，说明是前缀匹配
