@@ -1,4 +1,3 @@
-<!-- components/ReplyInput.vue -->
 <template>
   <!-- ===== 回复输入框 ===== -->
   <div class="reply-input-wrapper" :class="{ 'child-reply-wrapper': isChildReply }">

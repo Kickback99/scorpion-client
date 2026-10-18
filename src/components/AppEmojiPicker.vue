@@ -1,4 +1,3 @@
-<!-- components/AppEmojiPicker.vue -->
 <template>
   <!-- ===== 表情选择面板 ===== -->
   <!-- 用 v-menu 不用 v-dialog：v-menu 的 scrollStrategy 是 reposition，不会加 v-overlay-scroll-blocked，

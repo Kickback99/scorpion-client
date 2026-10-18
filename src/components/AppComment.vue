@@ -1,4 +1,3 @@
-<!-- components/AppComment.vue -->
 <template>
   <v-card class="comment-container" variant="flat" :style="{ '--comment-scale': scale }">
     <v-card-title class="text-h6">
