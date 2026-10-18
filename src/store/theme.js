@@ -16,7 +16,6 @@ const getConfigHash = () => {
   return hash.toString()
 }
 
-
 export const useThemeStore = defineStore('theme', {
 
   // ============================================================
@@ -49,7 +48,6 @@ export const useThemeStore = defineStore('theme', {
     isConfigChanged() {
       return this.configHash !== getConfigHash()
     },
-
 
     /**
      * 设置当前主题（直接设置，不验证）

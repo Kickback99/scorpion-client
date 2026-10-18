@@ -120,12 +120,10 @@ import { usePageSkeletonReporter } from '@/composables/usePageSkeleton';
 // ============================================================
 const configStore = useConfigStore()
 
-
 const {smAndUp, mobile} = useDisplay()
 
 // 空状态字号缩放（移动端 0.8）
 const scale = useDialogFontScale()
-
 
 const isLoading = ref(false)
 const scrollLoading = ref(false) // 滚动加载状态
@@ -134,7 +132,6 @@ const scrollLoading = ref(false) // 滚动加载状态
 usePageSkeletonReporter(isLoading)
 
 import { useRoute, useRouter } from 'vue-router';
-
 
 const route = useRoute()
 const router = useRouter()
@@ -155,7 +152,6 @@ const currentPageSize = computed(() => {
         return configStore.getListPaginationPageSize()
     }
 })
-
 
 // ============================================================
 // 列表状态
@@ -187,7 +183,6 @@ const resetScrollState = () => {
     total.value = 0
     hasMore.value = true
 }
-
 
 // 请求代次：回退/前进连续切换时会有多个请求同时在飞，只有最新一次的结果可被采纳
 let requestSeq = 0

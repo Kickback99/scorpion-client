@@ -5,7 +5,6 @@ import emitter from '@/utils/event-bus.js'
 import { userLogoutApi } from '@/api/user';
 import { StealthStorage } from '@/utils/stealthStorage'
 
-
 class WebSocketManager {
   constructor() {
     this.socket = null
@@ -38,7 +37,6 @@ class WebSocketManager {
       console.warn('没有用户ID，无法初始化 WebSocket')
       return
     }
-
 
     // 重置手动关闭标志
     this.isManualClose = false

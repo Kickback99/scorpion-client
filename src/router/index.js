@@ -13,7 +13,6 @@ const AppFriendLink = () => import('@/views/AppFriendLink.vue')
 const AppProfileCenter = () => import('@/components/AppProfileCenter.vue')
 const AppNotFound = () => import('@/views/AppNotFound.vue')
 
-
 // 路由规则
 const routes = [
     {path:"/",component :AppLayout,children:[

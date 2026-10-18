@@ -324,7 +324,6 @@ const step = ref(1)
 
 import emitter from '@/utils/event-bus.js'
 
-
 const handleWidth = computed(()=>{
     if(display.smAndDown.value){
         return '320'

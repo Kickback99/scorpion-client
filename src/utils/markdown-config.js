@@ -1,7 +1,6 @@
 // 全部动态导入：markdown-config 被 AppSidebar（首页）静态引用，
 // 若在顶层 import 编辑器组件会把编辑器 chunk 拖回首屏，这里全部改为按需加载
 
-
 export async function createMarkdownPreview(theme = 'github') {
   // 基础预览组件 + 插件（与主题无关）
   const [
