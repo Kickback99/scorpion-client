@@ -414,6 +414,12 @@ defineExpose({
    */
   getHasToc() {
     return hasToc.value
+  },
+  /**
+   * 折叠目录卡：展开态只属于当时那篇文章，切换文章时由外部调用
+   */
+  collapseToc() {
+    showToc.value = false
   }
 })
 </script>

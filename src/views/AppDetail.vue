@@ -162,6 +162,8 @@ const loadMarkdown = async (force = false) => {
 // 文章详情
 // ============================================================
 const renderArticleItem = async() => {
+  // 切换文章即折叠目录卡：展开态只属于当时那篇文章（主题重载不走这里，不折叠）
+  tocRef.value?.collapseToc()
   // 请求代次：详情页之间跳转或中途离开时会有多个请求在飞，只有最新一次可被采纳
   const id = props.id
   isLoading.value = true
