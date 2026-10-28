@@ -19,7 +19,7 @@
 
     <!-- TOC 目录卡片 -->
     <v-card
-      v-show="showToc"
+      v-show="hasToc && showToc"
       class="toc-card"
       elevation="4"
       :style="{
@@ -126,7 +126,8 @@ const existingLevels = computed(() => {
 })
 
 const hasToc = computed(() => {
-  return configStore.isAnchorEnabled && tocAnchors.value.length >= 2
+  // 正文不在（切换文章 / 骨架屏期间）就没有可用的目录，不能沿用上一篇的锚点
+  return !!props.preview && configStore.isAnchorEnabled && tocAnchors.value.length >= 2
 })
 
 /**
@@ -335,6 +336,11 @@ const handleTitleMouseLeave = (index) => {
 // ============================================================
 // 监听
 // ============================================================
+
+// 正文卸载（切换文章 / 骨架屏期间）即清空旧目录，避免新正文挂载后旧目录先闪一帧
+watch(() => props.preview, (val) => {
+  if (!val) tocAnchors.value = []
+})
 
 // 监听目录卡显示状态，打开时滚动到高亮项
 watch(() => showToc.value, (newVal) => {
