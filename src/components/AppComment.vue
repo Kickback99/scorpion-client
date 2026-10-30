@@ -336,9 +336,10 @@ import { useDialogFontScale } from '@/composables/useDialogFontScale'
 // 数据
 // ============================================================
 const props = defineProps({
+  // 友链评论没有文章 ID，允许为空
   articleId: {
     type: [Number, String],
-    required: true
+    default: null
   },
   isComment: {
     type: [Number, String],
