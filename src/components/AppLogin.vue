@@ -439,13 +439,10 @@ const authMismatchTip = (detail) => import.meta.env.PROD ? '服务异常，请�
 
 // 登录处理
 const handleLogin = async () => {
-    // if (!loginFormRef.value) return
-
-    await loginFormRef.value.validate()
-
+    // 加载态不会禁用 Vuetify 按钮，连点会重复提交（验证码 token 只能用一次）
+    if (loading.value) return
     loading.value = true
     try {
-        // 再次确认表单校验
         const { valid } = await loginFormRef.value.validate()
 
         if (valid) {
@@ -534,7 +531,8 @@ const registerRules = {
 
 // 注册处理
 const handleRegister = async () => {
-
+    // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+    if (registerLoading.value) return
     registerLoading.value = true
     try {
         const { valid } = await registerFormRef.value.validate()
@@ -609,11 +607,12 @@ const resetRules = {
 
 // 重置密码提交
 const handlePasswordReset = async () => {
-    const { valid } = await resetFormRef.value.validate()
-    if (!valid) return
-
+    // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+    if (resetLoading.value) return
     resetLoading.value = true
     try {
+        const { valid } = await resetFormRef.value.validate()
+        if (!valid) return
         await userPasswordResetApi({
             email: forgotModel.email,
             verifyCode: forgotModel.verifyCode,

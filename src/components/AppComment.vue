@@ -776,6 +776,8 @@ const loadMoreChildren = async (comment) => {
 // ============================================================
 // 发表评论
 const submitComment = async () => {
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+  if (submitLoading.value) return
   if (!commentContent.value.trim()) return
 
   // 清空输入框前先留住内容，用于刷新后定位自己刚发的那条
@@ -835,6 +837,8 @@ const cancelReply = () => {
 }
 
 const submitReply = async () => {
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+  if (replyLoading.value) return
   if (!replyContent.value.trim() || !replyTarget.value) return
 
   // cancelReply 会清空 replyTarget 与 replyContent，先取出定位新回复所需的信息
@@ -942,6 +946,8 @@ const cancelDelete = () => {
 
 // 确认删除
 const confirmDelete = async () => {
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+  if (isDeleting.value) return
   if (!deletingCommentId.value) return
 
    isDeleting.value = true
