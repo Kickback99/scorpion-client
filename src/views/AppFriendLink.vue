@@ -86,6 +86,7 @@
           :totalCount="totalCount"
           commentType="friendLink"
           @comment-deleted="handleCommentCountChange"
+          @comment-created="handleCommentCountChange"
         />
       </div>
     </v-sheet>

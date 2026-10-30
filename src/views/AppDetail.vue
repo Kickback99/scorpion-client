@@ -69,6 +69,7 @@
     :isComment="article.isComment"
     :totalCount="article.commentCount"
     @comment-deleted="handleCommentCountChange"
+    @comment-created="handleCommentCountChange"
     />
   </div>
 

@@ -354,7 +354,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['comment-deleted'])
+const emit = defineEmits(['comment-deleted', 'comment-created'])
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
@@ -799,6 +799,8 @@ const submitComment = async () => {
       // 未命中规则的评论已自动通过，刷新即可看到（与 submitReply 一致）；命中待审的不会出现在列表里
       await loadComments()
       await scrollToMyComment(content)
+      // 头部条数取自文章详情，发评论后需让宿主重新拉取（与删除走同一刷新链路）
+      emit('comment-created')
     }
   } catch (error) {
     // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
@@ -864,6 +866,8 @@ const submitReply = async () => {
       cancelReply()
       await refreshCommentChildren(rootId)
       await scrollToMyReply(rootId, content)
+      // 回复同样计入文章评论总数，通知宿主刷新头部条数
+      emit('comment-created')
     }
   } catch (error) {
     // 401 及其余错误提示已由 http.js 拦截器统一处理，此处仅记录日志
