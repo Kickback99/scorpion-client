@@ -90,7 +90,7 @@
               </template>
 
               <template #column-actions="{ item }">
-                <v-btn icon variant="text" size="small" color="red" @click="postListRef?.deleteItem?.(item)">
+                <v-btn icon variant="text" size="small" color="red" class="app-icon-btn" @click="postListRef?.deleteItem?.(item)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </template>
@@ -145,6 +145,7 @@
                   variant="text"
                   size="small"
                   color="red"
+                  class="app-icon-btn"
                   @click="commentListRef?.deleteItem?.(item)"
                 >
                   <v-icon :size="18 * handleFontScale">mdi-delete</v-icon>
@@ -199,6 +200,7 @@
                   variant="text"
                   size="small"
                   color="red"
+                  class="app-icon-btn"
                   @click="favoriteListRef?.deleteItem?.(item)"
                 >
                   <v-icon>mdi-heart-broken</v-icon>
