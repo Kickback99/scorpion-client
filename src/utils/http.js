@@ -27,7 +27,7 @@ instance.interceptors.request.use(
         return config
     },
 
-    err => Premise.reject(err)
+    err => Promise.reject(err)
 )
 
 // 认证失效统一清理：清用户状态 + 断开 WS + 提示 + 跳首页（业务码 401 与 HTTP 401 共用）
