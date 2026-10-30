@@ -270,7 +270,12 @@ class WebSocketManager {
 
   // 统一的退出和跳转
   async logoutAndRedirect() {
-    await userLogoutApi()
+    try {
+      await userLogoutApi()
+    } catch (error) {
+      // 接口失败也要清本地登录态，否则强制退出会卡在已登录状态
+      console.error('强制退出接口调用失败:', error)
+    }
     console.log("==================== 统一的退出和跳转 ====================")
     this.close()
     const userStore = useUserStore()
@@ -304,10 +309,10 @@ class WebSocketManager {
 
   // 关闭 WebSocket 连接
   close() {
-    // 连接正在建立或已建立，才需要关闭
-    // readyState 小于 2 表示正在连接或已连接
+    // 无论当前 readyState 如何都算手动关闭：CLOSING 时若只等 onclose，仍会走自动重连
+    this.isManualClose = true
+    // 连接正在建立或已建立，才需要关闭（readyState 小于 2）
     if (this.socket && this.socket.readyState < 2) {
-      this.isManualClose = true  // 标记为手动关闭，防止重连
       console.log('手动关闭 WebSocket 连接')
       this.socket.close(1000, 'Manual close')
       this.socket = null
