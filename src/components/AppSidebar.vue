@@ -132,7 +132,8 @@ import { useSearch } from '@/utils/useSearch';
 import coverRect from '@/assets/images/cover-rect.png';
 const route = useRoute()
 // 是否详情页：这张卡片在详情页归「相关文章」，全局「最新发布」不参与
-const isDetailPage = () => route.path.includes('/detail')
+// 按路由名判定，兼容 /DETAIL/:id 这类大小写写法（Vue Router 匹配不区分大小写）
+const isDetailPage = () => route.name === 'detail'
 
 const {triggerSearch} = useSearch()
 
@@ -403,7 +404,8 @@ onMounted(()=>{
       renderHotList()
       // 详情页不拉全局「最新发布」；无相关文章时由 handleDetailData 的 else 兜底
       if (!isDetailPage()) renderLatestList()
-      renderTagList()
+      // 详情页的标签由详情接口决定；全局标签只在无标签时由 handleDetailData 兜底
+      if (!isDetailPage()) renderTagList()
     }
     if ('requestIdleCallback' in window) {
       requestIdleCallback(loadSecondary)
@@ -424,12 +426,16 @@ onUnmounted(() => {
 // 路由监听
 // ============================================================
 // 监听路由地址变化
-watch(() => route.path,(newPath, oldPath) => {
+// 上一个路由是否为详情页：按路由名追状态，避免 path 字面量漏判大小写写法
+let wasDetailPage = isDetailPage()
+
+watch(() => route.path,(newPath) => {
+    const nowDetailPage = isDetailPage()
     // 上移只在整页刷新时算数；SPA 跳进详情页要立刻放开
     if(newPath !== '/') sidebarBooting.value = false
-    if(!newPath.includes('/detail')){
+    if(!nowDetailPage){
         // 从详情页回来：先撤掉旧的相关文章再拉，否则旧标题旧列表会挂到新数据回来
-        if (oldPath.includes('/detail')) {
+        if (wasDetailPage) {
             titles.value.articles = '最新发布'
             latestBlogs.value = []
         }
@@ -443,6 +449,7 @@ watch(() => route.path,(newPath, oldPath) => {
         articlesPending.value = true
         titles.value.articles = '相关文章'
     }
+    wasDetailPage = nowDetailPage
 })
 
 // ============================================================

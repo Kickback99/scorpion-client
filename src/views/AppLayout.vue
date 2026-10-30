@@ -73,8 +73,11 @@ renderCateList()
 // ============================================================
 // 计算属性
 // ============================================================
-// 个人中心按路由名判定（兼容 /PROFILE、/profile/ 等写法），其余公开页仍按 path
-const isBigScreen = computed(() => route.path === '/about' || route.name === 'Profile' || route.path === '/friendLink' || route.path === '/404')
+// 大屏页按 matched 记录判定，兼容 /ABOUT、/friendLink/ 等写法
+const isBigScreen = computed(() =>
+  route.name === 'Profile' ||
+  ['/about', '/friendLink', '/404'].some(path => route.matched.some(record => record.path === path))
+)
 const leftColMd = computed(() => isBigScreen.value ? 12 : 9)
 const showSidebar = computed(() => !isBigScreen.value)
 // TOC 图标占位列：桌面端 + 非大屏页 + outer 模式时显示

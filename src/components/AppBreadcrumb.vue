@@ -3,7 +3,7 @@
     <div class="d-flex align-center">
       <!-- ===== 面包屑 ===== -->
       <v-breadcrumbs
-        v-if="items.length > 1 && !(smAndDown && isProfilePage) && !(route.path === '/about')"
+        v-if="items.length > 1 && !(smAndDown && isProfilePage) && !isAboutPage"
         :items="items"
         density="compact"
         class="pa-0 flex-grow-0"
@@ -27,7 +27,7 @@
       <!-- 关于页额外用 v-if 排除：该页面包屑本就隐藏，若仍保留这个 visibility:hidden 的搜索框，
            整条 py-2 容器会被撑到 56px，在卡片上方留下一段纯空白（见 git 3a045b7 的占位初衷只针对有面包屑的路由） -->
       <v-text-field
-        v-if="smAndDown && route.path !== '/about'"
+        v-if="smAndDown && !isAboutPage"
         :style="{ visibility: route.path === '/' ? 'visible' : 'hidden' }"
         v-model="keyword"
         label="请输入标题/内容"
@@ -129,6 +129,10 @@ const findCategoryPath = (nodes, targetId) => {
  */
 const isProfilePage = computed(() => route.name === 'Profile')
 
+// 页面身份按路由记录判定，兼容 /ABOUT、/DETAIL/:id 等写法
+const isAboutPage = computed(() => route.matched.some(record => record.path === '/about'))
+const isDetailPage = computed(() => route.name === 'detail')
+
 /**
  * 页面标签映射
  */
@@ -148,14 +152,15 @@ const items = computed(() => {
   const query = route.query
 
   // 文章详情 /detail/:id
-  if (path.startsWith('/detail/')) {
+  if (isDetailPage.value) {
     result.push({ title: '文章详情', disabled: true })
     return result
   }
 
-  // 静态页面
-  if (PAGE_LABELS[path]) {
-    result.push({ title: PAGE_LABELS[path], disabled: true })
+  // 静态页面：按匹配到的路由记录取标签，避免大小写/尾斜杠写法漏判
+  const staticPath = route.matched.map(record => record.path).find(recordPath => PAGE_LABELS[recordPath])
+  if (staticPath) {
+    result.push({ title: PAGE_LABELS[staticPath], disabled: true })
     return result
   }
 

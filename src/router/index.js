@@ -97,6 +97,13 @@ const loadClientConfig = async (forceRefresh = false) => {
  */
 export const requiresLogin = (route) => route.matched.some(record => record.meta.requiresAuth)
 
+/**
+ * 判断路由是否命中指定路径的路由记录（matched 判定，兼容大小写与尾斜杠写法）
+ * @param {import('vue-router').RouteLocationNormalized} route
+ * @param {String} path 路由声明时的 path
+ */
+const matchesRoutePath = (route, path) => route.matched.some(record => record.path === path)
+
 // 注册在业务守卫之前，窗口要连 loadClientConfig 那段一起盖住
 router.beforeEach((to) => {
   if (to.meta.routeLoading) startRouteLoading()
@@ -116,10 +123,10 @@ router.beforeEach(async(to, from, next) => {
   const userStore = useUserStore()
   const configStore = useConfigStore()
 
-  // 友链、关于页面配置关闭时，统一拦截跳转 404
+  // 友链、关于页面配置关闭时，统一拦截跳转 404（按 matched 判定，大小写/尾斜杠写法同样生效）
   if (
-    (to.path === '/friendLink' && !configStore.getFriendLinkEnabled()) ||
-    (to.path === '/about' && !configStore.getAboutEnabled())
+    (matchesRoutePath(to, '/friendLink') && !configStore.getFriendLinkEnabled()) ||
+    (matchesRoutePath(to, '/about') && !configStore.getAboutEnabled())
   ) {
     next('/404')
     return
