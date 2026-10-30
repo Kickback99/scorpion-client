@@ -355,7 +355,10 @@ const renderLatestList = async() => {
 }
 
 const renderTagList = async() =>{
+    // 记下发起点：请求返回时路由已变就不写，避免覆盖详情页的文章标签
+    const startedAt = route.path
     const res = await tagListApi()
+    if (route.path !== startedAt) return
     titles.value.tags = '文章标签'
     tagStore.list = res.data
 }
