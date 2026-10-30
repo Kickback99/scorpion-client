@@ -21,9 +21,9 @@
     <!-- ===== 公告消息 ===== -->
     <AppBlogBox title="公告消息" v-if="configStore.getNoticeEnabled()">
         <v-card-text>
-            <!-- 普通消息显示在卡片内 -->
+            <!-- 普通消息显示在卡片内；仅有富文本公告时兜底显示暂无公告 -->
             <div v-if="normalNotice">{{ normalNotice }}</div>
-            <div v-else-if="!hasLongTextNotice" style="color: #999;">暂无公告</div>
+            <div v-else style="color: #999;">暂无公告</div>
         </v-card-text>
     </AppBlogBox>
 
@@ -149,7 +149,6 @@ const configStore = useConfigStore()
 const tagStore = useTagStore()
 const normalNotice = ref('')        // 普通消息内容
 const longTextNotice = ref(null)    // 富文本消息对象 { id, title, content, type }
-const hasLongTextNotice = ref(false)
 const noticeSnackbarVisible = ref(false)
 const noticeDialogVisible = ref(false)
 // 记录已展示的富文本公告 ID，防止重复弹出
@@ -182,9 +181,8 @@ const renderNotices = (list, options = {}) => {
     // console.log('📢 短文本', normalContent)
     // console.log('📢 富文本', longTextItem)
 
-    normalNotice.value = normalContent || '暂无公告'
+    normalNotice.value = normalContent
     longTextNotice.value = longTextItem
-    hasLongTextNotice.value = !!longTextItem
 
     // 弹出 Snackbar（有值显示，没值不显示）
     if (longTextItem) {
@@ -218,9 +216,8 @@ const fetchCurrentNotices = async (options = {}) => {
         renderNotices(list, options)
     } catch (error) {
         console.error('获取公告列表失败:', error)
-        normalNotice.value = '暂无公告'
+        normalNotice.value = ''
         longTextNotice.value = null
-        hasLongTextNotice.value = false
     }
 }
 
@@ -236,10 +233,9 @@ const handleSseOpen = async () => {
         sseConnectedOnce.value = true
         return
     }
-    // 重新拉取配置，与后台开关对齐
+    // 重新拉取配置，与后台开关对齐；公告总开关或 SSE 开关关闭都断开
     await configStore.loadConfig()
-    if (!configStore.getNoticeSseEnabled()) {
-        // 后台已关闭公告 SSE：断开连接，不再补拉（页面重载前不再连接）
+    if (!configStore.getNoticeEnabled() || !configStore.getNoticeSseEnabled()) {
         disconnectNoticeSSE()
         return
     }
@@ -392,11 +388,13 @@ const handleDetailData = (data) => {
 // 生命周期
 // ============================================================
 onMounted(()=>{
-    if (configStore.getNoticeSseEnabled()) {
-      // 1. 获取当前公告列表
+    if (configStore.getNoticeEnabled()) {
+      // 1. 获取当前公告列表（与实时推送开关解耦：关掉 SSE 也应展示现有公告）
       fetchCurrentNotices()
-      // 2. 建立 SSE 连接，接收实时推送
-      connectNoticeSSE(handleNoticeMessage, null, handleSseOpen)
+      // 2. 实时推送开关单独控制连接
+      if (configStore.getNoticeSseEnabled()) {
+        connectNoticeSSE(handleNoticeMessage, null, handleSseOpen)
+      }
     }
 
     // 次要数据（热门/最新/标签）延后到浏览器空闲时加载，避免与首屏关键请求（分类+文章）抢带宽
