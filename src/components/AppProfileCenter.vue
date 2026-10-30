@@ -113,6 +113,7 @@
               empty-icon="mdi-comment-outline"
               empty-headline="暂无评论"
               empty-text="你还没有发布任何评论"
+              delete-confirm-content="确定要删除这条评论吗？"
               :get-item-id="(item) => item.commentId || item.id"
             >
                 <!-- 自定义前置图标 -->
@@ -168,6 +169,7 @@
               empty-icon="mdi-heart-outline"
               empty-headline="暂无收藏"
               empty-text="你还没有收藏任何内容"
+              delete-confirm-content="确定要取消收藏这篇文章吗？"
               :get-item-id="(item) => item.articleId"
             >
               <!-- 自定义标题列 -->

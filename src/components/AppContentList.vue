@@ -219,6 +219,35 @@
         />
       </div>
     </div>
+
+    <!-- ===== 删除确认对话框（与详情页评论删除同口径） ===== -->
+    <v-dialog v-model="deleteDialogVisible" max-width="400" persistent>
+      <v-card class="delete-dialog-card" :style="{ '--dialog-scale': handleFontScale }">
+        <v-card-title class="text-h6">
+          <v-icon color="error" start>mdi-delete-outline</v-icon>
+          确认删除
+        </v-card-title>
+
+        <v-card-text class="pt-4">
+          <div class="text-body-1">{{ deleteConfirmContent }}</div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn variant="text" @click="cancelDelete" :disabled="deleteConfirmLoading">
+            取消
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="flat"
+            :loading="deleteConfirmLoading"
+            @click="confirmDelete"
+          >
+            确认删除
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-sheet>
 </template>
 
@@ -254,6 +283,11 @@ const props = defineProps({
       { title: '标题', key: 'title', align: 'start' },
       { title: '操作', key: 'actions', sortable: false, align: 'end' }
     ]
+  },
+  // 删除确认弹窗正文
+  deleteConfirmContent: {
+    type: String,
+    default: '确定要删除这条内容吗？'
   },
   // 是否启用搜索
   enableSearch: {
@@ -350,6 +384,8 @@ const searchKeyword = ref('')
 const currentPage = ref(1)
 const total = ref(0)
 const deletingIds = ref([]) // 正在删除的 ID 列表
+const deleteDialogVisible = ref(false)
+const deleteTarget = ref(null) // 待确认删除的条目
 
 // ============================================================
 // 计算属性
@@ -446,8 +482,10 @@ const handlePageChange = (page) => {
   loadData(page)
 }
 
-const handleDelete = async (item) => {
+const doDelete = async (item) => {
   const itemId = props.getItemId(item)
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+  if (deletingIds.value.includes(itemId)) return
   deletingIds.value.push(itemId)
   try {
     await props.deleteApi(itemId)
@@ -463,8 +501,33 @@ const handleDelete = async (item) => {
   }
 }
 
+// 打开删除确认弹窗（真正删除在 confirmDelete）
+const handleDelete = (item) => {
+  deleteTarget.value = item
+  deleteDialogVisible.value = true
+}
+
 const isDeleting = (item) => {
   return deletingIds.value.includes(props.getItemId(item))
+}
+
+const deleteConfirmLoading = computed(() => deleteTarget.value ? isDeleting(deleteTarget.value) : false)
+
+const cancelDelete = () => {
+  if (deleteConfirmLoading.value) return
+  deleteDialogVisible.value = false
+  deleteTarget.value = null
+}
+
+const confirmDelete = async () => {
+  const item = deleteTarget.value
+  if (!item) return
+  try {
+    await doDelete(item)
+  } finally {
+    deleteDialogVisible.value = false
+    deleteTarget.value = null
+  }
 }
 
 const handleSearch = () => {
@@ -591,6 +654,25 @@ defineExpose({
 .content-card-list {
   max-height: calc(100vh - 200px);
   overflow-y: auto;
+}
+
+/* ============================================================
+   删除确认弹窗字号缩放（与详情页评论删除同一口径）
+   ============================================================ */
+.delete-dialog-card {
+  --dialog-scale: 1;
+}
+
+.delete-dialog-card :deep(.v-card-title) {
+  font-size: calc(1.25rem * var(--dialog-scale)) !important;
+}
+
+.delete-dialog-card :deep(.text-body-1) {
+  font-size: calc(1rem * var(--dialog-scale)) !important;
+}
+
+.delete-dialog-card :deep(.v-btn) {
+  --v-btn-size: calc(0.875rem * var(--dialog-scale)) !important;
 }
 
 </style>
