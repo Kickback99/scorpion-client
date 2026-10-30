@@ -37,7 +37,7 @@
                 </v-text-field>
             </v-col>
             <v-col :cols="!display.mobile.value ? 4 : 5">
-                <v-btn block color="primary" :disabled="countdown > 0 || isSending"
+                <v-btn block :disabled="countdown > 0 || isSending"
                 @click="handleSendCode"
                 >
                     <span v-if="countdown > 0">{{ countdown }}秒后重试</span>
