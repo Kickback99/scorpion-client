@@ -34,7 +34,7 @@
               <!-- 使用 v-file-input 触发文件选择 -->
               <v-file-input
                 ref="fileInputRef"
-                v-model="profileData.avatar"
+                v-model="avatarFile"
                 accept="image/jpeg,image/jpg,image/png"
                 density="compact"
                 variant="plain"
@@ -257,11 +257,23 @@ const profileData = reactive({
   avatar: userStore.user?.avatar || ''
 })
 
+// 从 store 回填表单：保存后头像地址会变，不回填会让下次保存又提交旧头像
+const syncProfileFromStore = () => {
+  Object.assign(profileData, {
+    username: userStore.user?.username || 'test_user',
+    nickname: userStore.user?.nickname || '测试用户',
+    phone: userStore.user?.phone || '',
+    email: userStore.user?.email || 'test@example.com',
+    avatar: userStore.user?.avatar || ''
+  })
+}
+
 const profileFormRef = ref(null)
 const saving = ref(false)
 
 // 文件相关
 const fileInputRef = ref(null)
+const avatarFile = ref(null) // 新选中的头像文件（v-file-input 的 model 只接受 File/File[]）
 const avatarPreview = ref(null) // 头像预览 URL
 
 // ============================================================
@@ -287,8 +299,9 @@ const validateFile = (file) => {
 const handleFileChange = (file) => {
   if (!file) return
 
-  // 校验文件
+  // 校验失败须清掉选中值，否则保存时仍会把这个文件提交上去
   if (!validateFile(file)) {
+    avatarFile.value = null
     return
   }
 
@@ -297,7 +310,7 @@ const handleFileChange = (file) => {
     URL.revokeObjectURL(avatarPreview.value)
   }
   avatarPreview.value = URL.createObjectURL(file)
-  profileData.avatar = file
+  avatarFile.value = file
 }
 
 // 触发文件选择
@@ -309,26 +322,26 @@ const triggerFileInput = () => {
 // 保存
 // ============================================================
 const saveProfile = async () => {
-  const { valid } = await profileFormRef.value.validate()
-  if (!valid) return
-
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交（头像会被重复上传）
+  if (saving.value) return
   saving.value = true
   try {
+    const { valid } = await profileFormRef.value.validate()
+    if (!valid) return
 
     // console.log('保存个人资料：', profileData)
 
-    // 调用更新接口
-    await userUpdateInfoApi(profileData)
+    // 有本次选中的文件才上传，否则回传原头像地址（后端相同值不会改动）
+    await userUpdateInfoApi({ ...profileData, avatar: avatarFile.value || profileData.avatar })
 
-    // 回显
+    // 回显服务端最新资料（含新头像地址），并清掉本次选中的文件
     await userStore.getUser()
-
-    // 这里是错误的，因为后端 userUpdateInfoApi 没有返回值
-    // 调用更新接口
-    /* const res = await userUpdateInfoApi(profileData)
-    profileData.avatar = res.data?.avatar || profileData.avatar // 使用服务器返回的头像 URL
-    // 更新 store
-    userStore.setUser({ ...userStore.user, ...profileData }) */
+    syncProfileFromStore()
+    avatarFile.value = null
+    if (avatarPreview.value) {
+      URL.revokeObjectURL(avatarPreview.value)
+      avatarPreview.value = null
+    }
 
     // 触发父组件事件
     emit('profile-saved', profileData)
@@ -357,11 +370,12 @@ const { visible: newShowPassword, toggle: toggleNewPwd } = usePasswordVisibility
 const { visible: confirmShowPassword, toggle: toggleConfirmPwd } = usePasswordVisibility()
 
 const changePassword = async () => {
-  const { valid } = await passwordFormRef.value.validate()
-  if (!valid) return
-
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+  if (changingPassword.value) return
   changingPassword.value = true
   try {
+    const { valid } = await passwordFormRef.value.validate()
+    if (!valid) return
     await userChangePasswordApi({
       oldPassword: passwordData.oldPassword,
       newPassword: passwordData.newPassword,
@@ -424,6 +438,8 @@ const cancelAccount = async () => {
 
 // 确认框点「确认注销」后真正执行
 const doCancelAccount = async () => {
+  // 加载态不会禁用 Vuetify 按钮，连点会重复提交
+  if (cancelling.value) return
   cancelling.value = true
   try {
     await userCancelApi({ verifyCode: cancelData.verifyCode })
@@ -445,16 +461,7 @@ const doCancelAccount = async () => {
 // ============================================================
 // 暴露方法供父组件调用
 defineExpose({
-  loadProfile: () => {
-    // 重新加载用户数据
-    Object.assign(profileData, {
-      username: userStore.user?.username || 'test_user',
-      nickname: userStore.user?.nickname || '测试用户',
-      phone: userStore.user?.phone || '',
-      email: userStore.user?.email || 'test@example.com',
-      avatar: userStore.user?.avatar || ''
-    })
-  }
+  loadProfile: syncProfileFromStore
 })
 </script>
 
