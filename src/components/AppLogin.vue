@@ -680,6 +680,28 @@ const forwardLogin = () => {
     registerFormRef.value?.reset()
 }
 
+// ============================================================
+// 关闭弹窗后重置
+// ============================================================
+// 弹窗内容关闭即卸载，但模型留在组件作用域，不清会带到下次打开
+const resetDialogState = () => {
+    [loginModel, registerModel, forgotModel, resetModel].forEach(model => {
+        Object.keys(model).forEach(key => delete model[key])
+    })
+    loginTerm.value = false
+    registerTerm.value = false
+    loginShowPassword.value = false
+    registerShowPassword.value = false
+    resetShowPassword.value = false
+    resetShowConfirmPassword.value = false
+    showLoginCaptcha.value = false
+    step.value = 1
+}
+
+watch(dialogVisible, visible => {
+    if (!visible) resetDialogState()
+})
+
 // 可选：监听 step 变化，当离开注册页时停止倒计时
 /* watch(step, (newVal) => {
     if (newVal !== 2) {

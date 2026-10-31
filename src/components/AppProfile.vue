@@ -223,7 +223,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useDialogFontScale } from '@/composables/useDialogFontScale'
 import { useRouter } from 'vue-router'
@@ -369,6 +369,15 @@ const { visible: oldShowPassword, toggle: toggleOldPwd } = usePasswordVisibility
 const { visible: newShowPassword, toggle: toggleNewPwd } = usePasswordVisibility()
 const { visible: confirmShowPassword, toggle: toggleConfirmPwd } = usePasswordVisibility()
 
+// 关闭弹窗时清空，避免下次打开回填上次的密码和明文状态
+watch(showChangePasswordDialog, visible => {
+  if (visible) return
+  Object.assign(passwordData, { oldPassword: '', newPassword: '', confirmPassword: '' })
+  oldShowPassword.value = false
+  newShowPassword.value = false
+  confirmShowPassword.value = false
+})
+
 const changePassword = async () => {
   // 加载态不会禁用 Vuetify 按钮，连点会重复提交
   if (changingPassword.value) return
@@ -382,12 +391,6 @@ const changePassword = async () => {
       confirmPassword: passwordData.confirmPassword
     })
     showChangePasswordDialog.value = false
-    // 重置表单
-    Object.assign(passwordData, {
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    })
     // 后端已删除登录态，强制重新登录
     closeWebSocket()
     userStore.clearUserStore()
