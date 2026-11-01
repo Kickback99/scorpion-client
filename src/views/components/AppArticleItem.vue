@@ -219,7 +219,9 @@ const themeStore = useThemeStore()
 .v-list-item-subtitle .truncate-multi {
 
   display: -webkit-box;
-  white-space: wrap !important;
+  /* 用 normal 不用 wrap：wrap 要 Chrome 114 / Safari 17.4+，旧内核丢弃该声明后会继承
+     .v-list-item-title 的 nowrap，标题塌成单行；详情页同样用 normal */
+  white-space: normal !important;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
